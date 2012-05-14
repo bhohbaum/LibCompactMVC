@@ -166,7 +166,7 @@ class HTMLMail {
 		$this->mailheader .= 'BCC: '.implode(', ', $this->bcc)."\n";
 		$this->mailheader .= 'Content-Type: multipart/mixed; boundary="'.$this->boundary_m.'"'."\n";
 		$this->mailheader .= 'MIME-Version: 1.0'."\n";
-		$this->mailheader .= 'X-Mailer: LibHTMLMail (c) 2011 by HTML Design, Stuttgart, Germany.'."\n"; 
+		$this->mailheader .= 'X-Mailer: LibCompactMVC Mail Module (c) 2012 by Botho Hohbaum.'."\n"; 
 		$this->mailheader .= "\n\n";
 		
 		$this->mailbody = "--".$this->boundary_m."\n";
