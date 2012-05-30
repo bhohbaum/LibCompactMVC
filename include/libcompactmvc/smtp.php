@@ -30,7 +30,7 @@ class SMTP {
 		$mailarr = explode("\n", $this->mail);
 		$sock = new Socket($this->server, 25);
 		$ret = $sock->read();
-		$sock->write("HELO\n");
+		$sock->write("HELO ".gethostname()."\n");
 		$ret = $sock->read();
 		if (($this->user != "") && ($this->pass != "")) {
 			$sock->write("AUTH LOGIN\n");
