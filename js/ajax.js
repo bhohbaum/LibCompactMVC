@@ -17,9 +17,8 @@ if(navigator.appName.search("Microsoft") > -1) {
 }
 
 /**
- * 
  * @param arr
- * @return
+ * @return JSON representation
  */
 function array2json(arr) {
     var parts = [];
