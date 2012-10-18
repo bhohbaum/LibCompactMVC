@@ -2,6 +2,14 @@
 @include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
+/**
+ * Simple PHP implementation of an SMTP client.
+ * 
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC Mail Module
+ * @license LGPL version 3
+ * @link http://www.gnu.org/licenses/lgpl.html
+ */
 class SMTP {
 	
 	private $server;
@@ -11,21 +19,40 @@ class SMTP {
 	private $sender;
 	private $receiver;
 	
+	/**
+	 * Construct an object of this class by giving the IP address or hostname of the SMTP server to the constructor.
+	 * @param String $server IP address in xxx.xxx.xxx.xxx notation or host name
+	 */
 	public function __construct($server) {
 		$this->server = $server;
 	}
 	
+	/**
+	 * Set the login credentials for SMTP access.
+	 * @param String $user user name
+	 * @param String $pass password
+	 */
 	public function set_login($user, $pass) {
 		$this->user = $user;
 		$this->pass = $pass;
 	}
 	
+	/**
+	 * Set sender and receiver email address and the mail body. The mail body must have Unix line breaks.
+	 * @param String $sender sender email address
+	 * @param String $receiver receiver email address
+	 * @param String $mail mail body
+	 */
 	public function set_mail($sender, $receiver, $mail) {
 		$this->mail = $mail;
 		$this->sender = $sender;
 		$this->receiver = $receiver;
 	}
 	
+	/**
+	 * Send the mail.
+	 * @throws Exception contains the SMTP error
+	 */
 	public function send() {
 		$mailarr = explode("\n", $this->mail);
 		$sock = new Socket($this->server, 25);

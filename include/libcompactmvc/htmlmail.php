@@ -2,8 +2,18 @@
 @include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
-// HowTo: http://rand-mh.sourceforge.net/book/overall/mulmes.html
-
+/**
+ * The HTMLMail class can be used to send text and HTML mails either via PHP's mail() function or
+ * directly through an SMTP server. Additionaly the following files are required:
+ * 		SMTP.php
+ * 		UTF8.php
+ * 		Socket.php
+ * 
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @license LGPL version 3
+ * @link http://www.gnu.org/licenses/lgpl.html
+ */
 class HTMLMail {
 
 	private $inline;
@@ -35,6 +45,13 @@ class HTMLMail {
 	const TRANS_TYPE_MAIL = 1;
 	const TRANS_TYPE_SMTP = 2;
 	
+	/**
+	 * Instantiate this class telling the constructor if you wish do send a pure text or an HTML mail.
+	 * Allowed values:
+	 * 		HTMLMail::MAIL_TYPE_TEXT
+	 * 		HTMLMail::MAIL_TYPE_HTML
+	 * @param Integer $type
+	 */
 	public function __construct($type = self::MAIL_TYPE_HTML) {
 		$this->mailtype = $type;
 		$this->transfertype = self::TRANS_TYPE_MAIL;
@@ -49,65 +66,139 @@ class HTMLMail {
 		$this->boundary_r = md5(time() + mt_rand());
 	}
 	
+	/**
+	 * Set the mail type (text/HTML) on an already existing object of this class.
+	 * Allowed values:
+	 * 		HTMLMail::MAIL_TYPE_TEXT
+	 * 		HTMLMail::MAIL_TYPE_HTML
+	 * @param Integer $type
+	 */
 	public function set_mail_type($type) {
 		$this->mailtype = $type;
 	}
 	
+	/**
+	 * Set the transfer type. This decides if mail() is used or direct communication to an SMTP server.
+	 * Allowed values:
+	 * 		HTMLMail::TRANS_TYPE_MAIL
+	 * 		HTMLMail::TRANS_TYPE_SMTP
+	 * @param unknown_type $type
+	 */
 	public function set_transfer_type($type) {
 		$this->transfertype = $type;
 	}
 	
+	/**
+	 * Set hostname and login credentials for SMTP server. Local SMTP servers mostly don't require a login,
+	 * thus, the second and third parameters are optional.
+	 * @param String $server IP or hostname of SMTP server
+	 * @param String $user login user (optional)
+	 * @param String $pass login password (optional)
+	 */
 	public function set_smtp_access($server, $user = "", $pass = "") {
 		$this->smtpserver = $server;
 		$this->smtpuser = $user;
 		$this->smtppass = $pass;
 	}
-
+	
+	/**
+	 * Set the receiver of the mail.
+	 * @param String $email E-Mail address
+	 * @param String $name name of the receiver (optional)
+	 */
 	public function set_receiver($email, $name = "") {
 		$this->receiver_name = UTF8::encode($name);
 		$this->receiver_mail = UTF8::encode($email);
 	}
 
+	/**
+	 * Set the sender of the mail.
+	 * @param String $email E-Mail address
+	 * @param String $name name of the sender (optional)
+	 */
 	public function set_sender($email, $name = "") {
 		$this->sender_name = UTF8::encode($name);
 		$this->sender_mail = UTF8::encode($email);
 	}
-
+	
+	/**
+	 * Set the "Reply-To:" header field of the mail. If unset, the sender will be used for this field.
+	 * @param String $email E-Mail address
+	 * @param String $name name (optional)
+	 */
 	public function set_reply_to($email, $name = "") {
 		$this->replyto_name = UTF8::encode($name);
 		$this->replyto_mail = UTF8::encode($email);
 	}
-
+	
+	/**
+	 * Add a CC entry.
+	 * @param String $email E-Mail address
+	 * @param String $name name (optional)
+	 */
 	public function add_cc($email, $name = "") {
 		mb_internal_encoding('UTF-8');
 		$this->cc[] = mb_encode_mimeheader(UTF8::encode($name), "UTF-8", "Q")." <".$email.">";
 	}
 
+	/**
+	 * Add a BCC entry.
+	 * @param String $email E-Mail address
+	 * @param String $name name (optional)
+	 */
 	public function add_bcc($email, $name = "") {
 		mb_internal_encoding('UTF-8');
 		$this->bcc[] = mb_encode_mimeheader(UTF8::encode($name), "UTF-8", "Q")." <".$email.">";
 	}
-
+	
+	/**
+	 * Set the mail's subject.
+	 * @param String $subject the subject
+	 */
 	public function set_subject($subject) {
 		$this->subject = UTF8::encode($subject);
 	}
-
+	
+	/**
+	 * Set the HTML body of the mail.
+	 * @param String $body the HTML body
+	 */
 	public function set_html_body($body) {
 		$this->htmlbody = UTF8::encode($body);
 	}
-
+	
+	/**
+	 * Set the text body of the mail. If the text body is not explicitly set and the mail type ist set to HTML,
+	 * it will be generated automatically from the HTML body. Use this function to set the mail body for 
+	 * text only mails.
+	 * @param String $body text mail body
+	 */
 	public function set_text_body($body) {
 		$this->textbody = UTF8::encode($body);
 	}
-
+	
+	/**
+	 * Add attachments to the mail, that do not show up as attachments. This is required in case you want to embed
+	 * pictures in the mail and reference them from the HTML body with cid:... . The CID will be the basename of
+	 * the file you attach here. The file doesn't have to be local, also http:// URLs can be given here.
+	 * @param String $file full path or URL to the file to be attached
+	 */
 	public function add_inline($file) {
 		$this->inline[] = UTF8::encode($file);
 	}
-
+	
+	/**
+	 * Add an attachment to the mail. The file doesn't have to be local, also http:// URLs can be given here.
+	 * @param String $file full path or URL to the file to be attached
+	 */
 	public function add_attachment($file) {
 		$this->attachment[] = UTF8::encode($file);
 	}
-
+	
+	/**
+	 * Send the mail.
+	 * @throws Exception
+	 */
 	public function send() {
 		mb_internal_encoding('UTF-8');
 		$this->replace_image_tags();
@@ -154,6 +245,9 @@ class HTMLMail {
 		}
 	}
 	
+	/**
+	 * Puts everything together.
+	 */
 	private function assemble_mail() {
 		mb_internal_encoding('UTF-8');
 		$this->mailheader = 'Subject: '.mb_encode_mimeheader($this->subject, "UTF-8", "Q")."\n";
@@ -243,6 +337,9 @@ class HTMLMail {
 		$this->mailbody .= "--".$this->boundary_m."--\n\n";
 	}
 	
+	/**
+	 * Generates the text body from the HTML body.
+	 */
 	private function auto_text_body() {
 		if ($this->mailtype == self::MAIL_TYPE_HTML) {
 			if ($this->textbody == "") {
@@ -256,6 +353,10 @@ class HTMLMail {
 		}
 	}
 	
+	/**
+	 * When URLs are given to the add_inline() method and the same URLs are used in the HTML body,
+	 * this will automaticcaly rewritten to internal images using cid: in the src attribute.
+	 */
 	private function replace_image_tags() {
 		if (count($this->inline) > 0) {
 			foreach ($this->inline as $i) {
@@ -266,7 +367,12 @@ class HTMLMail {
 			}
 		}
 	}
-
+	
+	/**
+	 * Returns the MIME type based on the file extension.
+	 * @param String $ext file extension
+	 * @return String MIME type
+	 */
 	private function mime_type($ext = '') {
 		$mimes = array(
 			'hqx'   =>  'application/mac-binhex40',
