@@ -1,10 +1,9 @@
 /**
- * Umfragemodul fuer die Classrooms
+ * Ajax Module
  *
- * @author      Botho Hohbaum <b.hohbaum@compactmvc.de>
- * @package     VWA Classrooms
- * @copyright   Copyright (c) HTML Design 08.12.2011
- * @link		https://redmine.hive2.compactmvc.net/projects/vwa-classrooms
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package     Ajax Module
+ * @copyright   Copyright (c) Botho Hohbaum 08.12.2011
  */
 
 var res_object;
