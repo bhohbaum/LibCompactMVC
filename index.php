@@ -2,6 +2,7 @@
 @include('./include/libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
+
 session_start();
 
 class Main {
