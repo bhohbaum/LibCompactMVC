@@ -1,0 +1,17 @@
+RewriteEngine on
+
+RewriteRule ^restapi/([^/]*)$ /api.php?&action=$1 [L]
+RewriteRule ^restapi/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2 [L]
+RewriteRule ^restapi/([^/]*)/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&param1=$3 [L]
+RewriteRule ^restapi/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&param1=$3&param2=$4 [L]
+RewriteRule ^restapi/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5 [L]
+
+RewriteRule ^backend$ /backend.php?&action=test [L]
+ 
+RewriteRule ^backend/([^/]*)$ /backend.php?&action=$1 [L]
+RewriteRule ^backend/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2 [L]
+RewriteRule ^backend/([^/]*)/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2&param1=$3 [L]
+RewriteRule ^backend/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2&param1=$3&param2=$4 [L]
+RewriteRule ^backend/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5 [L]
+
+
