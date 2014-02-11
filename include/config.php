@@ -7,25 +7,42 @@ LIBCOMPACTMVC_ENTRY;
 // DB Server:
 
 // DB Server (IP or hostname)
-define("MSSQL_HOST", "10.10.2.3");
 define("MYSQL_HOST", "localhost");
+//define("MYSQL_HOST", "www.impressionstool.de");
 
 // default DB
-define("MSSQL_DB", "VWA-REPLIKATION");
-define("MYSQL_DB", "vwa3_1");
+define("MYSQL_DB", "botho_birkhit");
+//define("MYSQL_DB", "jan_birkhit");
+//define("MYSQL_DB", "birkhit");
 
 // DB user
-define("MSSQL_USER", "sa");
-define("MYSQL_USER", "vwa3");
+define("MYSQL_USER", "botho");
+//define("MYSQL_USER", "jan");
+//define("MYSQL_USER", "birkhit");
 
 // DB password
-define("MSSQL_PASS", "cola!light4167");
-define("MYSQL_PASS", "Siz1I4mgsFmBwRkxDSWBXijpBDhFINny");
+define("MYSQL_PASS", "mausi303");
+//define("MYSQL_PASS", "adrodevrockt");
+//define("MYSQL_PASS", "8F73V940qVRs");
 
 
 
 // Further constants to be set at installation time
-define('UPLOAD_BASE_DIR', '/newsletter/upload');		// relative to $_SERVER['DOCUMENT_ROOT']
+define('UPLOAD_BASE_DIR', './files/upload');				// relative to $_SERVER['DOCUMENT_ROOT']
+define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMENT_ROOT']
+define('CM_IMAGES_BASE_DIR', './files/cmimgs');				// relative to $_SERVER['DOCUMENT_ROOT']
+define('GEN_IMAGES_BASE_DIR', './files/genimgs');			// relative to $_SERVER['DOCUMENT_ROOT']
+define('PDFS_BASE_DIR', './files/pdfs');					// relative to $_SERVER['DOCUMENT_ROOT']
+define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
+define('DB_EXPORT_FILE', './files/database.sqlite');		// relative to $_SERVER['DOCUMENT_ROOT']
+define('LOG_FILE', '/var/www/botho/log/birkhit.log');		// relative to $_SERVER['DOCUMENT_ROOT']
+
+define('REDIS_HOST', '127.0.0.1');
+define('REDIS_PORT', 6379);
+
+define('CAPTCHA_RES_PATH', "./include/resources");			// relative to $_SERVER['DOCUMENT_ROOT']
+define('CAPTCHA_SESS_VAR', "captcha");
+
 define('SMTP_SERVER', '127.0.0.1');
 define('SMTP_USER', '');
 define('SMTP_PASS', '');
@@ -33,19 +50,21 @@ define('SMTP_PASS', '');
 define('MAIL_TRANS_TYPE', 'SMTP');
 define('MAIL_DEBUG_ADDR', 'b.hohbaum@compactmvc.de');
 
+// allowed users (login)
+define('LOGIN_USERS', '{"adrodev": 	"c0e8bf3bdd9583f9650fefd8ec590b5c", 
+						"admin": 	"64ab07516f3e7adb0a79cc5ec9ca529d"}');
 
-// valid IPs that may access the page (VALID_IP_1 .. VALID_IP_8)
-define('VALID_IP_1', '46.237.202.6');			// 
-define('VALID_IP_2', '46.4.83.136');			// Server's IP, required to start mssql -> mysql replication in background
-define('VALID_IP_3', '149.172.31.122');
-define('VALID_IP_4', '');
-define('VALID_IP_5', '');
-define('VALID_IP_6', '');
-define('VALID_IP_7', '');
-define('VALID_IP_8', '');
+// filter IDs in database that require special handling in the code
+define('ID_FLT_IMPRESSIONEN', 22);
 
+// filter types have matching entries in the filter_type table.
+define('FLT_TYPE_FROM_TO', 		"from-to");
+define('FLT_TYPE_IMG_MULTISEL', "img-multiselect");
 
-// Log level
+// Session
+define('SESSION_DYNAMIC_ID_DISABLED', true);
+
+// Debug messages
 // 0	off
 // 1	on
 define('DEBUG', 1);
@@ -57,7 +76,5 @@ define("LOG_LVL_WARNING", 1);
 define("LOG_LVL_NOTICE", 2);
 
 
-// root dir
-// /var/www/vwa1/html/newsletter/
 
 ?>

@@ -24,13 +24,16 @@ class Session
 		
 	//	The following lines change the session id with every click. 
 	//	This makes it harder for attackers to "steal" our session.
-		if (ini_get("session.use_cookies")) {
-			$sname = session_name();
-			setcookie($sname, '', time() - 42000);
-			unset($_COOKIE[$sname]);
+	//	THIS CAN CAUSE TROUBLE WITH AJAX CALLS!!!
+		if (!defined("SESSION_DYNAMIC_ID_DISABLED")) {
+			if (ini_get("session.use_cookies")) {
+				$sname = session_name();
+				setcookie($sname, '', time() - 42000);
+				unset($_COOKIE[$sname]);
+			}
+			session_destroy();
+			session_start();
 		}
-		session_destroy();
-		session_start();
 	}
 
 	// prevent cloning
@@ -72,6 +75,13 @@ class Session
 	 */
 	public function get_property($pname) {
 		return (isset(self::$parray[$pname])) ? self::$parray[$pname] : null;
+	}
+
+	/**
+	 * @param String $pname property name
+	 */
+	public function clear_property($pname) {
+		unset(self::$parray[$pname]);
 	}
 
 	/**

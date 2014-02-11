@@ -4,8 +4,7 @@
 		<br/><br/>
 	</head>
 	<body>
-		Hi Olli,
-		so toll funktioniert meine Mail-Klasse mit PHP 5.3.99
+		Hi,
 		Inhalt der Testmail.<br/>
 		Dieses Template dient zum Testen der <strong>HTMLMail</strong>-Komponente.<br/><br/>
 		Dies ist ein neuer Absatz.

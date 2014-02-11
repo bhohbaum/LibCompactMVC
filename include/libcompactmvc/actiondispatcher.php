@@ -39,6 +39,8 @@ class ActionDispatcher {
 			if (!isset($this->handlers[$this->control_action])) {
 				die("ActionDispatcher error: No handler registered for control ".$this->control_action);
 			} else {
+				$this->handlers[$this->control_action]->view->clear();
+				$this->handlers[$this->control_action]->view->set_value($this->actionname, $this->action);
 				$this->handlers[$this->control_action]->run();
 				if ($this->handlers[$this->control_action]->redirect != "") {
 					$this->action = $this->handlers[$this->control_action]->redirect;
@@ -52,6 +54,8 @@ class ActionDispatcher {
 			if (!isset($this->handlers[$this->action])) {
 				die("Redirect error: No handler registered for '".$this->action."'");
 			} else {
+				$this->handlers[$this->action]->view->clear();
+				$this->handlers[$this->action]->view->set_value($this->actionname, $this->action);
 				$this->handlers[$this->action]->run();
 			}
 		} while ($this->handlers[$this->action]->redirect != "");

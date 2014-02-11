@@ -4,18 +4,6 @@
 		<div class="headline">
 			<p>Direkte Anmeldung...</p>
 		</div>
-		<!-- 
-		<div class="rowcontent">
-			<ul class="LP_List HeadList">
-				<li>
-					<a href="#">
-						<img src="./img/roundarrow_right.png" alt="" />
-						<b>Weiter zum Newslettersystem</b>
-					</a>
-				</li>
-			</ul>
-		</div>
-		 -->
 		<form name="loginform" method="post" action="index.php" id="NLFCol">   
 			<div class="rowcontent">
 				<div class="divclear">

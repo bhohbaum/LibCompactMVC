@@ -6,6 +6,7 @@ class Upload {
 	
 	private $ul_path;
 	private $files_arr;
+	private $names_arr;
 	
 	public function __construct($path) {
 		$this->ul_path = $path;
@@ -14,7 +15,9 @@ class Upload {
 	
 	public function save() {
 		$ret = array();
+		$i = 0;
 		foreach ($this->files_arr as $key => $value) {
+			$this->names_arr[$i++] = $key;
 			if ($value['name'] != "") {
 				move_uploaded_file($value['tmp_name'], $this->ul_path."/".$value['name'])
 					or die('cannot write to upload directory');
@@ -38,7 +41,9 @@ class Upload {
 		return $ret;
 	}
 	
-	
+	public function get_param_name($index = 0) {
+		return $this->names_arr[$index];
+	}
 	
 }
 

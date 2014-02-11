@@ -1,5 +1,5 @@
 <html>
 	<head>
-		<title>LibHTMLDesign Test Page</title>
+		<title>CompactMVC Test Page</title>
 	</head>
 	<body>

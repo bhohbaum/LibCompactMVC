@@ -44,7 +44,7 @@ if (defined(DEBUG) && (DEBUG == 0)) {
 	ob_start();
 }
 
-// HTMLDesign Lib
+
 cpf_include('actiondispatcher.php');
 cpf_include('centermap.php');
 cpf_include('dbaccess.php');
@@ -63,7 +63,6 @@ cpf_include('validator.php');
 cpf_include('view.php');
 
 // pages
-cpf_include('ajax.php');
 cpf_include('test.php');
 
 

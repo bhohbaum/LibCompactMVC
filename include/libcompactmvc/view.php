@@ -65,14 +65,18 @@ class View {
 	public function render() {
 		$out = "";
 		if (DEBUG == 0) {
-			ob_end_clean();
+			@ob_end_clean();
 		}
 		ob_start();
 		if (count($this->tpls) > 0) {
 			foreach ($this->tpls as $t) {
 				$file = "./templates/".$t;
 				if (file_exists($file)) {
-					include($file);
+					if (DEBUG == 0) {
+						@include($file);
+					} else {
+						include($file);
+					}
 				} else {
 					ob_end_clean();
 					die("Could not find template file: ".$file);
@@ -82,7 +86,7 @@ class View {
 		$out = ob_get_contents();
 		ob_end_clean();
 		if (DEBUG == 0) {
-			ob_start();
+			@ob_start();
 		}
 		return $out;
 	}
