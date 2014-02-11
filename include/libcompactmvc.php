@@ -2,6 +2,15 @@
 define('LIBCOMPACTMVC', true);
 define('LIBCOMPACTMVC_ENTRY', defined('LIBCOMPACTMVC') || die);
 
+/**
+ * LibCompactMVC application loader
+ *
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package     LibCompactMVC
+ * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
+ * @link		http://www.adrodev.de
+ */
+
 function cpf_include($fname) {
 	$basepath = dirname(dirname(__FILE__)."../");
 	

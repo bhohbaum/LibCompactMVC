@@ -2,6 +2,14 @@
 @include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
+/**
+ * Session handler
+ * 
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @license LGPL version 3
+ * @link http://www.gnu.org/licenses/lgpl.html
+ */
 class Session
 {
 	// REMEMBER!!!

@@ -4,6 +4,14 @@ LIBCOMPACTMVC_ENTRY;
 
 session_start();
 
+/**
+ * Index file
+ *
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package     LibCompactMVC
+ * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
+ * @link		http://www.adrodev.de
+ */
 class Main {
 	
 	private $ad;

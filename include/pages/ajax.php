@@ -5,10 +5,10 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * AJAX request handler
  *
- * @author      Botho Hohbaum <b.hohbaum@compactmvc.de>
- * @package     VWA Classrooms
- * @copyright   Copyright (c) HTML Design 09.12.2011
- * @link		https://redmine.hive2.compactmvc.net/projects/vwa-classrooms
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package     LibCompactMVC
+ * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
+ * @link		http://www.adrodev.de
  */
 
 

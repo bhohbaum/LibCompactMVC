@@ -3,6 +3,14 @@
 LIBCOMPACTMVC_ENTRY;
 
 
+/**
+ * Network helper
+ * 
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @license LGPL version 3
+ * @link http://www.gnu.org/licenses/lgpl.html
+ */
 class Network {
 	
 	/**

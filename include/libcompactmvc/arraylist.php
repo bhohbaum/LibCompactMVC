@@ -3,14 +3,13 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Description of arraylist.php
- *
- * @author      bhohbaum
- * @package     libcompactmvc
- * @copyright   Copyright (c) Botho Hohbaum 24.01.2012
- * @link		
+ * Chained list
+ * 
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @license LGPL version 3
+ * @link http://www.gnu.org/licenses/lgpl.html
  */
-
 class ArrayList {
 	
 	private $ptr;

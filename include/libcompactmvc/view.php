@@ -6,6 +6,14 @@ LIBCOMPACTMVC_ENTRY;
 // It loads the templates, fills them with values and generates the output
 // into a buffer that can be retrieved.
 
+/**
+ * Template handling
+ *
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package     LibCompactMVC
+ * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
+ * @link		http://www.adrodev.de
+ */
 class View {
 
 	private $comp;

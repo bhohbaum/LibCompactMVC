@@ -2,6 +2,15 @@
 include_once('libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
+/**
+ * Application config
+ *
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package     LibCompactMVC
+ * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
+ * @link		http://www.adrodev.de
+ */
+
 // Set global constants
 
 // DB Server:
