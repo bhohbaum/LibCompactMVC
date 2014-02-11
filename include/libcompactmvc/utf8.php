@@ -2,12 +2,27 @@
 @include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
+/**
+ * UTF-8 helper class. These methods check the encoding of the input and convert it if required.
+ * 
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC Mail Module
+ * @license LGPL version 3
+ * @link http://www.gnu.org/licenses/lgpl.html
+ */
 class UTF8 {
 	
+	/**
+	 * Only static functions. No instantiation required.
+	 */
 	private function __construct() {
 		;
 	}
 	
+	/**
+	 * Convert to UTF-8
+	 * @param String $string input string
+	 */
 	public static function encode($string) {
 		if (!is_string($string)) {
 			return false;
@@ -23,6 +38,10 @@ class UTF8 {
 		}
 	}
 	
+	/**
+	 * Convert to ISO-8859-1
+	 * @param String $string input string
+	 */
 	public static function decode($string) {
 		if (!is_string($string)) {
 			return false;
@@ -30,6 +49,10 @@ class UTF8 {
 		return utf8_decode(self::encode($string));
 	}
 	
+	/**
+	 * Check if the input is properly UTF-8 encoded.
+	 * @param String $str string to be checked
+	 */
 	private static function check_utf8($str) {
 		$len = strlen($str);
 		for($i = 0; $i < $len; $i++){
@@ -52,6 +75,11 @@ class UTF8 {
 		return true;
 	} 
 	
+	/**
+	 * Required to convert other formats than ISO-8859-1.
+	 * @param String $string intput string
+	 * @param String $string_encoding desired encoding
+	 */
 	private static function checkEncoding( $string, $string_encoding ) {
 		$fs = $string_encoding == 'UTF-8' ? 'UTF-32' : $string_encoding;
 		$ts = $string_encoding == 'UTF-32' ? 'UTF-8' : $string_encoding;

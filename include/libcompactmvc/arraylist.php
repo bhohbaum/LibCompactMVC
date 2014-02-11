@@ -3,15 +3,15 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Description of htmllist.php
+ * Description of arraylist.php
  *
  * @author      bhohbaum
  * @package     libcompactmvc
- * @copyright   Copyright (c) HTML Design 24.01.2012
- * @link		https://redmine.hive2.compactmvc.net/projects/libcompactmvc
+ * @copyright   Copyright (c) Botho Hohbaum 24.01.2012
+ * @link		
  */
 
-class HTMLList {
+class ArrayList {
 	
 	private $ptr;
 	private $items;

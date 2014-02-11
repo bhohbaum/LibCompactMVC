@@ -17,6 +17,9 @@ class Session
 	// private constructor prevents direct instantiation
 	private function __construct() 
 	{
+		if (!isset($_SESSION)) {
+			session_start();
+		}
 		self::$parray = $_SESSION;
 		
 	//	The following lines change the session id with every click. 
