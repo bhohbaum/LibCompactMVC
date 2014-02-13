@@ -49,7 +49,7 @@ function cpf_include($fname) {
 // first include the configuration
 cpf_include('config.php');
 
-if (defined(DEBUG) && (DEBUG == 0)) {
+if (defined('DEBUG') && (DEBUG == 0)) {
 	ob_start();
 }
 
@@ -76,7 +76,7 @@ cpf_include('test.php');
 
 
 
-if (defined(DEBUG) && (DEBUG == 0)) {
+if (defined('DEBUG') && (DEBUG == 0)) {
 	ob_end_clean();
 }
 	
