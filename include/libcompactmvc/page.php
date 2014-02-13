@@ -15,6 +15,10 @@ abstract class Page {
 	private $ob;
 	
 	public $view;
+	
+	/**
+	 * @var DbAccess db
+	 */
 	public $db;
 	
 	public $redirect;
