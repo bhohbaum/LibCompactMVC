@@ -35,13 +35,12 @@ function cpf_include($fname) {
 		foreach ($dirs_down as $d) {
 			// if directory of index.php or below
 			$f = dirname($u.$d.$fname)."/".basename($u.$d.$fname);
-//			if (strlen($f) != (strlen(str_replace($basepath, "", $f)))) {
-				// and file exists
-				if (file_exists($f)) {
-					// include it once
-					include_once($f);
-				}
-//			}
+			// and file exists
+			if (file_exists($f)) {
+				// include it once
+				include_once($f);
+				return;
+			}
 		}
 	}
 }
