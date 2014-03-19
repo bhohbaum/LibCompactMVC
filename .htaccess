@@ -1,5 +1,13 @@
 RewriteEngine on
 
+RewriteRule ^app$ /index.php?&action= [L]
+
+RewriteRule ^app/([^/]*)$ /index.php?&action=$1 [L]
+RewriteRule ^app/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2 [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3 [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4 [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&param
+
 RewriteRule ^restapi/([^/]*)$ /api.php?&action=$1 [L]
 RewriteRule ^restapi/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2 [L]
 RewriteRule ^restapi/([^/]*)/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&param1=$3 [L]

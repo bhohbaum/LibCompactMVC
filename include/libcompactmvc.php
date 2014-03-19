@@ -1,6 +1,5 @@
 <?php
-define('LIBCOMPACTMVC', true);
-define('LIBCOMPACTMVC_ENTRY', defined('LIBCOMPACTMVC') || die);
+defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCUMENT_ROOT'] == "") || ($_SERVER['DOCUMENT_ROOT'] == getcwd())) || die('Invalid entry point'));
 
 /**
  * LibCompactMVC application loader
@@ -27,6 +26,7 @@ function cpf_include($fname) {
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
 					"include/",
+					"include/dba/",
 					"include/libcompactmvc/",
 					"include/pages/"
 				);
@@ -45,6 +45,8 @@ function cpf_include($fname) {
 	}
 }
 
+
+
 // first include the configuration
 cpf_include('config.php');
 
@@ -52,14 +54,19 @@ if (defined('DEBUG') && (DEBUG == 0)) {
 	ob_start();
 }
 
-
+// framework
 cpf_include('actiondispatcher.php');
+cpf_include('arraylist.php');
+cpf_include('captcha.php');
 cpf_include('centermap.php');
 cpf_include('dbaccess.php');
+cpf_include('error_messages.php');
+cpf_include('functions.php');
 cpf_include('googlemaps.php');
 cpf_include('htmlmail.php');
 cpf_include('log.php');
 cpf_include('map_radius.php');
+cpf_include('multiextender.php');
 cpf_include('network.php');
 cpf_include('page.php');
 cpf_include('session.php');
@@ -70,7 +77,11 @@ cpf_include('utf8.php');
 cpf_include('validator.php');
 cpf_include('view.php');
 
+// database
+cpf_include('dba.php');
+
 // pages
+cpf_include('ajax.php');
 cpf_include('test.php');
 
 

@@ -56,7 +56,9 @@ class Session
 	}
 	
 	/**
-	 * @return returns the instance of this class. this is a singleton. there can only be one instance.
+	 * returns the instance of this class. this is a singleton. there can only be one instance.
+	 * 
+	 * @return Session
 	 */
 	public static function get_instance() 
 	{

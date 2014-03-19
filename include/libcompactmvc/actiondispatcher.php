@@ -42,7 +42,7 @@ class ActionDispatcher {
 	}
 	
 	public function run() {
-		$this->action = isset($_POST[$this->actionname]) ? $_POST[$this->actionname] : (isset($_GET[$this->actionname]) ? $_GET[$this->actionname] : $this->action_default);
+		$this->action = ($this->request($this->actionname) == null) ? $this->action_default : $this->request($this->actionname);
 		if ($this->control_action != "") {
 			if (!isset($this->handlers[$this->control_action])) {
 				die("ActionDispatcher error: No handler registered for control ".$this->control_action);
@@ -74,6 +74,24 @@ class ActionDispatcher {
 	}
 	
 	
+	private function request($var) {
+		switch (strtoupper($_SERVER['REQUEST_METHOD'])) {
+			case 'GET':
+				$data = $_REQUEST;
+				break;
+			case 'POST':
+				$data = $_REQUEST;
+				break;
+			case 'PUT':
+				// the action is always determined from the request url, so we can use $_REQUEST here.
+				$data = $_REQUEST;
+				break;
+			case 'DELETE':
+				$data = $_REQUEST;
+				break;
+		}
+		return isset($data[$var]) ? $data[$var] : null;
+	}
 	
 	
 }

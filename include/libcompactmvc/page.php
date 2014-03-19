@@ -12,7 +12,9 @@ LIBCOMPACTMVC_ENTRY;
  */
 abstract class Page {
 	
+	
 	private $ob;
+	private static $request_data;
 	
 	public $view;
 	
@@ -21,61 +23,89 @@ abstract class Page {
 	 */
 	public $db;
 	
+	/**
+	 * @var Log
+	 */
+	public $log;
+	
 	public $redirect;
 	
-	protected function retrieve_data() {}
-	protected function run_page_logic() {}
+	/**
+	 * Has to return the name of the DBA class.
+	 * 
+	 * @return String
+	 */
+	protected function dba() { return DBA_DEFAULT_CLASS; }
 	
-	protected function retrieve_data_get() {}
-	protected function retrieve_data_post() {}
-	protected function retrieve_data_put() {}
-	protected function retrieve_data_delete() {}
+	protected function retrieve_data() { DLOG(__METHOD__); }
+	protected function run_page_logic() { DLOG(__METHOD__); }
 	
-	protected function run_page_logic_get() {}
-	protected function run_page_logic_post() {}
-	protected function run_page_logic_put() {}
-	protected function run_page_logic_delete() {}
+	protected function retrieve_data_get() { DLOG(__METHOD__); }
+	protected function retrieve_data_post() { DLOG(__METHOD__); }
+	protected function retrieve_data_put() { DLOG(__METHOD__); }
+	protected function retrieve_data_delete() { DLOG(__METHOD__); }
+	
+	protected function run_page_logic_get() { DLOG(__METHOD__); }
+	protected function run_page_logic_post() { DLOG(__METHOD__); }
+	protected function run_page_logic_put() { DLOG(__METHOD__); }
+	protected function run_page_logic_delete() { DLOG(__METHOD__); }
 	
 	public function __construct() {
 		$this->view = new View();
+		$this->log = new Log(Log::LOG_TYPE_FILE);
+		$this->log->set_log_file(LOG_FILE);
+		Page::$request_data = null;
 	}
 	
-	protected function request($var) {
-		switch ($this->method()) {
-			case 'GET':
-				$data = $_REQUEST;
-				break;
-			case 'POST':
-				$data = $_REQUEST;
-				break;
-			case 'PUT':
-				parse_str(file_get_contents('php://input'), $put_vars);
-				$data = $put_vars;
-				break;
-			case 'DELETE':
-				$data = $_REQUEST;
-				break;
+	protected function request($var = null) {
+		if (Page::$request_data == null) {
+			switch ($this->method()) {
+				case 'GET':
+					$data = $_REQUEST;
+					break;
+				case 'POST':
+					$data = $_REQUEST;
+					break;
+				case 'PUT':
+					// may only be called once, is empty afterwards. hence the use of Page::$request_data
+					parse_str(file_get_contents('php://input'), $put_vars);
+					$data = array_merge($_REQUEST, $put_vars);
+					break;
+				case 'DELETE':
+					$data = $_REQUEST;
+					break;
+			}
+			Page::$request_data = $data;
+		} else {
+			$data = Page::$request_data;
 		}
-		return isset($data[$var]) ? $data[$var] : null;
+		$ret = (isset($var)) ? (isset($data[$var]) ? $data[$var] : null) : $data;
+		DLOG(__METHOD__."(".$var.") return: ".var_export($ret, true));
+		return $ret;
 	}
 	
 	protected function method() {
-		return strtoupper($_SERVER['REQUEST_METHOD']);
+		$method = strtoupper($_SERVER['REQUEST_METHOD']);
+		DLOG(__METHOD__." '".$method."'");
+		return $method;
 	}
 	
 	protected function json_response($obj) {
+		$this->log->log(Log::LOG_LVL_DEBUG, __METHOD__." ".var_export($obj, true));
 		$this->view->clear();
 		$this->view->add_template("out.tpl");
 		$this->view->set_value("out", UTF8::encode(json_encode($obj)));
 	}
 	
 	protected function binary_response($obj) {
+		DLOG(__METHOD__);
 		$this->view->clear();
 		$this->view->add_template("out.tpl");
 		$this->view->set_value("out", $obj);
 	}
 	
 	protected function response_code($code) {
+		DLOG(__METHOD__."(".$code.")");
 		if (function_exists('http_response_code')) {
 			$code = http_response_code($code);
 		} else {
@@ -133,8 +163,12 @@ abstract class Page {
 	}
 
 	public function run() {
+		DLOG(__METHOD__);
+		
+		$this->log->log(Log::LOG_LVL_DEBUG, var_export($_REQUEST, true));
+		
 		$this->redirect = "";
-		$this->db = DbAccess::get_instance();
+		$this->db = DbAccess::get_instance($this->dba());
 		if (!isset($this->view)) {
 			$this->view = new View();
 		}
@@ -179,6 +213,7 @@ abstract class Page {
 	}
 	
 	public function get_ob() {
+		DLOG(__METHOD__);
 		return $this->ob;
 	}
 	

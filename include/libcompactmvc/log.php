@@ -13,18 +13,58 @@ LIBCOMPACTMVC_ENTRY;
 class Log {
 	
 	private $db;
-	private $user_id;
+	private $fname;
+	private $logtype;
 	
-	public function __construct(DbAccess $db) {
+	const LOG_TYPE_DB		= 0;
+	const LOG_TYPE_FILE		= 1;
+	
+	const LOG_LVL_ERROR		= 0;
+	const LOG_LVL_WARNING	= 1;
+	const LOG_LVL_NOTICE	= 2;
+	const LOG_LVL_DEBUG		= 3;
+	
+	public function __construct($logtype) {
+		$this->logtype = $logtype;
+	}
+	
+	public function set_log_file($fname) {
+		$this->fname = $fname;
+		return $this;
+	}
+	
+	public function set_log_db(DbAccess $db) {
 		$this->db = $db;
-		$user = $this->db->get_user($_SESSION['user']);
-		$this->user_id = $user['id'];
+		return $this;
 	}
 	
+	// general logging method
 	public function log($loglevel, $text) {
-		$this->db->write2log($loglevel, $this->user_id, $text);
+		if ((($loglevel == Log::LOG_LVL_DEBUG) && (defined("DEBUG") && (DEBUG == 1))) || ($loglevel != Log::LOG_LVL_DEBUG)) {
+			if ($this->logtype == Log::LOG_TYPE_DB) {
+				$this->db->write2log($loglevel, date(DATE_ISO8601), $text);
+			} else if ($this->logtype == Log::LOG_TYPE_FILE) {
+				error_log($loglevel." ".date(DATE_ISO8601)." ".$text."\n", 3, LOG_FILE);
+			}
+		}
 	}
 	
+	// short methods
+	public function error($text) {
+		$this->log(Log::LOG_LVL_ERROR, $text);
+	}
+	
+	public function warning($text) {
+		$this->log(Log::LOG_LVL_WARNING, $text);
+	}
+	
+	public function notice($text) {
+		$this->log(Log::LOG_LVL_NOTICE, $text);
+	}
+	
+	public function debug($text) {
+		$this->log(Log::LOG_LVL_DEBUG, $text);
+	}
 	
 }
 

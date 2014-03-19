@@ -1,8 +1,6 @@
 <?php
-@include('./include/libcompactmvc.php');
+include('./include/libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
-
-session_start();
 
 /**
  * Index file
@@ -20,11 +18,12 @@ class Main {
 		;
 	}
 	
-	public function dispatch() {
+	public function app() {
 		$this->ad = new ActionDispatcher("action");
-		$this->ad->set_handler("test", 		"Test");
+		$this->ad->set_handler("", 				"Test");
+		$this->ad->set_handler("test", 			"Test");
 		$this->ad->set_default("test");
-//		$this->ad->set_control("nlcontrol");
+//		$this->ad->set_control("control");
 		$this->ad->run();
 		echo($this->ad->get_ob());
 	}
@@ -32,8 +31,17 @@ class Main {
 	
 }
 
+// redirect
+if (substr($_SERVER["REQUEST_URI"], 0, 4) != "/app") {
+	header("Location: /app/");
+}
+
 // entry point (MAIN)
-$run = new Main();
-$run->dispatch();
+try {
+	$run = new Main();
+	$run->app();
+} catch (Exception $e) {
+	echo("<pre>".$e->getTraceAsString()."</pre>");
+}
 
 ?>
