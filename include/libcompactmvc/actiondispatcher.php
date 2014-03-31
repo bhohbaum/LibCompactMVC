@@ -4,11 +4,12 @@ LIBCOMPACTMVC_ENTRY;
 
 /**
  * Action dispatcher
- * 
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
- * @package LibCompactMVC
- * @license LGPL version 3
- * @link http://www.gnu.org/licenses/lgpl.html
+ *
+ * @author		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package	LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
+ * @license	LGPL version 3
+ * @link		https://github.com/bhohbaum/libcompactmvc
  */
 class ActionDispatcher {
 	
@@ -29,7 +30,7 @@ class ActionDispatcher {
 		if (is_subclass_of($this->handlers[$pgvvalue], "Page")) {
 			return true;
 		} else {
-			die("ActionDispatcher::set_handler(\"$pgvvalue\", \"$classname\"): Class must be a subclass of class Page.");
+			throw new Exception("ActionDispatcher::set_handler(\"$pgvvalue\", \"$classname\"): Class must be a subclass of class Page.");
 		}
 	}
 	
@@ -45,7 +46,7 @@ class ActionDispatcher {
 		$this->action = ($this->request($this->actionname) == null) ? $this->action_default : $this->request($this->actionname);
 		if ($this->control_action != "") {
 			if (!isset($this->handlers[$this->control_action])) {
-				die("ActionDispatcher error: No handler registered for control ".$this->control_action);
+				throw new Exception("ActionDispatcher error: No handler registered for control ".$this->control_action);
 			} else {
 				$this->handlers[$this->control_action]->view->clear();
 				$this->handlers[$this->control_action]->view->set_value($this->actionname, $this->action);
@@ -60,7 +61,7 @@ class ActionDispatcher {
 				$this->action = $this->handlers[$this->action]->redirect;
 			}
 			if (!isset($this->handlers[$this->action])) {
-				die("Redirect error: No handler registered for '".$this->action."'");
+				throw new Exception("Redirect error: No handler registered for '".$this->action."'");
 			} else {
 				$this->handlers[$this->action]->view->clear();
 				$this->handlers[$this->action]->view->set_value($this->actionname, $this->action);

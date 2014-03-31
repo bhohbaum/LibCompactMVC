@@ -3,12 +3,13 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Pages superclass
+ * Pages (controller) superclass
  * 
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
- * @package LibCompactMVC
- * @license LGPL version 3
- * @link http://www.gnu.org/licenses/lgpl.html
+ * @author		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package	LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
+ * @license	LGPL version 3
+ * @link		https://github.com/bhohbaum/libcompactmvc
  */
 abstract class Page {
 	
@@ -149,7 +150,7 @@ abstract class Page {
 					case 504: $text = 'Gateway Time-out'; break;
 					case 505: $text = 'HTTP Version not supported'; break;
 					default:
-						exit('Unknown http status code "' . htmlentities($code) . '"');
+						throw new Exception('Unknown http status code "' . htmlentities($code) . '"', $code);
 						break;
 				}
 				$protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');

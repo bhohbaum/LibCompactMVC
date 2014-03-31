@@ -5,10 +5,11 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Upload helper
  * 
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
- * @package LibCompactMVC Mail Module
- * @license LGPL version 3
- * @link http://www.gnu.org/licenses/lgpl.html
+ * @author		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package	LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
+ * @license	LGPL version 3
+ * @link		https://github.com/bhohbaum/libcompactmvc
  */
 class Upload {
 	
@@ -27,8 +28,9 @@ class Upload {
 		foreach ($this->files_arr as $key => $value) {
 			$this->names_arr[$i++] = $key;
 			if ($value['name'] != "") {
-				move_uploaded_file($value['tmp_name'], $this->ul_path."/".$value['name'])
-					or die('cannot write to upload directory');
+				if (!move_uploaded_file($value['tmp_name'], $this->ul_path."/".$value['name'])) {
+					throw new Exception('cannot write to upload directory');
+				}
 				chmod($this->ul_path."/".$value['name'], 0666);
 				$ret[] = $this->ul_path."/".$value['name'];
 			}
@@ -40,8 +42,9 @@ class Upload {
 		$ret = array();
 		foreach ($this->files_arr as $key => $value) {
 			if ($value['name'] != "") {
-				move_uploaded_file($value['tmp_name'], $this->ul_path."/".$key."/".$value['name'])
-					or die('cannot write to upload directory');
+				if (!move_uploaded_file($value['tmp_name'], $this->ul_path."/".$key."/".$value['name'])) {
+					throw new Exception('cannot write to upload directory');
+				}
 				chmod($this->ul_path."/".$key."/".$value['name'], 0666);
 				$ret[$key][] = $this->ul_path."/".$key."/".$value['name'];
 			}

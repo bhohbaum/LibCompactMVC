@@ -5,10 +5,11 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Socket wrapper class for easy socket handling.
  * 
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
- * @package LibCompactMVC Mail Module
- * @license LGPL version 3
- * @link http://www.gnu.org/licenses/lgpl.html
+ * @author		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package	LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
+ * @license	LGPL version 3
+ * @link		https://github.com/bhohbaum/libcompactmvc
  */
 class Socket {
 	
@@ -20,10 +21,10 @@ class Socket {
 	 * @param Integer $port port number
 	 * @throws Exception error returned from fsockopen()
 	 */
-	public function __construct($host, $port) {
+	public function __construct($host, $port = 25, $timeout = 2000) {
 		$errno = 0;
 		$errstr = "";
-		$this->fh = fsockopen($host.":".$port, 25, $errno, $errstr, 2000);
+		$this->fh = fsockopen($host, $port, $errno, $errstr, $timeout);
 		if (!$this->fh) {
 			throw new Exception($errstr, $errno);
 		}

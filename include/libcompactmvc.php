@@ -25,10 +25,10 @@ function cpf_include($fname) {
 	// Put all directories into this array, where source files shall be included.
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
+					"application/dba/",
+					"application/controller/",
 					"include/",
-					"include/dba/",
-					"include/libcompactmvc/",
-					"include/pages/"
+					"include/libcompactmvc/"
 				);
 	
 	foreach ($dirs_up as $u) {

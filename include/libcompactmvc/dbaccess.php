@@ -2,8 +2,16 @@
 @include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
-// this class handles our DB connection and requests
 
+/**
+ * this class handles our DB connection and requests
+ *
+ * @author		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package	LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
+ * @license	LGPL version 3
+ * @link		https://github.com/bhohbaum/libcompactmvc
+ */
 abstract class DbAccess {
 	
 	private $mysqli;
@@ -19,7 +27,7 @@ abstract class DbAccess {
 		$this->mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
 		
 		if (mysqli_connect_error()) {
-		    die('Connect Error ('.mysqli_connect_errno().') '. mysqli_connect_error());
+			throw new Exception('Connect Error ('.mysqli_connect_errno().') '. mysqli_connect_error(), mysqli_connect_errno());
 		}
 		
 		$this->log = new Log(Log::LOG_TYPE_FILE);

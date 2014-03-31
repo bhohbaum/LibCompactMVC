@@ -2,6 +2,15 @@
 @include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
+/**
+ * Calculates approximately the center of a rectangle
+ *
+ * @author		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package	LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
+ * @license	LGPL version 3
+ * @link		https://github.com/bhohbaum/libcompactmvc
+ */
 class CenterMap {
 	// this class will only work for germany!!!
 	// there may occur unexpected results for other areas on our globe... 
