@@ -17,22 +17,15 @@ LIBCOMPACTMVC_ENTRY;
 
 // DB Server (IP or hostname)
 define("MYSQL_HOST", "localhost");
-//define("MYSQL_HOST", "www.impressionstool.de");
 
 // default DB
-define("MYSQL_DB", "botho_birkmailing");
-//define("MYSQL_DB", "jan_birkhit");
-//define("MYSQL_DB", "birkhit");
+define("MYSQL_DB", "libcompactmvc");
 
 // DB user
 define("MYSQL_USER", "botho");
-//define("MYSQL_USER", "jan");
-//define("MYSQL_USER", "birkhit");
 
 // DB password
 define("MYSQL_PASS", "mausi303");
-//define("MYSQL_PASS", "adrodevrockt");
-//define("MYSQL_PASS", "8F73V940qVRs");
 
 define("DBA_DEFAULT_CLASS", "DBA");
 
@@ -40,8 +33,9 @@ define("DBA_DEFAULT_CLASS", "DBA");
 define('UPLOAD_BASE_DIR', './files/upload');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
-define('LOG_FILE', '/var/www/botho/log/birkmailing.log');	// relative to $_SERVER['DOCUMENT_ROOT']
-define('BASE_URL', 'http://birkmailing.botho.devel-web');
+define('LOG_FILE', '/Users/botho/log/birkmailing.log');		// relative to $_SERVER['DOCUMENT_ROOT']
+define('BASE_URL', 'http://libcompactmvc.bothos-mbp');
+define('DEFAULT_TIMEZONE', 'CET');
 
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);

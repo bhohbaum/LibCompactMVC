@@ -27,6 +27,7 @@ class Log {
 	
 	public function __construct($logtype) {
 		$this->logtype = $logtype;
+		date_default_timezone_set(DEFAULT_TIMEZONE);
 	}
 	
 	public function set_log_file($fname) {
