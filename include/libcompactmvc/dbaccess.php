@@ -7,9 +7,9 @@ LIBCOMPACTMVC_ENTRY;
  * this class handles our DB connection and requests
  *
  * @author		Botho Hohbaum (bhohbaum@googlemail.com)
- * @package	LibCompactMVC
+ * @package		LibCompactMVC
  * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
- * @license	LGPL version 3
+ * @license		LGPL version 3
  * @link		https://github.com/bhohbaum/libcompactmvc
  */
 abstract class DbAccess {
@@ -18,7 +18,7 @@ abstract class DbAccess {
 	
 	public $log;
 	
-	// keeps instance of the classs
+	// keeps instance of the class
 	private static $instance;
 	
 	public abstract function write2log($loglevel, $date, $text);
