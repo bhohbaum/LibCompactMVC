@@ -165,9 +165,7 @@ abstract class Page {
 
 	public function run() {
 		DLOG(__METHOD__);
-		
-		$this->log->log(Log::LOG_LVL_DEBUG, var_export($_REQUEST, true));
-		
+		DLOG(var_export($_REQUEST, true));
 		$this->redirect = "";
 		$this->db = DbAccess::get_instance($this->dba());
 		if (!isset($this->view)) {
