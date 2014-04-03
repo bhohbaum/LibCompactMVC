@@ -14,7 +14,7 @@ LIBCOMPACTMVC_ENTRY;
  */
 abstract class DbAccess {
 	
-	private $mysqli;
+	protected $mysqli;
 	
 	public $log;
 	
