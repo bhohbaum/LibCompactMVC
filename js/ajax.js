@@ -1,95 +1,188 @@
 /**
- * Ajax Module
- *
- * @author      Botho Hohbaum <bhohbaum@googlemail.com>
- * @package     Ajax Module
- * @copyright   Copyright (c) Botho Hohbaum 08.12.2011
- */
-
-var res_object;
-var dec_object;
-
-if(navigator.appName.search("Microsoft") > -1) {
-	res_object = new ActiveXObject("MSXML2.XMLHTTP");
-} else {
-	res_object = new XMLHttpRequest();
-}
-
-/**
- * @param arr
- * @return JSON representation
- */
-function array2json(arr) {
-    var parts = [];
-    for(var key in arr) {
-    	var value = arr[key];
-        if(typeof value == "object") { 
-            parts[key] = array2json(value);
-        } else {
-            var str = "";
-            str = '"' + key + '":';
-            if(typeof value == "number") str += value;
-            else if(value === false) str += 'false';
-            else if(value === true) str += 'true';
-            else str += '"' + value + '"';
-            parts.push(str);
-        }
-    }
-    var json = parts.join(",");
-    return '{' + json + '}';
-}
-
-/**
  * 
- * @param method
- * @param data
- * @return
  */
-function send_get_request(method, data) {
-	var request = './jqueryLoading/survey/survey.ajax.php?sub0=ajax&sub1='+method+"&data="+escape(array2json(data));
-//	alert(method + " " + array2json(data));
-	res_object.open('get', request, true);
-	res_object.onreadystatechange = handleResponse;
-	res_object.send(null);
-}
 
-/**
- * 
- * @param method
- * @param data
- * @return
- */
-function send_post_request(method, data) {
-	var request = './jqueryLoading/forum/forum.ajax.php';
-	var params = 'sub0=ajaxforum&sub1='+method+"&data="+encodeURI(array2json(data));
-	res_object.open('post', request, true);
-	res_object.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	res_object.setRequestHeader("Content-length", params.length);
-	res_object.setRequestHeader("Connection", "close");
-	res_object.onreadystatechange = handleResponse;
-	res_object.send(params);
-}
+var $_ajax = [];
+
+var $ajax = function() {
+	
+	$ajax._cfg = [];
+	
+	this._cfg = [];
+	this._responseType = "";
+	this._cbok = null;
+	this._cberr = null;
+	
+	this.get = function(url) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('GET', url, true);
+	    xhr.responseType = this._responseType;
+	    xhr.onload = function(response) {
+	    	var res = null;
+	    	if (response.currentTarget.hasOwnProperty('response')) {
+	    		res = response.currentTarget.response;
+	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
+	    		res = response.currentTarget.responseText;
+	    	}
+	    	if (response.target.status == 200) {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cbok) {
+	    			$_ajax[url]._cfg[url].cbok(res);
+	    		};
+	    	} else {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cberr) {
+	    			$_ajax[url]._cfg[url].cberr(res);
+	    		};
+	    	}
+	    	$_ajax[url]._cfg[url] = null;
+	    };
+	    this._cfg[url] = [];
+	    this._cfg[url].cbok = this._cbok;
+	    this._cfg[url].cberr = this._cberr;
+	    $_ajax[url] = this;
+	    xhr.send(this._data);
+	    return this;
+	};
+	this.post = function(url) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('POST', url, true);
+	    xhr.responseType = this._responseType;
+	    xhr.onload = function(response) {
+	    	var res = null;
+	    	if (response.currentTarget.hasOwnProperty('response')) {
+	    		res = response.currentTarget.response;
+	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
+	    		res = response.currentTarget.responseText;
+	    	}
+	    	if (response.target.status == 200) {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cbok) {
+	    			$_ajax[url]._cfg[url].cbok(res);
+	    		};
+	    	} else {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cberr) {
+	    			$_ajax[url]._cfg[url].cberr(res);
+	    		};
+	    	}
+	    	$_ajax[url]._cfg[url] = null;
+	    };
+	    this._cfg[url] = [];
+	    this._cfg[url].cbok = this._cbok;
+	    this._cfg[url].cberr = this._cberr;
+	    $_ajax[url] = this;
+	    xhr.send(this._data);
+		return this;
+	};
+	this.put = function(url) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('PUT', url, true);
+	    xhr.responseType = this._responseType;
+	    xhr.onload = function(response) {
+	    	var res = null;
+	    	if (response.currentTarget.hasOwnProperty('response')) {
+	    		res = response.currentTarget.response;
+	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
+	    		res = response.currentTarget.responseText;
+	    	}
+	    	if (response.target.status == 200) {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cbok) {
+	    			$_ajax[url]._cfg[url].cbok(res);
+	    		};
+	    	} else {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cberr) {
+	    			$_ajax[url]._cfg[url].cberr(res);
+	    		};
+	    	}
+	    	$_ajax[url]._cfg[url] = null;
+	    };
+	    this._cfg[url] = [];
+	    this._cfg[url].cbok = this._cbok;
+	    this._cfg[url].cberr = this._cberr;
+	    $_ajax[url] = this;
+	    xhr.send(this._data);
+		return this;
+	};
+	this.del = function(url) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.open('DELETE', url, true);
+	    xhr.responseType = this._responseType;
+	    xhr.onload = function(response) {
+	    	var res = null;
+	    	if (response.currentTarget.hasOwnProperty('response')) {
+	    		res = response.currentTarget.response;
+	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
+	    		res = response.currentTarget.responseText;
+	    	}
+	    	if (response.target.status == 200) {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cbok) {
+	    			$_ajax[url]._cfg[url].cbok(res);
+	    		};
+	    	} else {
+	    		console.log(response);
+	    		if ($_ajax[url]._cfg[url].cberr) {
+	    			$_ajax[url]._cfg[url].cberr(res);
+	    		};
+	    	}
+	    	$_ajax[url]._cfg[url] = null;
+	    };
+	    this._cfg[url] = [];
+	    this._cfg[url].cbok = this._cbok;
+	    this._cfg[url].cberr = this._cberr;
+	    $_ajax[url] = this;
+	    xhr.send(this._data);
+		return this;
+	};
+	this.data = function(str) {
+		this._data = str;
+		return this;
+	};
+	this.responseType = function(type) {
+		this._responseType = type;
+		return this;
+	};
+	this.ok = function(cb) {
+		this._cbok = cb;
+		return this;
+	};
+	this.err = function(cb) {
+		this._cberr = cb;
+		return this;
+	};
+	
+};
 
 
-/**
- * 
- * @return
- */
-function handleResponse() {
-	if (res_object.readyState == 4) {
-		if (res_object.status == 200) {
-//			alert(res_object.responseText);
-			dec_object = JSON.parse(res_object.responseText);
-			eval(dec_object.handler);
+$(".ajax").each(function() {
+	var element = $(this);
+	var url = "/" + element.attr("data-path") + "/" +
+					element.attr("data-parm1") + "/" +
+					element.attr("data-parm2") + "/" +
+					element.attr("data-parm3") + "/" +
+					element.attr("data-parm4");
+	while (url != url.replace("/undefined", "")) {
+		url = url.replace("/undefined", "");
+	}
+	var content = element.attr("data-content");
+	var events = ["change", "keydown", "keyup", "click", "mouseup"];
+	for (var i = 0; i < events.length; i++) {
+		if (element.attr("data-" + events[i]) != null) {
+			element.on(events[i], function(event) {
+				var cmd = 'var data = element.' + element.attr("data-" + event.type);
+				eval(cmd);
+				new $ajax().data(data).ok(function(result) {
+					var cmd = 'element.' + content;
+					eval(cmd);
+				}).post(url);
+			});
 		}
 	}
-}
-
-/**
- * 
- * @return
- */
-function set_target_content() {
-	document.getElementById(dec_object['target']).innerHTML = dec_object['content'];
-}
-
+	new $ajax().ok(function(result) {
+		var cmd = 'element.' + content;
+		eval(cmd);
+	}).get(url);
+});
