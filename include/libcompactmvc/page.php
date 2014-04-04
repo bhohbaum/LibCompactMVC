@@ -65,7 +65,8 @@ abstract class Page {
 					$data = $_REQUEST;
 					break;
 				case 'POST':
-					$data = $_REQUEST;
+					parse_str(file_get_contents('php://input'), $post_vars);
+					$data = array_merge($_REQUEST, $post_vars);
 					break;
 				case 'PUT':
 					// may only be called once, is empty afterwards. hence the use of Page::$request_data
