@@ -20,10 +20,16 @@ class Main {
 	
 	public function app() {
 		$this->ad = new ActionDispatcher("action");
-		$this->ad->set_handler("", 				"Test");
-		$this->ad->set_handler("test", 			"Test");
-		$this->ad->set_default("test");
-//		$this->ad->set_control("control");
+		$this->ad->set_handler("", 				"Login");
+		$this->ad->set_handler("control", 		"Control");
+		$this->ad->set_handler("login", 		"Login");
+		$this->ad->set_handler("logout", 		"Logout");
+		$this->ad->set_handler("mail", 			"Mail");
+		$this->ad->set_handler("mailingedit", 	"MailingEdit");
+		$this->ad->set_handler("mailinglist", 	"MailingList");
+		$this->ad->set_handler("trackingstats", "TrackingStats");
+		$this->ad->set_default("login");
+		$this->ad->set_control("control");
 		$this->ad->run();
 		echo($this->ad->get_ob());
 	}
@@ -44,4 +50,3 @@ try {
 	echo("<pre>".$e->getTraceAsString()."</pre>");
 }
 
-?>

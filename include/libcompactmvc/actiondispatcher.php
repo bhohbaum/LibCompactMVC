@@ -27,10 +27,10 @@ class ActionDispatcher {
 		$this->handlers[$pgvvalue] = new $classname();
 		$this->action_default = "";
 		$this->control_action = "";
-		if (is_subclass_of($this->handlers[$pgvvalue], "Page")) {
+		if (is_subclass_of($this->handlers[$pgvvalue], "CMVCController")) {
 			return true;
 		} else {
-			throw new Exception("ActionDispatcher::set_handler(\"$pgvvalue\", \"$classname\"): Class must be a subclass of class Page.");
+			throw new Exception("ActionDispatcher::set_handler(\"$pgvvalue\", \"$classname\"): Class must be a subclass of CMVCController.");
 		}
 	}
 	

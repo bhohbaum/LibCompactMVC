@@ -10,9 +10,9 @@ LIBCOMPACTMVC_ENTRY;
  * Template handling
  *
  * @author		Botho Hohbaum (bhohbaum@googlemail.com)
- * @package	LibCompactMVC
+ * @package		LibCompactMVC
  * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
- * @license	LGPL version 3
+ * @license		LGPL version 3
  * @link		https://github.com/bhohbaum/libcompactmvc
  */
 class View {
@@ -79,31 +79,28 @@ class View {
 		ob_start();
 		if (count($this->tpls) > 0) {
 			foreach ($this->tpls as $t) {
-				$file = "./templates/".$t;
-				if (file_exists($file)) {
-					if (DEBUG == 0) {
-						@include($file);
-					} else {
-						include($file);
-					}
+				if ((!defined("DEBUG")) || (DEBUG == 0)) {
+					@$this->include_template($t);
 				} else {
-					ob_end_clean();
-					throw new Exception("Could not find template file: ".$file);
+					$this->include_template($t);
 				}
 			}
 		}
 		$out = ob_get_contents();
 		ob_end_clean();
-		if (DEBUG == 0) {
+		if ((!defined("DEBUG")) || (DEBUG == 0)) {
 			@ob_start();
 		}
 		return $out;
 	}
 	
 	private function include_template($tpl_name) {
-		$file = "./templates/".$tpl_name;
-		if (file_exists($file)) {
-			include($file);
+		$file1 = "./include/resources/templates/".$tpl_name;
+		$file2 = "./templates/".$tpl_name;
+		if (file_exists($file1)) {
+			include($file1);
+		} else if (file_exists($file2)) {
+			include($file2);
 		} else {
 			throw new Exception("Could not find template file: ".$file);
 		}

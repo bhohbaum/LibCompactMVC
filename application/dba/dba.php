@@ -24,113 +24,113 @@ class DBA extends DbAccess {
 	public function get_image_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	images
-				WHERE	id = '".mysql_escape_string($id)."'";
+				WHERE	id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_text_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	texts
-				WHERE	id = '".mysql_escape_string($id)."'";
+				WHERE	id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mailpart_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailparts
-				WHERE	id = '".mysql_escape_string($id)."'";
+				WHERE	id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_event_type_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	event_types
-				WHERE	id = '".mysql_escape_string($id)."'";
+				WHERE	id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_event_type_by_name($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	event_types
-				WHERE	name = '".mysql_escape_string($id)."'";
+				WHERE	name = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mailing_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailings
-				WHERE	id = ".mysql_escape_string($id);
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mailpart_type_by_name($name, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailpart_types
-				WHERE	name = '".mysql_escape_string($name)."'";
+				WHERE	name = '".mysqli_escape_string($this->mysqli, $name)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mailpart_type_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailpart_types
-				WHERE	id = '".mysql_escape_string($id)."'";
+				WHERE	id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_receiver_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	receivers
-				WHERE	id = '".mysql_escape_string($id)."'";
+				WHERE	id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_receiver_by_email($email, $obj = false) {
 		$q = "SELECT	*
 				FROM	receivers
-				WHERE	email = '".mysql_escape_string($email)."'";
+				WHERE	email = '".mysqli_escape_string($this->mysqli, $email)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mhr_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailings_has_receivers
-				WHERE	id = '".mysql_escape_string($id)."'";
+				WHERE	id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mhr_by_ident($ident, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailings_has_receivers
-				WHERE	ident = '".mysql_escape_string($ident)."'";
+				WHERE	ident = '".mysqli_escape_string($this->mysqli, $ident)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mhr_by_mailing_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailings_has_receivers
-				WHERE	fk_id_mailings = '".mysql_escape_string($id)."'";
+				WHERE	fk_id_mailings = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, true, $obj);
 	}
 	
 	public function get_tracking_combined_by_mailing_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	tracking_combined
-				WHERE	mhr_fk_id_mailings = '".mysql_escape_string($id)."'";
+				WHERE	mhr_fk_id_mailings = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, true, $obj);
 	}
 	
 	public function get_tracking_events_by_mhr_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	tracking_combined
-				WHERE	mhr_id = '".mysql_escape_string($id)."'";
+				WHERE	mhr_id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, true, $obj);
 	}
 	
 	public function get_last_tracking_event_by_mhr_and_mailing_id($mailingid, $mhrid, $obj = false) {
 		$q = "SELECT	*
 				FROM	tracking_combined
-				WHERE	mhr_fk_id_mailings = '".mysql_escape_string($mailingid)."'
-				AND		mhr_id = '".mysql_escape_string($mhrid)."'
+				WHERE	mhr_fk_id_mailings = '".mysqli_escape_string($this->mysqli, $mailingid)."'
+				AND		mhr_id = '".mysqli_escape_string($this->mysqli, $mhrid)."'
 			ORDER BY	te_id DESC
 				LIMIT	0,1";
 		return $this->run_query($q, false, $obj);
@@ -146,7 +146,7 @@ class DBA extends DbAccess {
 	public function create_text($text) {
 		$q = "INSERT INTO 	texts 
 							(text)
-				VALUES		('".mysql_escape_string($text)."')";
+				VALUES		('".mysqli_escape_string($this->mysqli, $text)."')";
 		return $this->run_query($q, false);
 	}
 	
@@ -162,16 +162,16 @@ class DBA extends DbAccess {
 							(fk_id_mailings_has_receivers,
 							fk_id_event_types,
 							fk_id_mailparts)
-				VALUES		(".mysql_escape_string($fk_id_mailings_has_receivers).",
-							".mysql_escape_string($fk_id_event_types).",
-							".mysql_escape_string($fk_id_mailparts).")";
+				VALUES		(".mysqli_escape_string($this->mysqli, $fk_id_mailings_has_receivers).",
+							".mysqli_escape_string($this->mysqli, $fk_id_event_types).",
+							".mysqli_escape_string($this->mysqli, $fk_id_mailparts).")";
 		return $this->run_query($q, false);
 	}
 	
 	public function create_mailing($name) {
 		$q = "INSERT INTO 	mailings 
 							(name)
-				VALUES		('".mysql_escape_string($name)."')";
+				VALUES		('".mysqli_escape_string($this->mysqli, $name)."')";
 		return $this->run_query($q, false);
 	}
 	
@@ -180,21 +180,21 @@ class DBA extends DbAccess {
 		$images = ($images == null) ? "null" : $images;
 		$q = "INSERT INTO 	mailparts 
 							(ordinal, fk_id_mailings, fk_id_mailpart_types, fk_id_texts, fk_id_images)
-				VALUES		(".mysql_escape_string($ordinal).",
-							".mysql_escape_string($mailings).",
-							".mysql_escape_string($mailpart_types).",
-							".mysql_escape_string($texts).",
-							".mysql_escape_string($images).")";
+				VALUES		(".mysqli_escape_string($this->mysqli, $ordinal).",
+							".mysqli_escape_string($this->mysqli, $mailings).",
+							".mysqli_escape_string($this->mysqli, $mailpart_types).",
+							".mysqli_escape_string($this->mysqli, $texts).",
+							".mysqli_escape_string($this->mysqli, $images).")";
 		return $this->run_query($q, false);
 	}
 	
 	public function create_receiver($email, $salutation, $firstname, $lastname) {
 		$q = "INSERT IGNORE INTO 	receivers 
 							(email, salutation, firstname, lastname)
-				VALUES		('".mysql_escape_string($email)."',
-							'".mysql_escape_string($salutation)."',
-							'".mysql_escape_string($firstname)."',
-							'".mysql_escape_string($lastname)."')";
+				VALUES		('".mysqli_escape_string($this->mysqli, $email)."',
+							'".mysqli_escape_string($this->mysqli, $salutation)."',
+							'".mysqli_escape_string($this->mysqli, $firstname)."',
+							'".mysqli_escape_string($this->mysqli, $lastname)."')";
 		return $this->run_query($q, false);
 	}
 	
@@ -203,8 +203,8 @@ class DBA extends DbAccess {
 		$fk_id_receivers = ($fk_id_receivers == null) ? "null" : $fk_id_receivers;
 		$q = "INSERT IGNORE INTO 	mailings_has_receivers 
 							(fk_id_mailings, fk_id_receivers)
-				VALUES		(".mysql_escape_string($fk_id_mailings).",
-							".mysql_escape_string($fk_id_receivers).")";
+				VALUES		(".mysqli_escape_string($this->mysqli, $fk_id_mailings).",
+							".mysqli_escape_string($this->mysqli, $fk_id_receivers).")";
 		return $this->run_query($q, false);
 	}
 	
@@ -215,97 +215,97 @@ class DBA extends DbAccess {
 		$images = ($images == null) ? "null" : $images;
 		if ($link == null) {
 			$q = "UPDATE 	mailparts
-					SET		ordinal = ".mysql_escape_string($ordinal).",
-							fk_id_mailings = ".mysql_escape_string($mailings).",
-							fk_id_mailpart_types = ".mysql_escape_string($mailpart_types).",
-							fk_id_texts = ".mysql_escape_string($texts).",
-							fk_id_images = ".mysql_escape_string($images)."
-					WHERE	id = ".mysql_escape_string($id);
+					SET		ordinal = ".mysqli_escape_string($this->mysqli, $ordinal).",
+							fk_id_mailings = ".mysqli_escape_string($this->mysqli, $mailings).",
+							fk_id_mailpart_types = ".mysqli_escape_string($this->mysqli, $mailpart_types).",
+							fk_id_texts = ".mysqli_escape_string($this->mysqli, $texts).",
+							fk_id_images = ".mysqli_escape_string($this->mysqli, $images)."
+					WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		} else {
 			$q = "UPDATE 	mailparts
-					SET		link = '".mysql_escape_string($link)."',
-							ordinal = ".mysql_escape_string($ordinal).",
-							fk_id_mailings = ".mysql_escape_string($mailings).",
-							fk_id_mailpart_types = ".mysql_escape_string($mailpart_types).",
-							fk_id_texts = ".mysql_escape_string($texts).",
-							fk_id_images = ".mysql_escape_string($images)."
-					WHERE	id = ".mysql_escape_string($id);
+					SET		link = '".mysqli_escape_string($this->mysqli, $link)."',
+							ordinal = ".mysqli_escape_string($this->mysqli, $ordinal).",
+							fk_id_mailings = ".mysqli_escape_string($this->mysqli, $mailings).",
+							fk_id_mailpart_types = ".mysqli_escape_string($this->mysqli, $mailpart_types).",
+							fk_id_texts = ".mysqli_escape_string($this->mysqli, $texts).",
+							fk_id_images = ".mysqli_escape_string($this->mysqli, $images)."
+					WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		}
 		return $this->run_query($q, false);
 	}
 	
 	public function update_mailing($id, $name, $send_date) {
 		$q = "UPDATE 	mailings
-				SET		name = '".mysql_escape_string($name)."',
-						send_date = '".mysql_escape_string($send_date)."'
-				WHERE	id = ".mysql_escape_string($id);
+				SET		name = '".mysqli_escape_string($this->mysqli, $name)."',
+						send_date = '".mysqli_escape_string($this->mysqli, $send_date)."'
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false);
 	}
 	
 	public function update_mailing_name($id, $name) {
 		$q = "UPDATE 	mailings
-				SET		name = '".mysql_escape_string($name)."'
-				WHERE	id = ".mysql_escape_string($id);
+				SET		name = '".mysqli_escape_string($this->mysqli, $name)."'
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false);
 	}
 	
 	public function update_mailing_send_date($id, $send_date) {
 		$q = "UPDATE 	mailings
-				SET		send_date = '".mysql_escape_string($send_date)."'
-				WHERE	id = ".mysql_escape_string($id);
+				SET		send_date = '".mysqli_escape_string($this->mysqli, $send_date)."'
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false);
 	}
 	
 	public function update_mailing_data_url($id, $data_url) {
 		$q = "UPDATE 	mailings
-				SET		data_url = '".mysql_escape_string($data_url)."'
-				WHERE	id = ".mysql_escape_string($id);
+				SET		data_url = '".mysqli_escape_string($this->mysqli, $data_url)."'
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false);
 	}
 	
 	public function update_mailing_subject($id, $subject) {
 		$q = "UPDATE 	mailings
-				SET		subject = '".mysql_escape_string($subject)."'
-				WHERE	id = ".mysql_escape_string($id);
+				SET		subject = '".mysqli_escape_string($this->mysqli, $subject)."'
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false);
 	}
 	
 	public function update_text($id, $text) {
 		$q = "UPDATE 	texts
-				SET		text = '".mysql_escape_string($text)."'
-				WHERE	id = ".mysql_escape_string($id);
+				SET		text = '".mysqli_escape_string($this->mysqli, $text)."'
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false);
 	}
 	
 	public function update_receiver($id, $email, $salutation, $firstname, $lastname) {
 		$q = "UPDATE 	receivers
-				SET		email = '".mysql_escape_string($email)."',
-						salutation = '".mysql_escape_string($salutation)."',
-						firstname = '".mysql_escape_string($firstname)."',
-						lastname = '".mysql_escape_string($lastname)."'
-				WHERE	id = ".mysql_escape_string($id);
+				SET		email = '".mysqli_escape_string($this->mysqli, $email)."',
+						salutation = '".mysqli_escape_string($this->mysqli, $salutation)."',
+						firstname = '".mysqli_escape_string($this->mysqli, $firstname)."',
+						lastname = '".mysqli_escape_string($this->mysqli, $lastname)."'
+				WHERE	id = ".mysqli_escape_string($this->mysqli, $id);
 		return $this->run_query($q, false);
 	}
 	
 	public function get_mailpart_by_mailing_id_and_ordinal($id, $ordinal, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailparts
-				WHERE	fk_id_mailings = '".mysql_escape_string($id)."'
-				AND		ordinal = '".mysql_escape_string($ordinal)."'";
+				WHERE	fk_id_mailings = '".mysqli_escape_string($this->mysqli, $id)."'
+				AND		ordinal = '".mysqli_escape_string($this->mysqli, $ordinal)."'";
 		return $this->run_query($q, false, $obj);
 	}
 	
 	public function get_mailparts_by_mailing_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailparts
-				WHERE	fk_id_mailings = '".mysql_escape_string($id)."'
+				WHERE	fk_id_mailings = '".mysqli_escape_string($this->mysqli, $id)."'
 			ORDER BY	ordinal ASC";
 		return $this->run_query($q, true, $obj);
 	}
 	
 	public function delete_text_by_id($id) {
 		$q = "DELETE FROM	texts
-				WHERE		id = '".mysql_escape_string($id)."'";
+				WHERE		id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false);
 	}
 	
@@ -313,7 +313,7 @@ class DBA extends DbAccess {
 		$image = $this->get_image_by_id($id);
 		unlink(IMAGES_BASE_DIR."/".$image["name"].".jpg");
 		$q = "DELETE FROM	images
-				WHERE		id = '".mysql_escape_string($id)."'";
+				WHERE		id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false);
 	}
 	
@@ -326,7 +326,7 @@ class DBA extends DbAccess {
 			$this->delete_image_by_id($mailpart["fk_id_images"]);
 		}
 		$q = "DELETE FROM	mailparts
-				WHERE		id = '".mysql_escape_string($id)."'";
+				WHERE		id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false);
 	}
 	
@@ -336,7 +336,7 @@ class DBA extends DbAccess {
 			$this->delete_mailpart_by_id($mailpart["id"]);
 		}
 		$q = "DELETE FROM	mailings
-				WHERE		id = '".mysql_escape_string($id)."'";
+				WHERE		id = '".mysqli_escape_string($this->mysqli, $id)."'";
 		return $this->run_query($q, false);
 	}
 	

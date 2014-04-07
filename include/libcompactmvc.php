@@ -10,7 +10,7 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
  * @link		http://www.adrodev.de
  */
 
-function cpf_include($fname) {
+function cmvc_include($fname) {
 	$basepath = dirname(dirname(__FILE__)."../");
 	
 	$dirs_up = array(
@@ -48,41 +48,46 @@ function cpf_include($fname) {
 
 
 // first include the configuration
-cpf_include('config.php');
+cmvc_include('config.php');
 
 if (defined('DEBUG') && (DEBUG == 0)) {
 	ob_start();
 }
 
 // framework
-cpf_include('actiondispatcher.php');
-cpf_include('arraylist.php');
-cpf_include('captcha.php');
-cpf_include('centermap.php');
-cpf_include('dbaccess.php');
-cpf_include('error_messages.php');
-cpf_include('functions.php');
-cpf_include('googlemaps.php');
-cpf_include('htmlmail.php');
-cpf_include('log.php');
-cpf_include('map_radius.php');
-cpf_include('multiextender.php');
-cpf_include('network.php');
-cpf_include('page.php');
-cpf_include('session.php');
-cpf_include('smtp.php');
-cpf_include('socket.php');
-cpf_include('upload.php');
-cpf_include('utf8.php');
-cpf_include('validator.php');
-cpf_include('view.php');
+cmvc_include('actiondispatcher.php');
+cmvc_include('arraylist.php');
+cmvc_include('captcha.php');
+cmvc_include('centermap.php');
+cmvc_include('cmvccontroller.php');
+cmvc_include('dbaccess.php');
+cmvc_include('error_messages.php');
+cmvc_include('functions.php');
+cmvc_include('googlemaps.php');
+cmvc_include('htmlmail.php');
+cmvc_include('log.php');
+cmvc_include('map_radius.php');
+cmvc_include('multiextender.php');
+cmvc_include('network.php');
+cmvc_include('session.php');
+cmvc_include('smtp.php');
+cmvc_include('socket.php');
+cmvc_include('upload.php');
+cmvc_include('utf8.php');
+cmvc_include('validator.php');
+cmvc_include('view.php');
 
 // database
-cpf_include('dba.php');
+cmvc_include('dba.php');
 
 // pages
-cpf_include('ajax.php');
-cpf_include('test.php');
+cmvc_include('control.php');
+cmvc_include('login.php');
+cmvc_include('logout.php');
+cmvc_include('mail.php');
+cmvc_include('mailingedit.php');
+cmvc_include('mailinglist.php');
+cmvc_include('trackingstats.php');
 
 
 

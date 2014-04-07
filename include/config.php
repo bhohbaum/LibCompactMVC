@@ -33,7 +33,7 @@ define("DBA_DEFAULT_CLASS", "DBA");
 define('UPLOAD_BASE_DIR', './files/upload');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
-define('LOG_FILE', '/Users/botho/log/birkmailing.log');		// relative to $_SERVER['DOCUMENT_ROOT']
+define('LOG_FILE', '/Users/botho/log/cmvc.log');			// relative to $_SERVER['DOCUMENT_ROOT']
 define('BASE_URL', 'http://libcompactmvc.bothos-mbp');
 define('DEFAULT_TIMEZONE', 'CET');
 
@@ -47,7 +47,7 @@ define('SMTP_SERVER', '127.0.0.1');
 define('SMTP_USER', '');
 define('SMTP_PASS', '');
 define('SMTP_SENDER', 'birkmailing@adrodev.dyndns.org');
-define('SMTP_SENDER_NAME', 'Birk Mailing');
+define('SMTP_SENDER_NAME', 'LibCompactMVC');
 // Send method: MAIL (mail() function) or SMTP
 define('MAIL_TRANS_TYPE', 'SMTP');
 define('MAIL_DEBUG_ADDR', 'b.hohbaum@googlemail.com');
