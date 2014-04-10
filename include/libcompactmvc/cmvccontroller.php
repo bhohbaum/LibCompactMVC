@@ -84,12 +84,15 @@ abstract class CMVCController {
 		$this->log = new Log(Log::LOG_TYPE_FILE);
 		$this->log->set_log_file(LOG_FILE);
 		CMVCController::$request_data = null;
+		DLOG(__METHOD__);
 	}
 
 	protected function request($var = null) {
 		if (CMVCController::$request_data == null) {
-			parse_str(file_get_contents('php://input'), CMVCController::$request_data_raw);
-			CMVCController::$request_data = array_merge($_REQUEST, CMVCController::$request_data_raw);
+			parse_str(file_get_contents('php://input'), $put_vars);
+			CMVCController::$request_data_raw = $put_vars;
+			$data = array_merge($_REQUEST, $put_vars);
+			CMVCController::$request_data = $data;
 		} else {
 			$data = CMVCController::$request_data;
 		}
@@ -109,10 +112,10 @@ abstract class CMVCController {
 	}
 
 	protected function json_response($obj) {
-		$this->log->log(Log::LOG_LVL_DEBUG, __METHOD__ . " " . var_export($obj, true));
+		DLOG(__METHOD__ . " " . var_export($obj, true));
 		$this->view->clear();
 		$this->view->add_template("out.tpl");
-		$this->view->set_value("out", UTF8::encode(json_encode($obj)));
+		$this->view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE, 1024)));
 	}
 
 	protected function binary_response($obj) {
