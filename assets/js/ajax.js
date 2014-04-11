@@ -2,8 +2,14 @@
  * 
  */
 
+/**
+ * 
+ */
 var $_ajax = [];
 
+/**
+ * 
+ */
 var $ajax = function() {
 	
 	$ajax._cfg = [];
@@ -137,6 +143,28 @@ var $ajax = function() {
 	    xhr.send(this._data);
 		return this;
 	};
+	this.reload = function() {
+		$(".ajax").each(function() {
+			var element = $(this);
+			var url = "/" + element.attr("data-path") + "/" +
+							element.attr("data-parm1") + "/" +
+							element.attr("data-parm2") + "/" +
+							element.attr("data-parm3") + "/" +
+							element.attr("data-parm4");
+			while (url != url.replace("/undefined", "")) {
+				url = url.replace("/undefined", "");
+			}
+			var content = element.attr("data-content");
+			new $ajax().ok(function(result) {
+				var cmd = 'element.' + content;
+				try {
+					eval(cmd);
+				} catch (e) {
+					console.log(e);
+				}
+			}).get(url);
+		});
+	};
 	this.data = function(str) {
 		this._data = str;
 		return this;
@@ -156,33 +184,50 @@ var $ajax = function() {
 	
 };
 
-
-$(".ajax").each(function() {
-	var element = $(this);
-	var url = "/" + element.attr("data-path") + "/" +
-					element.attr("data-parm1") + "/" +
-					element.attr("data-parm2") + "/" +
-					element.attr("data-parm3") + "/" +
-					element.attr("data-parm4");
-	while (url != url.replace("/undefined", "")) {
-		url = url.replace("/undefined", "");
-	}
-	var content = element.attr("data-content");
-	var events = ["change", "keydown", "keyup", "click", "mouseup"];
-	for (var i = 0; i < events.length; i++) {
-		if (element.attr("data-" + events[i]) != null) {
-			element.on(events[i], function(event) {
-				var cmd = 'var data = element.' + element.attr("data-" + event.type);
-				eval(cmd);
-				new $ajax().data(data).ok(function(result) {
-					var cmd = 'element.' + content;
-					eval(cmd);
-				}).post(url);
-			});
+/**
+ * 
+ */
+$(document).ready(function() {
+	$(".ajax").each(function() {
+		var element = $(this);
+		var url = "/" + element.attr("data-path") + "/" +
+						element.attr("data-parm1") + "/" +
+						element.attr("data-parm2") + "/" +
+						element.attr("data-parm3") + "/" +
+						element.attr("data-parm4");
+		while (url != url.replace("/undefined", "")) {
+			url = url.replace("/undefined", "");
 		}
-	}
-	new $ajax().ok(function(result) {
-		var cmd = 'element.' + content;
-		eval(cmd);
-	}).get(url);
+		var content = element.attr("data-content");
+		events = ["change", "keydown", "keyup", "click", "mouseup"];
+		for (var i = 0; i < events.length; i++) {
+			if (element.attr("data-" + events[i]) != null) {
+				element.on(events[i], function(event) {
+					var cmd = 'var data = element.' + element.attr("data-" + event.type);
+					try {
+						eval(cmd);
+						new $ajax().data("&data=" + escape(data)).ok(function(result) {
+							var cmd = 'element.' + content;
+							try {
+								eval(cmd);
+							} catch (e) {
+								console.log(e);
+							}
+						}).post(url + "#toserver");
+					} catch (e) {
+						console.log(e);
+					}
+				});
+			}
+		}
+		new $ajax().ok(function(result) {
+			var cmd = 'element.' + content;
+			try {
+				eval(cmd);
+			} catch (e) {
+				console.log(e);
+			}
+		}).get(url + "#fromserver");
+	});
 });
+
