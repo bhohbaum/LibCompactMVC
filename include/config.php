@@ -25,7 +25,7 @@ define("MYSQL_DB", "libcompactmvc");
 define("MYSQL_USER", "botho");
 
 // DB password
-define("MYSQL_PASS", "mausi303");
+define("MYSQL_PASS", "Mausi_303");
 
 define("DBA_DEFAULT_CLASS", "DBA");
 
