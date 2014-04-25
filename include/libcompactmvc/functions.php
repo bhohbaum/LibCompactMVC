@@ -17,15 +17,13 @@ function printStackTrace() {
 	try {
 		throw new Exception("", 0);
 	} catch (Exception $e) {
-		echo("<pre>".$e->getTraceAsString()."</pre>");
+		echo ("<pre>" . $e->getTraceAsString() . "</pre>");
 	}
 }
 
 /*
- * The XLOG() functions can be used in all controller classes. 
- * PHP doesn't know c-like macros. hence we use the debug_backtrace() trick to get the callers object.
+ * The XLOG() functions can be used in all controller classes. PHP doesn't know c-like macros. hence we use the debug_backtrace() trick to get the callers object.
  */
-
 function ELOG($msg) {
 	$stack = debug_backtrace();
 	$stack[1]["object"]->log->error($msg);
@@ -45,8 +43,5 @@ function DLOG($msg) {
 	$stack = debug_backtrace();
 	$stack[1]["object"]->log->debug($msg);
 }
-
-
-
 
 ?>

@@ -262,7 +262,7 @@ abstract class CMVCController {
 		DLOG(var_export($_REQUEST, true));
 		$this->redirect = "";
 		$this->db = DbAccess::get_instance($this->dba());
-		if (! isset($this->view)) {
+		if (!isset($this->view)) {
 			$this->view = new View();
 		}
 		switch ($this->method()) {

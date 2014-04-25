@@ -1,29 +1,27 @@
 <?php
-@include_once('../libcompactmvc.php');
+@include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
  * Calculates approximately the center of a rectangle
  *
- * @author		Botho Hohbaum (bhohbaum@googlemail.com)
- * @package	LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
- * @license	LGPL version 3
- * @link		https://github.com/bhohbaum/libcompactmvc
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @license LGPL version 3
+ * @link https://github.com/bhohbaum/libcompactmvc
  */
 class CenterMap {
 	// this class will only work for germany!!!
-	// there may occur unexpected results for other areas on our globe... 
-	
+	// there may occur unexpected results for other areas on our globe...
 	private $max_lat;
 	private $min_lat;
 	private $max_lng;
 	private $min_lng;
-	
+
 	public function __construct() {
-		
 	}
-	
+
 	public function add_element($lat, $lng) {
 		if ($this->max_lat == null) {
 			$this->max_lat = $lat;
@@ -50,26 +48,25 @@ class CenterMap {
 			$this->min_lng = $lng;
 		}
 	}
-	
+
 	public function get_center() {
-		$ret['lat'] = $this->min_lat + (($this->max_lat - $this->min_lat) / 2); 
+		$ret['lat'] = $this->min_lat + (($this->max_lat - $this->min_lat) / 2);
 		$ret['lng'] = $this->min_lng + (($this->max_lng - $this->min_lng) / 2);
-		return $ret; 
+		return $ret;
 	}
-	
+
 	public function get_zoom() {
 		$diff_lat = $this->max_lat - $this->min_lat;
 		$diff_lng = $this->max_lng - $this->min_lng;
 		$rel_lat = $diff_lat;
 		$rel_lng = $diff_lng * 1.5;
 		$diff = ($rel_lat > $rel_lng) ? $rel_lat : $rel_lng;
-		$zoom = round(9.6 + ($diff * $diff) / 25 - $diff); 
-		$zoom = ($zoom < 5) ? 5 : $zoom; 
+		$zoom = round(9.6 + ($diff * $diff) / 25 - $diff);
+		$zoom = ($zoom < 5) ? 5 : $zoom;
 		return $zoom;
 	}
 
 
 }
-
 
 ?>

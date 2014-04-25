@@ -1,5 +1,5 @@
 <?php
-@include_once('../libcompactmvc.php');
+@include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 // This class is used for template handling.
@@ -9,20 +9,18 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Template handling
  *
- * @author		Botho Hohbaum (bhohbaum@googlemail.com)
- * @package		LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
- * @license		LGPL version 3
- * @link		https://github.com/bhohbaum/libcompactmvc
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @license LGPL version 3
+ * @link https://github.com/bhohbaum/libcompactmvc
  */
 class View {
-
 	private $comp;
 	private $vals;
-	private $tpls; 
+	private $tpls;
 
 	public function __construct() {
-
 	}
 
 	public function activate($comp_name) {
@@ -52,25 +50,25 @@ class View {
 			return "";
 		}
 	}
-	
+
 	public function set_template($index, $name) {
 		$this->tpls[$index] = $name;
 	}
-	
+
 	public function add_template($name) {
 		$this->tpls[] = $name;
 	}
-	
+
 	public function get_templates() {
 		return $this->tpls;
 	}
-	
+
 	public function clear() {
 		$this->comp = array();
 		$this->vals = array();
 		$this->tpls = array();
 	}
-	
+
 	public function render() {
 		$out = "";
 		if (DEBUG == 0) {
@@ -93,21 +91,20 @@ class View {
 		}
 		return $out;
 	}
-	
+
 	private function include_template($tpl_name) {
-		$file1 = "./include/resources/templates/".$tpl_name;
-		$file2 = "./templates/".$tpl_name;
+		$file1 = "./include/resources/templates/" . $tpl_name;
+		$file2 = "./templates/" . $tpl_name;
 		if (file_exists($file1)) {
-			include($file1);
+			include ($file1);
 		} else if (file_exists($file2)) {
-			include($file2);
+			include ($file2);
 		} else {
-			throw new Exception("Could not find template file: ".$file);
+			throw new Exception("Could not find template file: " . $file);
 		}
 	}
-	
-	
-	
+
+
 }
 
 ?>

@@ -1,24 +1,26 @@
 <?php
-@include_once('../libcompactmvc.php');
+@include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
  * Socket wrapper class for easy socket handling.
- * 
- * @author		Botho Hohbaum (bhohbaum@googlemail.com)
- * @package	LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
- * @license	LGPL version 3
- * @link		https://github.com/bhohbaum/libcompactmvc
+ *
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @license LGPL version 3
+ * @link https://github.com/bhohbaum/libcompactmvc
  */
 class Socket {
-	
 	private $fh;
-	
+
 	/**
 	 * Connect to an host on the given port.
-	 * @param String $host hostname or IP address
-	 * @param Integer $port port number
+	 * 
+	 * @param String $host
+	 *        	hostname or IP address
+	 * @param Integer $port
+	 *        	port number
 	 * @throws Exception error returned from fsockopen()
 	 */
 	public function __construct($host, $port = 25, $timeout = 2000) {
@@ -29,9 +31,10 @@ class Socket {
 			throw new Exception($errstr, $errno);
 		}
 	}
-	
+
 	/**
 	 * Read from the socket.
+	 * 
 	 * @throws Exception
 	 */
 	public function read() {
@@ -42,10 +45,12 @@ class Socket {
 		}
 		return $buf;
 	}
-	
+
 	/**
 	 * Write to the socket.
-	 * @param String $buf String to be written
+	 * 
+	 * @param String $buf
+	 *        	String to be written
 	 * @throws Exception
 	 */
 	public function write($buf) {
@@ -55,8 +60,8 @@ class Socket {
 			throw new Exception("Unable to write to socket. No connection established.");
 		}
 	}
-	
-}
 
+
+}
 
 ?>
