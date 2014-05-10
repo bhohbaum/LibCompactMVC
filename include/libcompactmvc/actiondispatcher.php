@@ -49,7 +49,11 @@ class ActionDispatcher {
 			} else {
 				$this->handlers[$this->control_action]->view->clear();
 				$this->handlers[$this->control_action]->view->set_value($this->actionname, $this->action);
-				$this->handlers[$this->control_action]->run();
+				try {
+					$this->handlers[$this->control_action]->run();
+				} catch (Exception $e) {
+					$this->handlers[$this->control_action]->run_exception_handler($e);
+				}
 				if ($this->handlers[$this->control_action]->redirect != "") {
 					$this->action = $this->handlers[$this->control_action]->redirect;
 				}
@@ -64,7 +68,11 @@ class ActionDispatcher {
 			} else {
 				$this->handlers[$this->action]->view->clear();
 				$this->handlers[$this->action]->view->set_value($this->actionname, $this->action);
-				$this->handlers[$this->action]->run();
+				try {
+					$this->handlers[$this->action]->run();
+				} catch (Exception $e) {
+					$this->handlers[$this->action]->run_exception_handler($e);
+				}
 			}
 		} while ($this->handlers[$this->action]->redirect != "");
 	}

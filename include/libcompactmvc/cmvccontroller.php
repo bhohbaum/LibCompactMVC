@@ -79,6 +79,14 @@ abstract class CMVCController {
 		DLOG(__METHOD__);
 	}
 
+	/**
+	 * Exception handler
+	 * @param Exception $e
+	 */
+	protected function exception_handler($e) {
+		DLOG(__METHOD__);
+	}
+
 	public function __construct() {
 		$this->view = new View();
 		$this->log = new Log(Log::LOG_TYPE_FILE);
@@ -303,6 +311,15 @@ abstract class CMVCController {
 		if ($this->redirect == "") {
 			$this->ob = $this->view->render();
 		}
+	}
+	
+	/**
+	 * Run the exception handler method
+	 * @param Exception $e the exception
+	 */
+	public function run_exception_handler($e) {
+		DLOG(__METHOD__ . " Exception ".$e->getCode()." '" . $e->getMessage() . "'");
+		$this->exception_handler($e);
 	}
 
 	public function get_ob() {
