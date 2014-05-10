@@ -75,8 +75,7 @@ class Captcha {
 					36,
 					7
 			) // red
-    )// red
-	null;
+    );
 	
 	/**
 	 * Shadow color in RGB-array or null
@@ -85,7 +84,7 @@ class Captcha {
 
     /** Horizontal line through the text */
     // array(0, 0, 0);
-	nullpublic $lineWidth = 0;
+	public $lineWidth = 0;
 	
 	/**
 	 * Font configuration
@@ -214,8 +213,7 @@ class Captcha {
 		//$_SESSION[$this->session_var] = $text;
 
         /** Transformations */
-        if// $_SESSION[$this->session_var] = $text;
-		null (!empty($this->lineWidth)) {
+        if (!empty($this->lineWidth)) {
 			$this->WriteLine();
 		}
 		$this->WaveImage();
@@ -240,26 +238,22 @@ class Captcha {
 	 */
 	protected function ImageAllocate() {
 		// Cleanup
-        if// Cleanup
-		null (!empty($this->im)) {
+        if (!empty($this->im)) {
 			imagedestroy($this->im);
 		}
 		
 		$this->im = imagecreatetruecolor($this->width * $this->scale, $this->height * $this->scale);
 		
 		// Background color
-        $this// Background color
-		null->GdBgColor = imagecolorallocate($this->im, $this->backgroundColor[0], $this->backgroundColor[1], $this->backgroundColor[2]);
+        $this->GdBgColor = imagecolorallocate($this->im, $this->backgroundColor[0], $this->backgroundColor[1], $this->backgroundColor[2]);
 		imagefilledrectangle($this->im, 0, 0, $this->width * $this->scale, $this->height * $this->scale, $this->GdBgColor);
 		
 		// Foreground color
-        $color// Foreground color
-		null = $this->colors[mt_rand(0, sizeof($this->colors) - 1)];
+        $color = $this->colors[mt_rand(0, sizeof($this->colors) - 1)];
 		$this->GdFgColor = imagecolorallocate($this->im, $color[0], $color[1], $color[2]);
 		
 		// Shadow color
-        if// Shadow color
-		null (!empty($this->shadowColor) && is_array($this->shadowColor) && sizeof($this->shadowColor) >= 3) {
+        if (!empty($this->shadowColor) && is_array($this->shadowColor) && sizeof($this->shadowColor) >= 3) {
 			$this->GdShadowColor = imagecolorallocate($this->im, $this->shadowColor[0], $this->shadowColor[1], $this->shadowColor[2]);
 		}
 	}
@@ -316,8 +310,7 @@ class Captcha {
 		}
 		
 		// Full path of words file
-        if// Full path of words file
-		null (substr($this->wordsFile, 0, 1) == '/') {
+        if (substr($this->wordsFile, 0, 1) == '/') {
 			$wordsfile = $this->wordsFile;
 		} else {
 			$wordsfile = $this->resourcesPath . '/' . $this->wordsFile;
@@ -383,13 +376,11 @@ class Captcha {
 	protected function WriteText($text, $fontcfg = array()) {
 		if (empty($fontcfg)) {
 			// Select the font configuration
-            $fontcfg// Select the font configuration
-			null = $this->fonts[array_rand($this->fonts)];
+            $fontcfg = $this->fonts[array_rand($this->fonts)];
 		}
 		
 		// Full path of font file
-        $fontfile// Full path of font file
-		null = $this->resourcesPath . '/fonts/' . $fontcfg['font'];
+        $fontfile = $this->resourcesPath . '/fonts/' . $fontcfg['font'];
 		
 		/**
 		 * Increase font-size for shortest words: 9% for each glyp missing
@@ -398,8 +389,7 @@ class Captcha {
 		$fontSizefactor = 1 + ($lettersMissing * 0.09);
 		
 		// Text generation (char by char)
-        $x// Text generation (char by char)
-		null = 20 * $this->scale;
+        $x = 20 * $this->scale;
 		$y = round(($this->height * 27 / 40) * $this->scale);
 		$length = strlen($text);
 		for($i = 0; $i < $length; $i++) {
@@ -422,16 +412,14 @@ class Captcha {
 	 */
 	protected function WaveImage() {
 		// X-axis wave generation
-        $xp// X-axis wave generation
-		null = $this->scale * $this->Xperiod * rand(1, 3);
+        $xp = $this->scale * $this->Xperiod * rand(1, 3);
 		$k = rand(0, 100);
 		for($i = 0; $i < ($this->width * $this->scale); $i++) {
 			imagecopy($this->im, $this->im, $i - 1, sin($k + $i / $xp) * ($this->scale * $this->Xamplitude), $i, 0, 1, $this->height * $this->scale);
 		}
 		
 		// Y-axis wave generation
-        $k// Y-axis wave generation
-		null = rand(0, 100);
+        $k = rand(0, 100);
 		$yp = $this->scale * $this->Yperiod * rand(1, 2);
 		for($i = 0; $i < ($this->height * $this->scale); $i++) {
 			imagecopy($this->im, $this->im, sin($k + $i / $yp) * ($this->scale * $this->Yamplitude), $i - 1, 0, $i, $this->width * $this->scale, 1);
@@ -443,8 +431,7 @@ class Captcha {
 	 */
 	protected function ReduceImage() {
 		// Reduzco el tamaÒo de la imagen
-        $imResampled// Reduzco el tamaÒo de la imagen
-		null = imagecreatetruecolor($this->width, $this->height);
+        $imResampled = imagecreatetruecolor($this->width, $this->height);
 		imagecopyresampled($imResampled, $this->im, 0, 0, 0, 0, $this->width, $this->height, $this->width * $this->scale, $this->height * $this->scale);
 		imagedestroy($this->im);
 		$this->im = $imResampled;
