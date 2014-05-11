@@ -85,6 +85,7 @@ abstract class CMVCController {
 	 */
 	protected function exception_handler($e) {
 		DLOG(__METHOD__);
+		throw $e;
 	}
 
 	public function __construct() {
