@@ -321,6 +321,7 @@ abstract class CMVCController {
 	public function run_exception_handler($e) {
 		DLOG(__METHOD__ . " Exception ".$e->getCode()." '" . $e->getMessage() . "'");
 		$this->exception_handler($e);
+		$this->ob = $this->view->render();
 	}
 
 	public function get_ob() {
