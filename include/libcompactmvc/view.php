@@ -19,8 +19,11 @@ class View {
 	private $comp;
 	private $vals;
 	private $tpls;
+	private $redis;
 
 	public function __construct() {
+		$this->redis = new Redis();
+		$this->redis->connect(REDIS_HOST, REDIS_PORT);
 	}
 
 	public function activate($comp_name) {
@@ -70,6 +73,16 @@ class View {
 	}
 
 	public function render() {
+		$key = REDIS_KEY_RCACHE_PFX . md5(json_encode(array(
+				$this->comp,
+				$this->tpls,
+				$this->vals
+		)));
+		$out = $this->redis->get($key);
+		if ($out != null) {
+			$this->redis->expire($key, REDIS_KEY_RCACHE_TTL);
+			return $out;
+		}
 		$out = "";
 		if (DEBUG == 0) {
 			@ob_end_clean();
@@ -89,6 +102,8 @@ class View {
 		if ((!defined("DEBUG")) || (DEBUG == 0)) {
 			@ob_start();
 		}
+		$this->redis->set($key, $out);
+		$this->redis->expire($key, REDIS_KEY_RCACHE_TTL);
 		return $out;
 	}
 
