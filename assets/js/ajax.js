@@ -1,15 +1,4 @@
-/**
- * 
- */
-
-/**
- * 
- */
 var $_ajax = [];
-
-/**
- * 
- */
 var $ajax = function() {
 	
 	$ajax._cfg = [];
@@ -19,129 +8,20 @@ var $ajax = function() {
 	this._cbok = null;
 	this._cberr = null;
 	
+	/**
+	 * functions for public use
+	 */
 	this.get = function(url) {
-	    var xhr = new XMLHttpRequest();
-	    xhr.open('GET', url, true);
-	    xhr.responseType = this._responseType;
-	    xhr.onload = function(response) {
-	    	var res = null;
-	    	if (response.currentTarget.hasOwnProperty('response')) {
-	    		res = response.currentTarget.response;
-	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
-	    		res = response.currentTarget.responseText;
-	    	}
-	    	if (response.target.status == 200) {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cbok) {
-	    			$_ajax[url]._cfg[url].cbok(res);
-	    		};
-	    	} else {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cberr) {
-	    			$_ajax[url]._cfg[url].cberr(res);
-	    		};
-	    	}
-	    	$_ajax[url]._cfg[url] = null;
-	    };
-	    this._cfg[url] = [];
-	    this._cfg[url].cbok = this._cbok;
-	    this._cfg[url].cberr = this._cberr;
-	    $_ajax[url] = this;
-	    xhr.send(this._data);
-	    return this;
+		return this._doRequest('GET', url);
 	};
 	this.post = function(url) {
-	    var xhr = new XMLHttpRequest();
-	    xhr.open('POST', url, true);
-	    xhr.responseType = this._responseType;
-	    xhr.onload = function(response) {
-	    	var res = null;
-	    	if (response.currentTarget.hasOwnProperty('response')) {
-	    		res = response.currentTarget.response;
-	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
-	    		res = response.currentTarget.responseText;
-	    	}
-	    	if (response.target.status == 200) {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cbok) {
-	    			$_ajax[url]._cfg[url].cbok(res);
-	    		};
-	    	} else {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cberr) {
-	    			$_ajax[url]._cfg[url].cberr(res);
-	    		};
-	    	}
-	    	$_ajax[url]._cfg[url] = null;
-	    };
-	    this._cfg[url] = [];
-	    this._cfg[url].cbok = this._cbok;
-	    this._cfg[url].cberr = this._cberr;
-	    $_ajax[url] = this;
-	    xhr.send(this._data);
-		return this;
+		return this._doRequest('POST', url);
 	};
 	this.put = function(url) {
-	    var xhr = new XMLHttpRequest();
-	    xhr.open('PUT', url, true);
-	    xhr.responseType = this._responseType;
-	    xhr.onload = function(response) {
-	    	var res = null;
-	    	if (response.currentTarget.hasOwnProperty('response')) {
-	    		res = response.currentTarget.response;
-	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
-	    		res = response.currentTarget.responseText;
-	    	}
-	    	if (response.target.status == 200) {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cbok) {
-	    			$_ajax[url]._cfg[url].cbok(res);
-	    		};
-	    	} else {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cberr) {
-	    			$_ajax[url]._cfg[url].cberr(res);
-	    		};
-	    	}
-	    	$_ajax[url]._cfg[url] = null;
-	    };
-	    this._cfg[url] = [];
-	    this._cfg[url].cbok = this._cbok;
-	    this._cfg[url].cberr = this._cberr;
-	    $_ajax[url] = this;
-	    xhr.send(this._data);
-		return this;
+		return this._doRequest('PUT', url);
 	};
 	this.del = function(url) {
-	    var xhr = new XMLHttpRequest();
-	    xhr.open('DELETE', url, true);
-	    xhr.responseType = this._responseType;
-	    xhr.onload = function(response) {
-	    	var res = null;
-	    	if (response.currentTarget.hasOwnProperty('response')) {
-	    		res = response.currentTarget.response;
-	    	} else if (response.currentTarget.hasOwnProperty('responseText')) {
-	    		res = response.currentTarget.responseText;
-	    	}
-	    	if (response.target.status == 200) {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cbok) {
-	    			$_ajax[url]._cfg[url].cbok(res);
-	    		};
-	    	} else {
-	    		console.log(response);
-	    		if ($_ajax[url]._cfg[url].cberr) {
-	    			$_ajax[url]._cfg[url].cberr(res);
-	    		};
-	    	}
-	    	$_ajax[url]._cfg[url] = null;
-	    };
-	    this._cfg[url] = [];
-	    this._cfg[url].cbok = this._cbok;
-	    this._cfg[url].cberr = this._cberr;
-	    $_ajax[url] = this;
-	    xhr.send(this._data);
-		return this;
+		return this._doRequest('DELETE', url);
 	};
 	this.reload = function() {
 		$(".ajax").each(function() {
@@ -182,11 +62,52 @@ var $ajax = function() {
 		return this;
 	};
 	
+	/**
+	 * internal functions
+	 */
+	this._response = function(response) {
+		var res = null;
+		if (response.currentTarget.hasOwnProperty('response')) {
+			res = response.currentTarget.response;
+		} else if (response.currentTarget.hasOwnProperty('responseText')) {
+			res = response.currentTarget.responseText;
+		} else { // FF hack
+			res = response.currentTarget.response;
+		}
+		return res;
+	};
+	this._callHandler = function(url, response, rData) {
+		if (response.target.status == 200) {
+			console.log(response);
+			if ($_ajax[url]._cfg[url].cbok) {
+				$_ajax[url]._cfg[url].cbok(rData);
+			};
+		} else {
+			console.log(response);
+			if ($_ajax[url]._cfg[url].cberr) {
+				$_ajax[url]._cfg[url].cberr(rData);
+			};
+		}
+	};
+	this._doRequest = function(method, url) {
+		var xhr = new XMLHttpRequest();
+		xhr.open(method, url, true);
+		xhr.responseType = this._responseType;
+		xhr.onload = function(response) {
+			new $ajax()._callHandler(url, response, new $ajax()._response(response));
+			$_ajax[url]._cfg[url] = null;
+		};
+		this._cfg[url] = [];
+		this._cfg[url].cbok = this._cbok;
+		this._cfg[url].cberr = this._cberr;
+		$_ajax[url] = this;
+		xhr.send(this._data);
+		return this;
+	}
+	
+	
 };
 
-/**
- * 
- */
 $(document).ready(function() {
 	$(".ajax").each(function() {
 		var element = $(this);
