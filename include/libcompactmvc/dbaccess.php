@@ -117,7 +117,22 @@ abstract class DbAccess {
 		return $ret;
 	}
 
-
+	protected function autocommit($mode) {
+		$this->mysqli->autocommit($this->mysqli, $mode);
+	}
+	
+	protected function begin_transaction() {
+		$this->mysqli->begin_transaction();
+	}
+	
+	protected function commit() {
+		$this->mysqli->commit();
+	}
+	
+	protected function rollback() {
+		$this->mysqli->rollback();
+	}
+	
 }
 
 ?>
