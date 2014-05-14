@@ -117,19 +117,19 @@ abstract class DbAccess {
 		return $ret;
 	}
 
-	protected function autocommit($mode) {
+	public function autocommit($mode) {
 		$this->mysqli->autocommit($this->mysqli, $mode);
 	}
 	
-	protected function begin_transaction() {
+	public function begin_transaction() {
 		$this->mysqli->begin_transaction();
 	}
 	
-	protected function commit() {
+	public function commit() {
 		$this->mysqli->commit();
 	}
 	
-	protected function rollback() {
+	public function rollback() {
 		$this->mysqli->rollback();
 	}
 	
