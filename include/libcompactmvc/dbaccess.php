@@ -118,21 +118,29 @@ abstract class DbAccess {
 	}
 
 	public function autocommit($mode) {
-		$this->mysqli->autocommit($mode);
+		if (!$this->mysqli->autocommit($mode)) {
+			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
+		}
 	}
 	
 	public function begin_transaction() {
-		$this->mysqli->begin_transaction();
+		if (!$this->mysqli->begin_transaction()) {
+			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
+		}
 	}
 	
 	public function commit() {
-		$this->mysqli->commit();
+		if (!$this->mysqli->commit()) {
+			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
+		}
 	}
 	
 	public function rollback() {
-		$this->mysqli->rollback();
+		if (!$this->mysqli->rollback()) {
+			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
+		}
 	}
-	
+		
 }
 
 ?>
