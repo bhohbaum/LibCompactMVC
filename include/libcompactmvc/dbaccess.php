@@ -65,6 +65,7 @@ abstract class DbAccess {
 	protected function run_query($query, $has_multi_result = false, $object = false, $field = null) {
 		$ret = null;
 		DLOG($query);
+		$object = ($field == null) ? $object : false;
 		if (!($result = $this->mysqli->query($query))) {
 			throw new Exception(ErrorMessages::DB_QUERY_ERROR . $this->mysqli->error . "\nQuery: " . $query);
 		} else {
@@ -72,11 +73,7 @@ abstract class DbAccess {
 				if ($has_multi_result) {
 					if ($object) {
 						while ($row = $result->fetch_object()) {
-							if ($field != null) {
-								$ret[] = $row[$field];
-							} else {
-								$ret[] = $row;
-							}
+							$ret[] = $row;
 						}
 					} else {
 						while ($row = $result->fetch_assoc()) {
@@ -90,11 +87,7 @@ abstract class DbAccess {
 				} else {
 					if ($object) {
 						while ($row = $result->fetch_object()) {
-							if ($field != null) {
-								$ret = $row[$field];
-							} else {
-								$ret = $row;
-							}
+							$ret[] = $row;
 						}
 					} else {
 						while ($row = $result->fetch_assoc()) {
@@ -116,7 +109,7 @@ abstract class DbAccess {
 		}
 		return $ret;
 	}
-
+	
 	public function autocommit($mode) {
 		if (!$this->mysqli->autocommit($mode)) {
 			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
