@@ -118,7 +118,7 @@ abstract class DbAccess {
 	}
 
 	public function autocommit($mode) {
-		$this->mysqli->autocommit($this->mysqli, $mode);
+		$this->mysqli->autocommit($mode);
 	}
 	
 	public function begin_transaction() {
