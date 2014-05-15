@@ -68,7 +68,7 @@ class Socket {
 					$rv = fwrite($this->fh, substr($buf, $bytes_written));
 				}
 				if ($rv === false || $rv == 0) {
-					throw new Exception("Unable to write to socket any more. ".$bytes_written."  bytes written.");
+					throw new Exception("Unable to write to socket any more. " . $bytes_written . " of " . $bytes_to_write . " bytes written.");
 				}
 				$bytes_written += $rv;
 			}

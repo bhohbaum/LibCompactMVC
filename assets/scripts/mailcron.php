@@ -1,12 +1,12 @@
-#!/opt/local/bin/php55
+#!/usr/bin/env php
 <?php
-include_once('../../include/libcompactmvc.php');
+@include_once('../../include/libcompactmvc.php');
 
 /**
- * Import and send script
+ * Import script
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
- * @package     LibCompactMVC
+ * @package     Birk Mailing
  * @copyright   Copyright (c) Botho Hohbaum 19.02.2014
  * @link		http://www.adrodev.de
  */
@@ -14,10 +14,11 @@ include_once('../../include/libcompactmvc.php');
 /**
  * Read parameters
  */
-$maxloop = 30;
+$maxloop = false;
 $sendenabled = false;
 $importenabled = false;
 $debugenabled = false;
+$testmail = false;
 foreach ($argv as $key => $val) {
 	if ((isset($argv[$key])) && (is_numeric($argv[$key]))) {
 		$maxloop = $argv[$key];
@@ -31,6 +32,20 @@ foreach ($argv as $key => $val) {
 	if ((isset($argv[$key])) && (($argv[$key] == "--debug") || ($argv[$key] == "-d"))) {
 		$debugenabled = true;
 	}
+	if ((isset($argv[$key])) && (isset($argv[$key + 1])) && (($argv[$key] == "--testmail") || ($argv[$key] == "-t"))) {
+		$testmail = $argv[$key + 1];
+	}
+}
+if ($testmail != false) {
+	$mailingid = $maxloop;
+	if (!$mailingid) {
+		die("Mailing Id is missing!\n");
+	}
+	$sendenabled = true;
+	$maxloop = 1;
+}
+if (!$maxloop) {
+	$maxloop = 30;
 }
 
 $db = DbAccess::get_instance("DBA");
@@ -63,20 +78,35 @@ if ($importenabled) {
 }
 
 if ($sendenabled) {
-	echo("\n\nSending ".$maxloop." mails if available.\n");
+	echo("\n\nSending ".$maxloop." mails.\n");
 	$counter = 0;
-	$receiver = $db->get_next_receiver();
+	if ($testmail != false) {
+		$receiver["email"] = $testmail;
+		$receiver["salutation"] = "Sehr geehrter Herr";
+		$receiver["firstname"] = "Max";
+		$receiver["lastname"] = "Mustermann";
+		$receiver["subject"] = "Testmail";
+	} else {
+		$receiver = $db->get_next_receiver();
+	}
 	if ($receiver == null) {
 		echo("No more mails to send at the moment.\n\n");
 		exit(0);
 	}
-	$db->create_tracking_event($receiver["mhr_id"], "mail_sent", null);
+	if ($testmail == false) {
+		$db->create_tracking_event($receiver["mhr_id"], "mail_sent", null);
+	}
 	while ($receiver != null) {
 		if ($counter++ >= $maxloop) {
 			exit(0);
 		}
 		echo(var_export($receiver, true)."\n");
-		if (($fh = fopen(BASE_URL."/app/mail/byident/".$receiver["ident"], "r")) !== false) {
+		if ($testmail == false) {
+			$fh = fopen(BASE_URL."/app/mail/byident/".$receiver["ident"], "r");
+		} else {
+			$fh = fopen(BASE_URL."/app/mail/byid/".$mailingid, "r");
+		}
+		if ($fh !== false) {
 			$contents = '';
 			while (!feof($fh)) {
 				$contents .= fread($fh, 8192);
@@ -111,7 +141,11 @@ if ($sendenabled) {
 			$mail->set_html_body($contents);
 			$mail->send();
 		}
-		$receiver = $db->get_next_receiver();
+		if ($testmail == false) {
+			$receiver = $db->get_next_receiver();
+		} else {
+			$receiver = null;
+		}
 		if ($receiver == null) {
 			echo("No more mails to send at the moment.\n\n");
 			exit(0);
