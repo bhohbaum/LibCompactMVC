@@ -3,6 +3,7 @@
 	<ul class="clearfix">
 		<li><a href="/app/mailinglist">Mailings</a></li>
 		<li>Erstellen / Bearbeiten</li>
+		<li><a href="/app/uploads">Uploads</a></li> 
 	</ul>
 </div>
 <div>
@@ -36,6 +37,12 @@
 	<div class="form-row">
 		<label>Link zur CSV-Datei:</label>
 		<input type="text" id="dataurl" placeholder="ftp://... http://..." />
+	</div>
+	<hr />
+	<div class="form-row">
+		<label>Test-Mail versenden:</label>
+		<input type="text" id="testemail" placeholder="ich@beispiel.de" style="width: 50%; float: left; margin-right: 12px"/>
+		<button class="btn" onmouseup="previewmail()" style="margin-top: 0px;">Senden</button>
 	</div>
 	<hr />
 	<div>
@@ -501,6 +508,19 @@ function getScrollXY() {
 	}
 	console.log("getScrollXY() : [ " + scrX + ", " + scrY +" ]");
 	return [ scrX, scrY ];
+}
+
+function previewmail()
+{
+	var mail = $("#testemail").val();
+	var mailid = mailingid;
+
+	$.ajax({
+		url: "/app/mailingedit/"+mailid+"/testmail/"+escape(mail),
+		type: "POST"
+	}).done(function() {
+		alert("Mail wurde geschickt");
+	});
 }
 
 function setScrollXY(scrX, scrY) {

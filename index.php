@@ -28,6 +28,7 @@ class Main {
 		$this->ad->set_handler("mailingedit", 	"MailingEdit");
 		$this->ad->set_handler("mailinglist", 	"MailingList");
 		$this->ad->set_handler("trackingstats", "TrackingStats");
+		$this->ad->set_handler("uploads", 		"Uploads");
 		$this->ad->set_default("login");
 		$this->ad->set_control("control");
 		$this->ad->run();

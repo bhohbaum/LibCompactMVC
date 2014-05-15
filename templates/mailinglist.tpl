@@ -1,14 +1,26 @@
 <h1>Mailings</h1>
 
 <div class="add-new">
-		<div class="info">
-				<p>Verfassen Sie ein <a href="/app/mailingedit/new">neues Mailing</a> oder wählen Sie einen Bestehendes aus der nachfolgenden Liste.</p>
-		</div>
-		<div class="action">
-					<a href="/app/mailingedit/new" class="btn btn-primary">Neues Mailing</a>
-		</div>
+	<div class="info">
+		<p>
+			Verfassen Sie ein <a href="/app/mailingedit/new">neues Mailing</a> oder wählen Sie einen Bestehendes aus der nachfolgenden Liste.
+		</p>
+	</div>
+	<div class="action">
+		<a href="/app/mailingedit/new" class="btn btn-primary">Neues Mailing</a>
+	</div>
 </div>
-			
+<div class="add-new">
+	<div class="info">
+		<p>
+			Laden Sie <a href="/app/uploads">Empfängerlisten hoch</a> oder entfernen sie nicht mehr benötigte.
+		</p>
+	</div>
+	<div class="action">
+		<a href="/app/uploads" class="btn btn-primary">Uploads verwalten</a>
+	</div>
+</div>
+
 <!-- 
 <div>
 	<button class="btn btn-primary" onclick="window.location.href='/app/mailingedit/new'">Neu...</button>
@@ -35,6 +47,6 @@
 </table>
 
 
-	
+
 
 

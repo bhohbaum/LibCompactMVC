@@ -33,6 +33,7 @@ define("DBA_DEFAULT_CLASS", "DBA");
 define('UPLOAD_BASE_DIR', './files/upload');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
+define('CSV_BASE_DIR', './files/csv');						// relative to $_SERVER['DOCUMENT_ROOT']
 define('LOG_FILE', '/Users/botho/log/cmvc.log');			// relative to $_SERVER['DOCUMENT_ROOT']
 define('BASE_URL', 'http://libcompactmvc.bothos-mbp');
 define('DEFAULT_TIMEZONE', 'CET');

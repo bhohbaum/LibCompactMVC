@@ -88,6 +88,7 @@ cmvc_include('mail.php');
 cmvc_include('mailingedit.php');
 cmvc_include('mailinglist.php');
 cmvc_include('trackingstats.php');
+cmvc_include('uploads.php');
 
 
 

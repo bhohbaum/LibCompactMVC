@@ -171,6 +171,12 @@ class MailingEdit extends CMVCController {
 										$mailpart["fk_id_mailpart_types"], 
 										$mailpart["fk_id_texts"], 
 										$mailpart["fk_id_images"]);
+		} else if ($this->param1 == "testmail") {
+			if (system("cd assets/scripts ; ./mailcron.php -d -t ".$this->param2." ".$this->mailingid." >> ".LOG_FILE) !== false) {
+				$this->json_response(true);
+			} else {
+				$this->json_response(false);
+			}
 		}
 		if (($this->mailingid != null) && (is_numeric($this->mailingid))) {
 			if ($this->mailingname != null) {
