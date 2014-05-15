@@ -16,7 +16,7 @@ class Socket {
 
 	/**
 	 * Connect to an host on the given port.
-	 * 
+	 *
 	 * @param String $host
 	 *        	hostname or IP address
 	 * @param Integer $port
@@ -34,12 +34,15 @@ class Socket {
 
 	/**
 	 * Read from the socket.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public function read() {
+		$buf = "";
 		if ($this->fh) {
-			$buf = fread($this->fh, 128);
+			while (!feof($this->fh)) {
+				$buf .= fread($this->fh, 8192);
+			}
 		} else {
 			throw new Exception("Unable to read from socket. No connection established.");
 		}
@@ -48,17 +51,31 @@ class Socket {
 
 	/**
 	 * Write to the socket.
-	 * 
+	 *
 	 * @param String $buf
-	 *        	String to be written
+	 *        	Data to be written
 	 * @throws Exception
 	 */
 	public function write($buf) {
+		$n = 0;
+		$bytes_written = 0;
+		$bytes_to_write = strlen($buf);
 		if ($this->fh) {
-			fwrite($this->fh, $buf);
+			while ($bytes_written < $bytes_to_write) {
+				if ($bytes_written == 0) {
+					$rv = fwrite($this->fh, $buf);
+				} else {
+					$rv = fwrite($this->fh, substr($buf, $bytes_written));
+				}
+				if ($rv === false || $rv == 0) {
+					throw new Exception("Unable to write to socket any more. ".$bytes_written."  bytes written.");
+				}
+				$bytes_written += $rv;
+			}
 		} else {
 			throw new Exception("Unable to write to socket. No connection established.");
 		}
+		return $n;
 	}
 
 

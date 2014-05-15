@@ -87,7 +87,7 @@ abstract class DbAccess {
 				} else {
 					if ($object) {
 						while ($row = $result->fetch_object()) {
-							$ret[] = $row;
+							$ret = $row;
 						}
 					} else {
 						while ($row = $result->fetch_assoc()) {
