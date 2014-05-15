@@ -49,7 +49,7 @@ define('CAPTCHA_SESS_VAR', "captcha");
 define('SMTP_SERVER', '127.0.0.1');
 define('SMTP_USER', '');
 define('SMTP_PASS', '');
-define('SMTP_SENDER', 'birkmailing@adrodev.dyndns.org');
+define('SMTP_SENDER', 'test@bothos-mbp');
 define('SMTP_SENDER_NAME', 'LibCompactMVC');
 // Send method: MAIL (mail() function) or SMTP
 define('MAIL_TRANS_TYPE', 'SMTP');

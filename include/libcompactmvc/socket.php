@@ -39,10 +39,19 @@ class Socket {
 	 */
 	public function read() {
 		$buf = "";
+		$oldbuf = "";
 		if ($this->fh) {
-			while (!feof($this->fh)) {
-				$buf .= fread($this->fh, 8192);
-			}
+			$buf .= fread($this->fh, 8192);
+			// TODO: read sizes >8192 bytes
+// 			while (!feof($this->fh)) {
+// 				stream_set_blocking($this->fh, true);
+// 				$buf .= fread($this->fh, 8192);
+// 				stream_set_blocking($this->fh, true);
+// 				if ($oldbuf == $buf) {
+// 					break;
+// 				}
+// 				$oldbuf = $buf;
+// 			}
 		} else {
 			throw new Exception("Unable to read from socket. No connection established.");
 		}
