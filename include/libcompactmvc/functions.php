@@ -17,15 +17,13 @@ function printStackTrace() {
 	try {
 		throw new Exception("", 0);
 	} catch (Exception $e) {
-		echo("<pre>".$e->getTraceAsString()."</pre>");
+		echo ("<pre>" . $e->getTraceAsString() . "</pre>");
 	}
 }
 
 /*
- * The XLOG() functions can be used in all controller classes. 
- * PHP doesn't know c-like macros. hence we use the debug_backtrace() trick to get the callers object.
+ * The XLOG() functions can be used in all controller classes. PHP doesn't know c-like macros. hence we use the debug_backtrace() trick to get the callers object.
  */
-
 function ELOG($msg) {
 	$stack = debug_backtrace();
 	if ($stack[1]["object"]->log == null) {
@@ -69,7 +67,7 @@ function rrmdir($path, $ignore = array()) {
 	DLOG(__METHOD__);
 	foreach ($ignore as $i) {
 		if (pathinfo($path, PATHINFO_BASENAME) == $i) {
-			echo ($path . " is on ignore list, leaving it undeleted...\n");
+			DLOG(__METHOD__ . " " . $path . " is on ignore list, leaving it undeleted...\n");
 			return;
 		}
 	}
@@ -84,6 +82,5 @@ function rrmdir($path, $ignore = array()) {
 		unlink($path);
 	}
 }
-
 
 ?>
