@@ -62,7 +62,28 @@ function DLOG($msg) {
 	$stack[1]["object"]->log->debug($msg);
 }
 
-
+/*
+ * Filesystem helper
+ */
+function rrmdir($path, $ignore = array()) {
+	DLOG(__METHOD__);
+	foreach ($ignore as $i) {
+		if (pathinfo($path, PATHINFO_BASENAME) == $i) {
+			echo ($path . " is on ignore list, leaving it undeleted...\n");
+			return;
+		}
+	}
+	if (is_dir($path)) {
+		$path = rtrim($path, '/') . '/';
+		$items = glob($path . '*');
+		foreach ($items as $item) {
+			is_dir($item) ? rrmdir($item, $ignore) : unlink($item);
+		}
+		rmdir($path);
+	} else {
+		unlink($path);
+	}
+}
 
 
 ?>
