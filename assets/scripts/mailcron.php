@@ -1,6 +1,6 @@
-#!/usr/bin/env php
+#!/usr/bin/php
 <?php
-@include_once('../../include/libcompactmvc.php');
+@include_once('../include/libcompactmvc.php');
 
 /**
  * Import script
@@ -10,6 +10,11 @@
  * @copyright   Copyright (c) Botho Hohbaum 19.02.2014
  * @link		http://www.adrodev.de
  */
+
+/**
+ * configure PHP
+ */
+ini_set("auto_detect_line_endings", true);
 
 /**
  * Read parameters
@@ -39,7 +44,7 @@ foreach ($argv as $key => $val) {
 if ($testmail != false) {
 	$mailingid = $maxloop;
 	if (!$mailingid) {
-		die("Mailing Id is missing!\n");
+		die("Mailing Id is missing");
 	}
 	$sendenabled = true;
 	$maxloop = 1;
@@ -70,8 +75,12 @@ if ($importenabled) {
 							$db->update_receiver($receiver["id"], $data[0], $data[1], $data[2], $data[3]);
 							$db->create_mhr($mailing["id"], $receiver["id"]);
 						}
+					} else {
+						echo("\n\nFound record with invalid field count in ".$mailing["data_url"]." : ".count($data)."\n");
 					}
 				}
+			} else {
+				echo("\n\nERROR IMPORTING FROM URI: ".$mailing["data_url"]." : Unable to open stream.\n");
 			}
 		}
 	}
