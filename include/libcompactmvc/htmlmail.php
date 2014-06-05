@@ -12,9 +12,8 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @link http://www.gnu.org/licenses/lgpl.html
  */
 class HTMLMail {
 	private $inline;
@@ -25,6 +24,8 @@ class HTMLMail {
 	private $receiver_mail;
 	private $replyto_name;
 	private $replyto_mail;
+	private $returnpath_name;
+	private $returnpath_mail;
 	private $cc;
 	private $bcc;
 	private $subject;
@@ -147,6 +148,19 @@ class HTMLMail {
 	public function set_reply_to($email, $name = "") {
 		$this->replyto_name = UTF8::encode($name);
 		$this->replyto_mail = UTF8::encode($email);
+	}
+
+	/**
+	 * Set the "Return-Path:" header field of the mail.
+	 * 
+	 * @param String $email
+	 *        	E-Mail address
+	 * @param String $name
+	 *        	name (optional)
+	 */
+	public function set_return_path($email, $name = "") {
+		$this->returnpath_name = UTF8::encode($name);
+		$this->returnpath_mail = UTF8::encode($email);
 	}
 
 	/**
@@ -290,6 +304,9 @@ class HTMLMail {
 			$this->mailheader .= 'To: ' . mb_encode_mimeheader($this->receiver_name, "UTF-8", "Q") . ' <' . $this->receiver_mail . ">\n";
 		}
 		$this->mailheader .= 'Reply-To: ' . mb_encode_mimeheader($this->replyto_name, "UTF-8", "Q") . ' <' . $this->replyto_mail . ">\n";
+		if ((isset($this->returnpath_mail)) && (isset($this->returnpath_name))) {
+			$this->mailheader .= 'Return-Path: ' . mb_encode_mimeheader($this->returnpath_name, "UTF-8", "Q") . ' <' . $this->returnpath_mail . ">\n";
+		}
 		$this->mailheader .= 'CC: ' . implode(', ', $this->cc) . "\n";
 		$this->mailheader .= 'BCC: ' . implode(', ', $this->bcc) . "\n";
 		$this->mailheader .= 'Content-Type: multipart/mixed; boundary="' . $this->boundary_m . '"' . "\n";
