@@ -50,6 +50,17 @@ function cmvc_include($fname) {
 // first include the configuration
 cmvc_include('config.php');
 
+if (!defined("LOG_FILE")) {
+	die("Constant LOG_FILE is undefined, please define in config.php - exiting.\n");
+}
+@touch(LOG_FILE);
+if (!file_exists(LOG_FILE)) {
+	die(LOG_FILE." does not exists, exiting.\n");
+}
+if (!is_writable(LOG_FILE)) {
+	die(LOG_FILE." is not writable by the current webserver process, exiting.\n");
+}
+
 if (defined('DEBUG') && (DEBUG == 0)) {
 	ob_start();
 }
