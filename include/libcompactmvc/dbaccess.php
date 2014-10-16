@@ -45,9 +45,9 @@ abstract class DbAccess {
 	 * @return returns the instance of this class. this is a singleton. there can only be one instance per derived class.
 	 */
 	public static function get_instance($name) {
-		if (!isset(self::$instance)) {
+		if ((!isset(self::$instance)) || (!array_key_exists($name, self::$instance))) {
 			if (($name == null) || ($name == "")) {
-				$name = __CLASS__;
+				$name = get_class($this);
 			}
 			self::$instance[$name] = new $name();
 		}
@@ -67,7 +67,7 @@ abstract class DbAccess {
 		DLOG($query);
 		$object = ($field == null) ? $object : false;
 		if (!($result = $this->mysqli->query($query))) {
-			throw new Exception(ErrorMessages::DB_QUERY_ERROR . $this->mysqli->error . "\nQuery: " . $query);
+			throw new Exception(ErrorMessages::DB_QUERY_ERROR . '"' . $this->mysqli->error . '"' . "\nQuery: " . $query);
 		} else {
 			if (is_object($result)) {
 				if ($has_multi_result) {

@@ -45,7 +45,7 @@ class ActionDispatcher {
 		$this->action = ($this->request($this->actionname) == null) ? $this->action_default : $this->request($this->actionname);
 		if ($this->control_action != "") {
 			if (!isset($this->handlers[$this->control_action])) {
-				throw new Exception("ActionDispatcher error: No handler registered for control " . $this->control_action);
+				throw new Exception("ActionDispatcher error: No handler registered for action " . $this->control_action);
 			} else {
 				try {
 					$this->handlers[$this->control_action]->view->clear();
@@ -64,7 +64,7 @@ class ActionDispatcher {
 				$this->action = $this->handlers[$this->action]->redirect;
 			}
 			if (!isset($this->handlers[$this->action])) {
-				throw new Exception("Redirect error: No handler registered for '" . $this->action . "'");
+				throw new Exception("Redirect error: No handler registered for action '" . $this->action . "'");
 			} else {
 				try {
 					$this->handlers[$this->action]->view->clear();

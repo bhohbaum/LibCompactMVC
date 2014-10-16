@@ -124,7 +124,7 @@ abstract class CMVCController {
 		DLOG(__METHOD__ . " " . var_export($obj, true));
 		$this->view->clear();
 		$this->view->add_template("out.tpl");
-		$this->view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE, 1024)));
+		$this->view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
 	}
 
 	protected function binary_response($obj) {
