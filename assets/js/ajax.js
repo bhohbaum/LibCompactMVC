@@ -1,3 +1,9 @@
+// example:
+// <input type='hidden' id='tags' class="ajax form-control full-width"
+//     data-placeholder="Titel eintragen"
+//     data-path="ajax/survey/bonus/<?= $this->get_value("surveyId") ?>#name"
+//     data-content="html(JSON.parse(result)[0].name); element.attr('placeholder', JSON.parse(result)[0].name); select_reinit();" />
+
 var $_ajax = [];
 var $ajax = function() {
 	
@@ -27,10 +33,11 @@ var $ajax = function() {
 		$(".ajax").each(function() {
 			var element = $(this);
 			var url = "/" + element.attr("data-path") + "/" +
-							element.attr("data-parm1") + "/" +
-							element.attr("data-parm2") + "/" +
-							element.attr("data-parm3") + "/" +
-							element.attr("data-parm4");
+							element.attr("data-param0") + "/" +
+							element.attr("data-param1") + "/" +
+							element.attr("data-param2") + "/" +
+							element.attr("data-param3") + "/" +
+							element.attr("data-param4");
 			while (url != url.replace("/undefined", "")) {
 				url = url.replace("/undefined", "");
 			}
@@ -95,7 +102,7 @@ var $ajax = function() {
 		xhr.responseType = this._responseType;
 		xhr.onload = function(response) {
 			new $ajax()._callHandler(url, response, new $ajax()._response(response));
-			$_ajax[url]._cfg[url] = null;
+//			$_ajax[url]._cfg[url] = null;
 		};
 		this._cfg[url] = [];
 		this._cfg[url].cbok = this._cbok;
@@ -112,21 +119,23 @@ $(document).ready(function() {
 	$(".ajax").each(function() {
 		var element = $(this);
 		var url = "/" + element.attr("data-path") + "/" +
-						element.attr("data-parm1") + "/" +
-						element.attr("data-parm2") + "/" +
-						element.attr("data-parm3") + "/" +
-						element.attr("data-parm4");
+						element.attr("data-param0") + "/" +
+						element.attr("data-param1") + "/" +
+						element.attr("data-param2") + "/" +
+						element.attr("data-param3") + "/" +
+						element.attr("data-param4");
 		while (url != url.replace("/undefined", "")) {
 			url = url.replace("/undefined", "");
 		}
 		var content = element.attr("data-content");
-		events = ["change", "keydown", "keyup", "click", "mouseup"];
+		events = ["change", "keydown", "keyup", "click", "mouseup", "mouseover", "mouseout"];
 		for (var i = 0; i < events.length; i++) {
 			if (element.attr("data-" + events[i]) != null) {
 				element.on(events[i], function(event) {
 					var cmd = 'var data = element.' + element.attr("data-" + event.type);
 					try {
 						eval(cmd);
+						var rnd = Math.round(Math.random() * 1000000);
 						new $ajax().data("&data=" + escape(data)).ok(function(result) {
 							var cmd = 'element.' + content;
 							try {
@@ -134,13 +143,14 @@ $(document).ready(function() {
 							} catch (e) {
 								console.log(e);
 							}
-						}).post(url + "#toserver");
+						}).post(url + "#toserver" + rnd);
 					} catch (e) {
 						console.log(e);
 					}
 				});
 			}
 		}
+		var rnd = Math.round(Math.random() * 1000000);
 		new $ajax().ok(function(result) {
 			var cmd = 'element.' + content;
 			try {
@@ -148,7 +158,7 @@ $(document).ready(function() {
 			} catch (e) {
 				console.log(e);
 			}
-		}).get(url + "#fromserver");
+		}).get(url + "#fromserver" + rnd);
 	});
 });
 
