@@ -35,7 +35,7 @@ define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMEN
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
 define('CSV_BASE_DIR', './files/csv');						// relative to $_SERVER['DOCUMENT_ROOT']
 define('LOG_FILE', '/Users/botho/log/cmvc.log');			// relative to $_SERVER['DOCUMENT_ROOT']
-define('BASE_URL', 'http://libcompactmvc.bothos-mbp');
+define('BASE_URL', 'http://libcompactmvc.wstuboho01');
 define('DEFAULT_TIMEZONE', 'CET');
 
 define('REDIS_HOST', '127.0.0.1');
