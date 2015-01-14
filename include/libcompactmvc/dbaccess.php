@@ -14,7 +14,7 @@ LIBCOMPACTMVC_ENTRY;
 abstract class DbAccess {
 	protected $mysqli;
 	public $log;
-	
+
 	// keeps instance of the class
 	private static $instance;
 
@@ -22,11 +22,11 @@ abstract class DbAccess {
 
 	private function __construct() {
 		$this->mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
-		
+
 		if (mysqli_connect_error()) {
 			throw new Exception('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error(), mysqli_connect_errno());
 		}
-		
+
 		$this->log = new Log(Log::LOG_TYPE_FILE);
 		$this->log->set_log_file(LOG_FILE);
 	}
@@ -34,7 +34,7 @@ abstract class DbAccess {
 	public function __destruct() {
 		$this->close_db();
 	}
-	
+
 	// prevent cloning
 	private function __clone() {
 		;
@@ -51,7 +51,7 @@ abstract class DbAccess {
 			}
 			self::$instance[$name] = new $name();
 		}
-		
+
 		return self::$instance[$name];
 	}
 
@@ -109,13 +109,13 @@ abstract class DbAccess {
 		}
 		return $ret;
 	}
-	
+
 	public function autocommit($mode) {
 		if (!$this->mysqli->autocommit($mode)) {
 			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
 		}
 	}
-	
+
 	public function begin_transaction() {
 		if (function_exists("mysqli_begin_transaction")) {
 			if (!$this->mysqli->begin_transaction()) {
@@ -124,20 +124,27 @@ abstract class DbAccess {
 		}
 		$this->autocommit(false);
 	}
-	
+
 	public function commit() {
 		if (!$this->mysqli->commit()) {
 			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
 		}
 		$this->autocommit(true);
 	}
-		
+
 	public function rollback() {
 		if (!$this->mysqli->rollback()) {
 			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
 		}
 	}
-		
+
+	protected function escape($str) {
+		if ($this->mysqli) {
+			return $this->mysqli->real_escape_string($str);
+		}
+		throw new Exception("DbAccess::mysqli is not initialized, unable to escape string.");
+	}
+
 }
 
 ?>
