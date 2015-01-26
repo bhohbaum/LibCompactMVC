@@ -146,13 +146,8 @@ abstract class DbAccess {
 	}
 
 	protected function mkobj($var) {
-		$tmp = new stdClass();
-		if (is_array($var)) {
-			foreach ($var as $key => $val) {
-				$tmp->{$key} = $val;
-			}
-		}
-		return (is_object($var)) ? $var : $tmp;
+		$dbo = new DbObject($var);
+		return (is_object($var)) ? $var : $dbo;
 	}
 
 }

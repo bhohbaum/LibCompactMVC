@@ -12,7 +12,7 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
 
 function cmvc_include($fname) {
 	$basepath = dirname(dirname(__FILE__)."../");
-	
+
 	$dirs_up = array(
 					"./",
 					"../",
@@ -21,7 +21,7 @@ function cmvc_include($fname) {
 					"../../../../",
 					"../../../../../"
 				);
-	
+
 	// Put all directories into this array, where source files shall be included.
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
@@ -30,7 +30,7 @@ function cmvc_include($fname) {
 					"include/",
 					"include/libcompactmvc/"
 				);
-	
+
 	foreach ($dirs_up as $u) {
 		foreach ($dirs_down as $d) {
 			// if directory of index.php or below
@@ -72,6 +72,7 @@ cmvc_include('captcha.php');
 cmvc_include('centermap.php');
 cmvc_include('cmvccontroller.php');
 cmvc_include('dbaccess.php');
+cmvc_include('dbobject.php');
 cmvc_include('error_messages.php');
 cmvc_include('functions.php');
 cmvc_include('googlemaps.php');
@@ -106,6 +107,6 @@ cmvc_include('uploads.php');
 if (defined('DEBUG') && (DEBUG == 0)) {
 	ob_end_clean();
 }
-	
+
 
 ?>
