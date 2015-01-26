@@ -21,6 +21,12 @@ class Upload {
 		$this->files_arr = $_FILES;
 	}
 
+	/**
+	 * Saves one ore more files in the upload directory.
+	 *
+	 * @return array	file names
+	 * @throws Exception
+	 */
 	public function save() {
 		$ret = array();
 		$i = 0;
@@ -37,6 +43,12 @@ class Upload {
 		return $ret;
 	}
 
+	/**
+	 * Saves one or more files in corresponding subdirectories of the upload directory.
+	 *
+	 * @return array	file names
+	 * @throws Exception
+	 */
 	public function save_sub() {
 		$ret = array();
 		foreach ($this->files_arr as $key => $value) {

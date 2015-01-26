@@ -146,8 +146,7 @@ abstract class DbAccess {
 	}
 
 	protected function mkobj($var) {
-		$dbo = new DbObject($var);
-		return (is_object($var)) ? $var : $dbo;
+		return (is_object($var)) ? $var : new DbObject($var);
 	}
 
 }

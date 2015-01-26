@@ -2,7 +2,7 @@
 
 class DbObject {
 
-	public function __construct($members = array()) {
+	public function __construct(array $members = array()) {
 		foreach ($members as $name => $value) {
 			$this->$name = $value;
 		}

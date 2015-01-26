@@ -93,7 +93,7 @@ class View {
 		$this->tpls = array();
 	}
 
-	public function render($caching = true) {
+	public function render($caching = CACHING_ENABLED) {
 		if ($caching) {
 			$start = microtime(true);
 			$key = REDIS_KEY_RCACHE_PFX . md5(serialize($this));

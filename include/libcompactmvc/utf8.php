@@ -24,41 +24,41 @@ class UTF8 {
 
 	/**
 	 * Convert to UTF-8
-	 * 
-	 * @param String $string
-	 *        	input string
+	 *
+	 * @param string_or_array $subject
+	 *        	input
 	 */
-	public static function encode($string) {
-		if (!is_string($string)) {
-			return false;
-		}
-		if (self::check_utf8($string)) {
-			return $string;
-		} else {
-			if (strlen(self::checkEncoding($string, "UTF-8")) != strlen($string)) {
-				return utf8_encode($string);
-			} else {
-				return self::checkEncoding($string, "UTF-8");
+	public static function encode($subject) {
+		if (is_array($subject)) {
+			foreach ($subject as $key => $val) {
+				$subject[$key] = self::_encode($val);
 			}
+			return $subject;
+		} else {
+			return self::_encode($subject);
 		}
 	}
 
 	/**
 	 * Convert to ISO-8859-1
-	 * 
-	 * @param String $string
-	 *        	input string
+	 *
+	 * @param string_or_array $subject
+	 *        	input
 	 */
-	public static function decode($string) {
-		if (!is_string($string)) {
-			return false;
+	public static function decode($subject) {
+		if (is_array($subject)) {
+			foreach ($subject as $key => $val) {
+				$subject[$key] = self::_decode($val);
+			}
+			return $subject;
+		} else {
+			return self::_decode($subject);
 		}
-		return utf8_decode(self::encode($string));
 	}
 
 	/**
 	 * Check if the input is properly UTF-8 encoded.
-	 * 
+	 *
 	 * @param String $str
 	 *        	string to be checked
 	 */
@@ -93,7 +93,7 @@ class UTF8 {
 
 	/**
 	 * Required to convert other formats than ISO-8859-1.
-	 * 
+	 *
 	 * @param String $string
 	 *        	intput string
 	 * @param String $string_encoding
@@ -103,6 +103,28 @@ class UTF8 {
 		$fs = $string_encoding == 'UTF-8' ? 'UTF-32' : $string_encoding;
 		$ts = $string_encoding == 'UTF-32' ? 'UTF-8' : $string_encoding;
 		return $string === mb_convert_encoding(mb_convert_encoding($string, $fs, $ts), $ts, $fs);
+	}
+
+	private static function _encode($string) {
+		if (!is_string($string)) {
+			return false;
+		}
+		if (self::check_utf8($string)) {
+			return $string;
+		} else {
+			if (strlen(self::checkEncoding($string, "UTF-8")) != strlen($string)) {
+				return utf8_encode($string);
+			} else {
+				return self::checkEncoding($string, "UTF-8");
+			}
+		}
+	}
+
+	private static function _decode($string) {
+		if (!is_string($string)) {
+			return false;
+		}
+		return utf8_decode(self::encode($string));
 	}
 
 
