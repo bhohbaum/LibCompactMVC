@@ -145,6 +145,16 @@ abstract class DbAccess {
 		throw new Exception("DbAccess::mysqli is not initialized, unable to escape string.");
 	}
 
+	protected function mkobj($var) {
+		$tmp = new stdClass();
+		if (is_array($var)) {
+			foreach ($var as $key => $val) {
+				$tmp->{$key} = $val;
+			}
+		}
+		return (is_object($var)) ? $var : $tmp;
+	}
+
 }
 
 ?>

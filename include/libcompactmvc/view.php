@@ -71,6 +71,10 @@ class View {
 		}
 	}
 
+	public function encode($val) {
+		return htmlentities(UTF8::encode($val), ENT_QUOTES | ENT_HTML401, 'UTF-8');
+	}
+
 	public function set_template($index, $name) {
 		$this->tpls[$index] = $name;
 	}

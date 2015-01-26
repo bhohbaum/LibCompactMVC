@@ -11,7 +11,7 @@ LIBCOMPACTMVC_ENTRY;
  * @link		http://www.adrodev.de
  */
 class MailingEdit extends CMVCController {
-	
+
 	private $param0;
 	private $param1;
 	private $param2;
@@ -24,11 +24,11 @@ class MailingEdit extends CMVCController {
 	private $dataurl;
 	private $subject;
 	private $link;
-	
+
 	protected function dba() {
 		return "DBA";
 	}
-	
+
 	protected function retrieve_data() {
 		DLOG(__METHOD__);
 		$this->param0 = $this->request("param0");
@@ -58,11 +58,11 @@ class MailingEdit extends CMVCController {
 		}
 		$this->log->log(Log::LOG_LVL_NOTICE, "param0 = ".$this->param0." | param1 = ".$this->param1." | param2 = ".$this->param2." | mailingid = ".$this->mailingid);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	protected function run_page_logic_get() {
 		DLOG(__METHOD__);
 		$this->view->add_template("header.tpl");
@@ -70,14 +70,14 @@ class MailingEdit extends CMVCController {
 		$this->view->add_template("footer.tpl");
 		$this->view->set_value("mailingid", $this->mailingid);
 	}
-	
+
 	protected function run_page_logic_post() {
 		DLOG(__METHOD__);
 		if ($this->param1 == "img") {
 			$upload = new Upload(UPLOAD_BASE_DIR);
 			$fnames = $upload->save();
 			$fname = @basename($fnames[0]);
-			$paramarr = explode("_", $upload->get_param_name());
+			$paramarr = explode("_", $upload->get_param_name(0));
 			$this->ordinal = $paramarr[1];
 			$mailpart = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $paramarr[1]);
 			if ($mailpart == null) {
@@ -94,12 +94,12 @@ class MailingEdit extends CMVCController {
 				$imgid = $this->db->create_image();
 				$img = $this->db->get_image_by_id($imgid);
 			}
-			$this->db->update_mailpart(	$mailpart["id"], 
+			$this->db->update_mailpart(	$mailpart["id"],
 										null,
-										$mailpart["ordinal"], 
-										$mailpart["fk_id_mailings"], 
-										$mailpart["fk_id_mailpart_types"], 
-										$mailpart["fk_id_texts"], 
+										$mailpart["ordinal"],
+										$mailpart["fk_id_mailings"],
+										$mailpart["fk_id_mailpart_types"],
+										$mailpart["fk_id_texts"],
 										$img["id"]);
 			if (!rename(UPLOAD_BASE_DIR."/".$fname, IMAGES_BASE_DIR."/".$img["name"].".jpg")) {
 				if ((file_exists(UPLOAD_BASE_DIR."/".$fname)) && (file_exists(IMAGES_BASE_DIR."/".$img["name"].".jpg"))) {
@@ -151,12 +151,12 @@ class MailingEdit extends CMVCController {
 				$txtid = $this->db->create_text($this->text);
 				$txt = $this->db->get_text_by_id($txtid);
 			}
-			$this->db->update_mailpart(	$mailpart["id"], 
-										$mailpart["link"], 
-										$mailpart["ordinal"], 
-										$mailpart["fk_id_mailings"], 
-										$mailpart["fk_id_mailpart_types"], 
-										$txt["id"], 
+			$this->db->update_mailpart(	$mailpart["id"],
+										$mailpart["link"],
+										$mailpart["ordinal"],
+										$mailpart["fk_id_mailings"],
+										$mailpart["fk_id_mailpart_types"],
+										$txt["id"],
 										$mailpart["fk_id_images"]);
 		} else if ($this->param1 == "lnk") {
 			$mailpart = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $this->ordinal);
@@ -164,12 +164,12 @@ class MailingEdit extends CMVCController {
 				$mailpartid = $this->db->create_mailpart($this->ordinal, $this->mailingid, $this->type, null, null);
 				$mailpart = $this->db->get_mailpart_by_id($mailpartid);
 			}
-			$this->db->update_mailpart(	$mailpart["id"], 
-										$this->link, 
-										$mailpart["ordinal"], 
-										$mailpart["fk_id_mailings"], 
-										$mailpart["fk_id_mailpart_types"], 
-										$mailpart["fk_id_texts"], 
+			$this->db->update_mailpart(	$mailpart["id"],
+										$this->link,
+										$mailpart["ordinal"],
+										$mailpart["fk_id_mailings"],
+										$mailpart["fk_id_mailpart_types"],
+										$mailpart["fk_id_texts"],
 										$mailpart["fk_id_images"]);
 		} else if ($this->param1 == "testmail") {
 			if (system("cd assets/scripts ; ./mailcron.php -d -t ".$this->param2." ".$this->mailingid." >> ".LOG_FILE) !== false) {
@@ -193,7 +193,7 @@ class MailingEdit extends CMVCController {
 			}
 		}
 	}
-	
+
 	protected function run_page_logic_put() {
 		DLOG(__METHOD__);
 		if ($this->param1 == "mailpart") {
@@ -221,7 +221,7 @@ class MailingEdit extends CMVCController {
 			$this->json_response(true);
 		}
 	}
-	
+
 	protected function run_page_logic_delete() {
 		DLOG(__METHOD__);
 		if ($this->mailingid != null) {
@@ -239,7 +239,7 @@ class MailingEdit extends CMVCController {
 			}
 		}
 	}
-	
+
 }
 
 ?>

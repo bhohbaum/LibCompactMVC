@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once('libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
@@ -34,14 +34,14 @@ define('UPLOAD_BASE_DIR', './files/upload');				// relative to $_SERVER['DOCUMEN
 define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
 define('CSV_BASE_DIR', './files/csv');						// relative to $_SERVER['DOCUMENT_ROOT']
-define('LOG_FILE', '/Users/botho/log/cmvc.log');			// relative to $_SERVER['DOCUMENT_ROOT']
-define('BASE_URL', 'http://libcompactmvc.wstuboho01');
+define('LOG_FILE', '/home/botho/log/cmvc.log');			// relative to $_SERVER['DOCUMENT_ROOT']
+define('BASE_URL', 'http://libcompactmvc.local');
 define('DEFAULT_TIMEZONE', 'CET');
 
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);
 
-define('REDIS_KEY_RCACHE_PFX', 'RENDERCACHE_');
+define('REDIS_KEY_RCACHE_PFX', 'RENDERCACHE_LIBCOMPACTMVC_');
 define('REDIS_KEY_RCACHE_TTL', '600');
 
 define('CAPTCHA_RES_PATH', "./include/resources");			// relative to $_SERVER['DOCUMENT_ROOT']
@@ -50,16 +50,16 @@ define('CAPTCHA_SESS_VAR', "captcha");
 define('SMTP_SERVER', '127.0.0.1');
 define('SMTP_USER', '');
 define('SMTP_PASS', '');
-define('SMTP_SENDER', 'test@bothos-mbp');
+define('SMTP_SENDER', 'test@libcompactmvc.local');
 define('SMTP_SENDER_NAME', 'LibCompactMVC');
 // Send method: MAIL (mail() function) or SMTP
 define('MAIL_TRANS_TYPE', 'SMTP');
 define('MAIL_DEBUG_ADDR', 'b.hohbaum@googlemail.com');
 
 // allowed users (login)
-// to get the hash on a terminal, type: 
+// to get the hash on a terminal, type:
 // php -r 'echo(md5("your-password-goes-here")."\n");'
-define('LOGIN_USERS', '{"adrodev": 	"c0e8bf3bdd9583f9650fefd8ec590b5c", 
+define('LOGIN_USERS', '{"adrodev": 	"c0e8bf3bdd9583f9650fefd8ec590b5c",
 						"admin": 	"64ab07516f3e7adb0a79cc5ec9ca529d"}');
 
 // special DB content
