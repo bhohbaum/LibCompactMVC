@@ -1,19 +1,28 @@
-// example:
-// <input type='hidden' id='tags' class="ajax form-control full-width"
-//     data-placeholder="Titel eintragen"
-//     data-path="ajax/survey/bonus/<?= $this->get_value("surveyId") ?>#name"
-//     data-content="html(JSON.parse(result)[0].name); element.attr('placeholder', JSON.parse(result)[0].name); select_reinit();" />
+/**
+ * ajax.js
+ *
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package     libcompactmvc
+ * @copyright   Copyright (c) Botho Hohbaum
+ * @link		https://github.com/bhohbaum
+ *
+ * example:
+ * <input type='hidden' id='tags' class="ajax form-control full-width"
+ *    data-placeholder="Titel eintragen"
+ *    data-path="ajax/survey/bonus/<?= $this->get_value("surveyId") ?>#name"
+ *
+ */
 
 var $_ajax = [];
 var $ajax = function() {
-	
+
 	$ajax._cfg = [];
-	
+
 	this._cfg = [];
 	this._responseType = "";
 	this._cbok = null;
 	this._cberr = null;
-	
+
 	/**
 	 * functions for public use
 	 */
@@ -31,19 +40,19 @@ var $ajax = function() {
 	};
 	this.reload = function() {
 		$(".ajax").each(function() {
-			var element = $(this);
-			var url = "/" + element.attr("data-path") + "/" +
-							element.attr("data-param0") + "/" +
-							element.attr("data-param1") + "/" +
-							element.attr("data-param2") + "/" +
-							element.attr("data-param3") + "/" +
-							element.attr("data-param4");
+			var $this = $(this);
+			var url = "/" + $this.attr("data-path") + "/" +
+							$this.attr("data-param0") + "/" +
+							$this.attr("data-param1") + "/" +
+							$this.attr("data-param2") + "/" +
+							$this.attr("data-param3") + "/" +
+							$this.attr("data-param4");
 			while (url != url.replace("/undefined", "")) {
 				url = url.replace("/undefined", "");
 			}
-			var content = element.attr("data-content");
+			var content = $this.attr("data-content");
 			new $ajax().ok(function(result) {
-				var cmd = 'element.' + content;
+				var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
 				try {
 					eval(cmd);
 				} catch (e) {
@@ -68,7 +77,7 @@ var $ajax = function() {
 		this._cberr = cb;
 		return this;
 	};
-	
+
 	/**
 	 * internal functions
 	 */
@@ -102,7 +111,6 @@ var $ajax = function() {
 		xhr.responseType = this._responseType;
 		xhr.onload = function(response) {
 			new $ajax()._callHandler(url, response, new $ajax()._response(response));
-//			$_ajax[url]._cfg[url] = null;
 		};
 		this._cfg[url] = [];
 		this._cfg[url].cbok = this._cbok;
@@ -111,33 +119,40 @@ var $ajax = function() {
 		xhr.send(this._data);
 		return this;
 	}
-	
-	
+
+
 };
 
 $(document).ready(function() {
 	$(".ajax").each(function() {
-		var element = $(this);
-		var url = "/" + element.attr("data-path") + "/" +
-						element.attr("data-param0") + "/" +
-						element.attr("data-param1") + "/" +
-						element.attr("data-param2") + "/" +
-						element.attr("data-param3") + "/" +
-						element.attr("data-param4");
+		var $this = $(this);
+		var url = "/" + $this.attr("data-path") + "/" +
+						$this.attr("data-param0") + "/" +
+						$this.attr("data-param1") + "/" +
+						$this.attr("data-param2") + "/" +
+						$this.attr("data-param3") + "/" +
+						$this.attr("data-param4");
 		while (url != url.replace("/undefined", "")) {
 			url = url.replace("/undefined", "");
 		}
-		var content = element.attr("data-content");
-		events = ["change", "keydown", "keyup", "click", "mouseup", "mouseover", "mouseout"];
+		var content = $this.attr("data-content");
+		events = ["keydown", "keypress", "keyup",
+		          "click", "dblclick",
+		          "mousedown", "mouseup", "mouseover", "mousemove", "mouseout",
+		          "dragstart", "drag", "dragenter", "dragleave", "dragover", "drop", "dragend",
+		          "load", "unload", "abort", "error", "resize", "scroll",
+		          "select", "change", "submit", "reset", "focus", "blur",
+		          "focusin", "focusout"];
 		for (var i = 0; i < events.length; i++) {
-			if (element.attr("data-" + events[i]) != null) {
-				element.on(events[i], function(event) {
-					var cmd = 'var data = element.' + element.attr("data-" + event.type);
+			if ($this.attr("data-" + events[i]) != null) {
+				$this.on(events[i], function(event) {
+					var addThis = ($this.attr("data-" + event.type).substring(0, 6) == "$this.") ? "" : "$this.";
+					var cmd = 'var data = ' + addThis + $this.attr("data-" + event.type);
 					try {
 						eval(cmd);
 						var rnd = Math.round(Math.random() * 1000000);
 						new $ajax().data("&data=" + escape(data)).ok(function(result) {
-							var cmd = 'element.' + content;
+							var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
 							try {
 								eval(cmd);
 							} catch (e) {
@@ -152,7 +167,7 @@ $(document).ready(function() {
 		}
 		var rnd = Math.round(Math.random() * 1000000);
 		new $ajax().ok(function(result) {
-			var cmd = 'element.' + content;
+			var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
 			try {
 				eval(cmd);
 			} catch (e) {

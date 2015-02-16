@@ -15,20 +15,21 @@ class Session {
 	// REMEMBER!!!
 	// NEVER use the $_SESSION directly when using this class!
 	// your data will get lost!
-	
+
 	// keeps instance of the classs
 	private static $instance;
-	
+
 	// contains all session data
 	private static $parray;
-	
+
 	// private constructor prevents direct instantiation
 	private function __construct() {
 		if (!isset($_SESSION)) {
+			ini_set('session.cookie_httponly', 1);
 			session_start();
 		}
 		self::$parray = $_SESSION;
-		
+
 		// The following lines change the session id with every click.
 		// This makes it harder for attackers to "steal" our session.
 		// THIS CAN CAUSE TROUBLE WITH AJAX CALLS!!!
@@ -39,15 +40,16 @@ class Session {
 				unset($_COOKIE[$sname]);
 			}
 			session_destroy();
+			ini_set('session.cookie_httponly', 1);
 			session_start();
 		}
 	}
-	
+
 	// prevent cloning
 	private function __clone() {
 		;
 	}
-	
+
 	// store our data into the $_SESSION variable
 	public function __destruct() {
 		$_SESSION = self::$parray;
@@ -64,7 +66,7 @@ class Session {
 			$c = __CLASS__;
 			self::$instance = new $c();
 		}
-		
+
 		return self::$instance;
 	}
 

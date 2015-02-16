@@ -21,6 +21,7 @@ abstract class DbAccess {
 	public abstract function write2log($loglevel, $date, $text);
 
 	private function __construct() {
+		DLOG(__METHOD__);
 		$this->mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
 
 		if (mysqli_connect_error()) {
@@ -32,6 +33,7 @@ abstract class DbAccess {
 	}
 
 	public function __destruct() {
+		DLOG(__METHOD__);
 		$this->close_db();
 	}
 
@@ -45,6 +47,7 @@ abstract class DbAccess {
 	 * @return returns the instance of this class. this is a singleton. there can only be one instance per derived class.
 	 */
 	public static function get_instance($name) {
+		DLOG(__METHOD__);
 		if ((!isset(self::$instance)) || (!array_key_exists($name, self::$instance))) {
 			if (($name == null) || ($name == "")) {
 				$name = get_class($this);
@@ -56,6 +59,7 @@ abstract class DbAccess {
 	}
 
 	public function close_db() {
+		DLOG(__METHOD__);
 		if ($this->mysqli != null) {
 			$this->mysqli->close();
 			$this->mysqli = null;
@@ -63,8 +67,9 @@ abstract class DbAccess {
 	}
 
 	protected function run_query($query, $has_multi_result = false, $object = false, $field = null) {
-		$ret = null;
+		DLOG(__METHOD__);
 		DLOG($query);
+		$ret = null;
 		$object = ($field == null) ? $object : false;
 		if (!($result = $this->mysqli->query($query))) {
 			throw new Exception(ErrorMessages::DB_QUERY_ERROR . '"' . $this->mysqli->error . '"' . "\nQuery: " . $query);
@@ -111,12 +116,14 @@ abstract class DbAccess {
 	}
 
 	public function autocommit($mode) {
+		DLOG(__METHOD__);
 		if (!$this->mysqli->autocommit($mode)) {
 			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
 		}
 	}
 
 	public function begin_transaction() {
+		DLOG(__METHOD__);
 		if (function_exists("mysqli_begin_transaction")) {
 			if (!$this->mysqli->begin_transaction()) {
 				throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
@@ -126,6 +133,7 @@ abstract class DbAccess {
 	}
 
 	public function commit() {
+		DLOG(__METHOD__);
 		if (!$this->mysqli->commit()) {
 			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
 		}
@@ -133,12 +141,14 @@ abstract class DbAccess {
 	}
 
 	public function rollback() {
+		DLOG(__METHOD__);
 		if (!$this->mysqli->rollback()) {
 			throw new Exception(__METHOD__." MySQLi error: ".$this->mysqli->error);
 		}
 	}
 
 	protected function escape($str) {
+		DLOG(__METHOD__);
 		if ($this->mysqli) {
 			return $this->mysqli->real_escape_string($str);
 		}
@@ -146,6 +156,7 @@ abstract class DbAccess {
 	}
 
 	protected function mkobj($var) {
+		DLOG(__METHOD__);
 		return (is_object($var)) ? $var : new DbObject($var);
 	}
 
