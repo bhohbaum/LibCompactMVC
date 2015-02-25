@@ -77,6 +77,7 @@ cmvc_include('error_messages.php');
 cmvc_include('functions.php');
 cmvc_include('googlemaps.php');
 cmvc_include('htmlmail.php');
+cmvc_include('invalidmemberexception.php');
 cmvc_include('log.php');
 cmvc_include('map_radius.php');
 cmvc_include('multiextender.php');

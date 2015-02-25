@@ -5,12 +5,10 @@
  * @package     libcompactmvc
  * @copyright   Copyright (c) Botho Hohbaum
  * @link		https://github.com/bhohbaum
- *
- * example:
- * <input type='hidden' id='tags' class="ajax form-control full-width"
- *    data-placeholder="Titel eintragen"
- *    data-path="ajax/survey/bonus/<?= $this->get_value("surveyId") ?>#name"
- *
+ * @classDescription example:
+ * 		<input type='hidden' id='tags' class="ajax form-control full-width"
+ * 			data-placeholder="Titel eintragen"
+ * 			data-path="ajax/survey/bonus/<?= $this->get_value("surveyId") ?>#name"
  */
 
 var $_ajax = [];
@@ -118,7 +116,7 @@ var $ajax = function() {
 		$_ajax[url] = this;
 		xhr.send(this._data);
 		return this;
-	}
+	};
 
 
 };

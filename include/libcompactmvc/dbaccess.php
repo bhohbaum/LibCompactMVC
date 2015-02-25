@@ -22,12 +22,7 @@ abstract class DbAccess {
 
 	private function __construct() {
 		DLOG(__METHOD__);
-		$this->mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
-
-		if (mysqli_connect_error()) {
-			throw new Exception('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error(), mysqli_connect_errno());
-		}
-
+		$this->open_db();
 		$this->log = new Log(Log::LOG_TYPE_FILE);
 		$this->log->set_log_file(LOG_FILE);
 	}
@@ -39,6 +34,7 @@ abstract class DbAccess {
 
 	// prevent cloning
 	private function __clone() {
+		DLOG(__METHOD__);
 		;
 	}
 
@@ -56,6 +52,15 @@ abstract class DbAccess {
 		}
 
 		return self::$instance[$name];
+	}
+
+	public function open_db() {
+		DLOG(__METHOD__);
+		$this->mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
+
+		if (mysqli_connect_error()) {
+			throw new Exception('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error(), mysqli_connect_errno());
+		}
 	}
 
 	public function close_db() {

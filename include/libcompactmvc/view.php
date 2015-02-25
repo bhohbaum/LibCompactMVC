@@ -45,10 +45,12 @@ class View {
 
 	public function activate($comp_name) {
 		$this->comp[$comp_name] = true;
+		return $this;
 	}
 
 	public function deactivate($comp_name) {
 		$this->comp[$comp_name] = false;
+		return $this;
 	}
 
 	private function is_active($comp_name) {
@@ -61,6 +63,7 @@ class View {
 
 	public function set_value($key, $value) {
 		$this->vals[$key] = $value;
+		return $this;
 	}
 
 	public function get_value($key) {
@@ -77,10 +80,12 @@ class View {
 
 	public function set_template($index, $name) {
 		$this->tpls[$index] = $name;
+		return $this;
 	}
 
 	public function add_template($name) {
 		$this->tpls[] = $name;
+		return $this;
 	}
 
 	public function get_templates() {
@@ -91,6 +96,11 @@ class View {
 		$this->comp = array();
 		$this->vals = array();
 		$this->tpls = array();
+		return $this;
+	}
+
+	public function get_hash() {
+		return md5(serialize($this));
 	}
 
 	public function render($caching = CACHING_ENABLED) {
@@ -98,7 +108,7 @@ class View {
 			$start = microtime(true);
 			$key = REDIS_KEY_RCACHE_PFX . md5(serialize($this));
 			$out = $this->redis->get($key);
-			if ($out != null) {
+			if ($out !== false) {
 				$this->redis->expire($key, REDIS_KEY_RCACHE_TTL);
 				$time_taken = (microtime(true) - $start) * 1000 . " ms";
 				$msg = 'Returning content from render cache... (' . $key . ' | ' . $time_taken . ')';
