@@ -28,21 +28,6 @@ class View {
 		$this->redis->connect(REDIS_HOST, REDIS_PORT);
 	}
 
-// 	private function __clone() {
-// 	}
-
-// 	public static function instance() {
-// 		$name = get_called_class();
-// 		var_dump($name);
-// 		if (!isset(self::$instance)) {
-// 			self::$instance = array();
-// 		}
-// 		if (!array_key_exists($name, self::$instance)) {
-// 			self::$instance[$name] = new $name();
-// 		}
-// 		return self::$instance[$name];
-// 	}
-
 	public function activate($comp_name) {
 		$this->comp[$comp_name] = true;
 		return $this;

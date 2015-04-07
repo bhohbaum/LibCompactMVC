@@ -41,7 +41,9 @@ define('DEFAULT_TIMEZONE', 'CET');
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);
 
-define('REDIS_KEY_RCACHE_PFX', 'RENDERCACHE_LIBCOMPACTMVC_');
+define('REDIS_KEY_PRAEFIX', 'CMVC_');
+define('REDIS_KEY_RCACHE_PFX', REDIS_KEY_PRAEFIX . 'RENDERCACHE_');
+define('REDIS_KEY_TBLDESC_PFX', REDIS_KEY_PRAEFIX . 'TBLDESC_');
 define('REDIS_KEY_RCACHE_TTL', '600');
 
 define('CAPTCHA_RES_PATH', "./include/resources");			// relative to $_SERVER['DOCUMENT_ROOT']

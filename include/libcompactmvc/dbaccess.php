@@ -18,9 +18,9 @@ abstract class DbAccess {
 	// keeps instance of the class
 	private static $instance;
 
-	public abstract function write2log($loglevel, $date, $text);
+	//public abstract function write2log($loglevel, $date, $text);
 
-	private function __construct() {
+	protected function __construct() {
 		DLOG(__METHOD__);
 		$this->open_db();
 		$this->log = new Log(Log::LOG_TYPE_FILE);
@@ -160,11 +160,33 @@ abstract class DbAccess {
 		throw new Exception("DbAccess::mysqli is not initialized, unable to escape string.");
 	}
 
+	/**
+	 * Converts arrays to DbObject, if required.
+	 *
+	 * @param Array_or_Object $var
+	 * @return DbObject instance
+	 */
 	protected function mkobj($var) {
 		DLOG(__METHOD__);
 		return (is_object($var)) ? $var : new DbObject($var);
 	}
 
+	/**
+	 * Use this method for values that can be null, when building the SQL query.
+	 * Refrain from surrounding this return value with "'", as they are automatically added to string values!
+	 *
+	 * @param String_or_Number input value that has to be transformed
+	 * @return String value to concatenate with the rest of the sql query
+	 */
+	protected function sqlnull($var) {
+		DLOG(__METHOD__);
+		if (is_numeric($var)) {
+			$var = ($var == null) ? "null" : $var;
+		} else {
+			$var = ($var == null) ? "null" : "'" . $var . "'";
+		}
+		return $var;
+	}
 }
 
 ?>

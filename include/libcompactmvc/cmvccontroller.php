@@ -16,6 +16,7 @@ abstract class CMVCController {
 	protected $member_variables;
 	private static $request_data;
 	private static $request_data_raw;
+	private static $rbrc;
 	public $view;
 
 	/**
@@ -270,6 +271,18 @@ abstract class CMVCController {
 		return $code;
 	}
 
+	protected function rbrc($observe_headers = true) {
+		DLOG(__METHOD__);
+		self::$rbrc = RBRC::get_instance($this->request(), $observe_headers);
+		if (self::$rbrc->get()) {
+			$this->view->clear();
+			$this->view->add_template("out.tpl");
+			$this->view->set_value("out", self::$rbrc->get());
+			return true;
+		}
+		return false;
+	}
+
 	public function run() {
 		DLOG(__METHOD__);
 		DLOG(var_export($_REQUEST, true));
@@ -316,6 +329,9 @@ abstract class CMVCController {
 		// if we have a redirect, we don't want the current template(s) to be displayed
 		if ($this->redirect == "") {
 			$this->ob = $this->view->render();
+			if (isset(self::$rbrc)) {
+				self::$rbrc->put($this->ob);
+			}
 		}
 	}
 

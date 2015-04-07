@@ -25,8 +25,10 @@ function cmvc_include($fname) {
 	// Put all directories into this array, where source files shall be included.
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
-					"application/dba/",
+					"application/",
 					"application/controller/",
+					"application/dba/",
+					"application/framework/",
 					"include/",
 					"include/libcompactmvc/"
 				);
@@ -82,26 +84,18 @@ cmvc_include('log.php');
 cmvc_include('map_radius.php');
 cmvc_include('multiextender.php');
 cmvc_include('network.php');
+cmvc_include('querybuilder.php');
+cmvc_include('rbrc.php');
 cmvc_include('session.php');
 cmvc_include('smtp.php');
 cmvc_include('socket.php');
+cmvc_include('tabledescription.php');
 cmvc_include('upload.php');
 cmvc_include('utf8.php');
 cmvc_include('validator.php');
 cmvc_include('view.php');
 
-// database
-cmvc_include('dba.php');
-
-// pages
-cmvc_include('control.php');
-cmvc_include('login.php');
-cmvc_include('logout.php');
-cmvc_include('mail.php');
-cmvc_include('mailingedit.php');
-cmvc_include('mailinglist.php');
-cmvc_include('trackingstats.php');
-cmvc_include('uploads.php');
+cmvc_include('include.php');
 
 
 
