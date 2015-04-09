@@ -27,7 +27,7 @@ class QueryBuilder extends DbAccess {
 			$desc = $this->td->columninfo($tablename);
 			foreach ($desc as $key => $val) {
 				if (array_key_exists($val->Field, $constraint)) {
-					$q .= " " . $val->Field . " = '".$this->escape($constraint[$val->Field])."', AND ";
+					$q .= " " . $val->Field . " = ".$this->sqlnull($this->escape($constraint[$val->Field])).", AND ";
 				}
 			}
 			$q = substr($q, 0, strlen($q) - 6);
@@ -48,7 +48,7 @@ class QueryBuilder extends DbAccess {
 		$q .= ") VALUES (";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {
-				$q .= "'" . $this->escape($fields[$val->Field]) . "', ";
+				$q .= $this->sqlnull($this->escape($fields[$val->Field])) . ", ";
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 2);
@@ -62,14 +62,14 @@ class QueryBuilder extends DbAccess {
 		$q = "UPDATE " . $tablename . " SET ";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {
-				$q .= $val->Field . " = '".$this->escape($fields[$val->Field])."', ";
+				$q .= $val->Field . " = ".$this->sqlnull($this->escape($fields[$val->Field])).", ";
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 2);
 		$q .= " WHERE ";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $constraint)) {
-				$q .= $val->Field . " = '" . $this->escape($constraint[$val->Field]) . "' AND ";
+				$q .= $val->Field . " = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 5);
@@ -81,8 +81,8 @@ class QueryBuilder extends DbAccess {
 		$desc = $this->td->columninfo($tablename);
 		$q = "DELETE FROM " . $tablename . " WHERE ";
 		foreach ($desc as $key => $val) {
-			if (array_key_exists($val->Field, $fields)) {
-				$q .= $val->Field . " = '".$this->escape($fields[$val->Field])."' AND ";
+			if (array_key_exists($val->Field, $constraint)) {
+				$q .= $val->Field . " = ".$this->sqlnull($this->escape($constraint[$val->Field]))." AND ";
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 5);

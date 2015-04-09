@@ -21,7 +21,7 @@ class SMTP {
 
 	/**
 	 * Construct an object of this class by giving the IP address or hostname of the SMTP server to the constructor.
-	 * 
+	 *
 	 * @param String $server
 	 *        	IP address in xxx.xxx.xxx.xxx notation or host name
 	 */
@@ -31,7 +31,7 @@ class SMTP {
 
 	/**
 	 * Set the login credentials for SMTP access.
-	 * 
+	 *
 	 * @param String $user
 	 *        	user name
 	 * @param String $pass
@@ -45,7 +45,7 @@ class SMTP {
 	/**
 	 * Set sender and receiver email address and the mail body.
 	 * The mail body must have Unix line breaks.
-	 * 
+	 *
 	 * @param String $sender
 	 *        	sender email address
 	 * @param String $receiver
@@ -61,7 +61,7 @@ class SMTP {
 
 	/**
 	 * Send the mail.
-	 * 
+	 *
 	 * @throws Exception contains the SMTP error
 	 */
 	public function send() {
@@ -118,5 +118,3 @@ class SMTP {
 
 
 }
-
-?>

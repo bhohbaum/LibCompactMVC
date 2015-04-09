@@ -1,5 +1,16 @@
 <?php
+@include_once ('../libcompactmvc.php');
+LIBCOMPACTMVC_ENTRY;
 
+/**
+ * Generic database object.
+ *
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @license LGPL version 3
+ * @link https://github.com/bhohbaum/libcompactmvc
+ */
 class DbObject extends DbAccess {
 	private $__tablename;
 	private $__isnew;
@@ -39,6 +50,7 @@ class DbObject extends DbAccess {
 			$this->$key = $val;
 		}
 		$this->__isnew = false;
+		return $this;
 	}
 
 	public function save() {
@@ -62,10 +74,11 @@ class DbObject extends DbAccess {
 			}
 			$q = $qb->update($this->__tablename, $fields, $constraint);
 		}
-		$this->run_query($q);
+		return $this->run_query($q);
 	}
 
 	public function delete() {
+		$td = new TableDescription();
 		$pks = $td->primary_keys($this->__tablename);
 		$constraint = array();
 		foreach ($pks as $key => $val) {
@@ -73,7 +86,7 @@ class DbObject extends DbAccess {
 		}
 		$qb = new QueryBuilder();
 		$q = $qb->delete($this->__tablename, $constraint);
-		$this->run_query($q);
+		return $this->run_query($q);
 	}
 
 }

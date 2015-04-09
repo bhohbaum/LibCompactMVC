@@ -50,8 +50,8 @@ class HTMLMail {
 	 * Allowed values:
 	 * HTMLMail::MAIL_TYPE_TEXT
 	 * HTMLMail::MAIL_TYPE_HTML
-	 * 
-	 * @param Integer $type        	
+	 *
+	 * @param Integer $type
 	 */
 	public function __construct($type = self::MAIL_TYPE_HTML) {
 		$this->mailtype = $type;
@@ -72,8 +72,8 @@ class HTMLMail {
 	 * Allowed values:
 	 * HTMLMail::MAIL_TYPE_TEXT
 	 * HTMLMail::MAIL_TYPE_HTML
-	 * 
-	 * @param Integer $type        	
+	 *
+	 * @param Integer $type
 	 */
 	public function set_mail_type($type) {
 		$this->mailtype = $type;
@@ -85,8 +85,8 @@ class HTMLMail {
 	 * Allowed values:
 	 * HTMLMail::TRANS_TYPE_MAIL
 	 * HTMLMail::TRANS_TYPE_SMTP
-	 * 
-	 * @param unknown_type $type        	
+	 *
+	 * @param unknown_type $type
 	 */
 	public function set_transfer_type($type) {
 		$this->transfertype = $type;
@@ -96,7 +96,7 @@ class HTMLMail {
 	 * Set hostname and login credentials for SMTP server.
 	 * Local SMTP servers mostly don't require a login,
 	 * thus, the second and third parameters are optional.
-	 * 
+	 *
 	 * @param String $server
 	 *        	IP or hostname of SMTP server
 	 * @param String $user
@@ -112,7 +112,7 @@ class HTMLMail {
 
 	/**
 	 * Set the receiver of the mail.
-	 * 
+	 *
 	 * @param String $email
 	 *        	E-Mail address
 	 * @param String $name
@@ -125,7 +125,7 @@ class HTMLMail {
 
 	/**
 	 * Set the sender of the mail.
-	 * 
+	 *
 	 * @param String $email
 	 *        	E-Mail address
 	 * @param String $name
@@ -139,7 +139,7 @@ class HTMLMail {
 	/**
 	 * Set the "Reply-To:" header field of the mail.
 	 * If unset, the sender will be used for this field.
-	 * 
+	 *
 	 * @param String $email
 	 *        	E-Mail address
 	 * @param String $name
@@ -152,7 +152,7 @@ class HTMLMail {
 
 	/**
 	 * Set the "Return-Path:" header field of the mail.
-	 * 
+	 *
 	 * @param String $email
 	 *        	E-Mail address
 	 * @param String $name
@@ -165,7 +165,7 @@ class HTMLMail {
 
 	/**
 	 * Add a CC entry.
-	 * 
+	 *
 	 * @param String $email
 	 *        	E-Mail address
 	 * @param String $name
@@ -178,7 +178,7 @@ class HTMLMail {
 
 	/**
 	 * Add a BCC entry.
-	 * 
+	 *
 	 * @param String $email
 	 *        	E-Mail address
 	 * @param String $name
@@ -191,7 +191,7 @@ class HTMLMail {
 
 	/**
 	 * Set the mail's subject.
-	 * 
+	 *
 	 * @param String $subject
 	 *        	the subject
 	 */
@@ -201,7 +201,7 @@ class HTMLMail {
 
 	/**
 	 * Set the HTML body of the mail.
-	 * 
+	 *
 	 * @param String $body
 	 *        	the HTML body
 	 */
@@ -214,7 +214,7 @@ class HTMLMail {
 	 * If the text body is not explicitly set and the mail type ist set to HTML,
 	 * it will be generated automatically from the HTML body. Use this function to set the mail body for
 	 * text only mails.
-	 * 
+	 *
 	 * @param String $body
 	 *        	text mail body
 	 */
@@ -227,7 +227,7 @@ class HTMLMail {
 	 * This is required in case you want to embed
 	 * pictures in the mail and reference them from the HTML body with cid:... . The CID will be the basename of
 	 * the file you attach here. The file doesn't have to be local, also http:// URLs can be given here.
-	 * 
+	 *
 	 * @param String $file
 	 *        	full path or URL to the file to be attached
 	 */
@@ -238,7 +238,7 @@ class HTMLMail {
 	/**
 	 * Add an attachment to the mail.
 	 * The file doesn't have to be local, also http:// URLs can be given here.
-	 * 
+	 *
 	 * @param String $file
 	 *        	full path or URL to the file to be attached
 	 */
@@ -248,7 +248,7 @@ class HTMLMail {
 
 	/**
 	 * Send the mail.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public function send() {
@@ -313,7 +313,7 @@ class HTMLMail {
 		$this->mailheader .= 'MIME-Version: 1.0' . "\n";
 		$this->mailheader .= 'X-Mailer: LibCompactMVC Mail Module (c) 2012 by Botho Hohbaum.' . "\n";
 		$this->mailheader .= "\n\n";
-		
+
 		$this->mailbody = "--" . $this->boundary_m . "\n";
 		$this->mailbody .= 'Content-Type: multipart/related; type="multipart/alternative"; boundary="' . $this->boundary_r . '"' . "\n";
 		$this->mailbody .= "\n\n";
@@ -421,7 +421,7 @@ class HTMLMail {
 
 	/**
 	 * Returns the MIME type based on the file extension.
-	 * 
+	 *
 	 * @param String $ext
 	 *        	file extension
 	 * @return String MIME type
@@ -521,5 +521,3 @@ class HTMLMail {
 
 
 }
-
-?>

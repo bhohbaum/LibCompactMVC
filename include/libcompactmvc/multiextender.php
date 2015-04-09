@@ -26,9 +26,9 @@ abstract class MultiExtender {
 
 	/**
 	 * ein weitere ExtendesClasse hinzufügen
-	 * 
-	 * @param String $name        	
-	 * @param Array $params        	
+	 *
+	 * @param String $name
+	 * @param Array $params
 	 */
 	protected function addExtendedClass($className, $params = array()) {
 		// Eine Wrapperklasse erstellen, damit die Protected-Methodes Public werden
@@ -50,7 +50,7 @@ abstract class MultiExtender {
 
 	/**
 	 * Methoden oder Properties der Extended-Klasse in den Index einfügen
-	 * 
+	 *
 	 * @param String $name
 	 *        	Objektname
 	 * @param Constante $var
@@ -66,9 +66,9 @@ abstract class MultiExtender {
 	/**
 	 * Aufruf einer Methode.
 	 * Der Aufruf wird an das entsprechende Parentobjekt weitergeleitet
-	 * 
-	 * @param String $name        	
-	 * @param Array $params        	
+	 *
+	 * @param String $name
+	 * @param Array $params
 	 * @return Variant
 	 */
 	public function __call($name, $params) {
@@ -85,8 +85,8 @@ abstract class MultiExtender {
 	/**
 	 * Aufruf eines Property.
 	 * Der Aufruf wird an das entsprechende Parentobjekt weitergeleitet
-	 * 
-	 * @param String $name        	
+	 *
+	 * @param String $name
 	 * @return Variant
 	 */
 	public function __get($name) {
@@ -98,8 +98,8 @@ abstract class MultiExtender {
 
 	/**
 	 * Erstellen einer Wrapperlasse um die ParentClass
-	 * 
-	 * @param String $className        	
+	 *
+	 * @param String $className
 	 * @return String Name der Wrapperklasse
 	 */
 	final private static function createWrapperClass($className) {
@@ -110,7 +110,7 @@ abstract class MultiExtender {
 		$lines[] = "class {$wrapperName} extends {$className}{";
 		$lines[] = '
 		    public function __construct(){
-		        $pStrings  = $params = func_get_args();    
+		        $pStrings  = $params = func_get_args();
 		        array_walk($pStrings, create_function(\'&$item, $key\', \'$item = "\$params[{$key}]";\'));
 		        eval(\'parent::__construct(\' . implode(\',\', $pStrings) . \');\');
 		    }
@@ -127,7 +127,7 @@ abstract class MultiExtender {
 
 	/**
 	 * Erstellen der Wrappermethoden für die Wrapperklasse
-	 * 
+	 *
 	 * @param
 	 *        	$lines
 	 * @param
@@ -147,7 +147,7 @@ abstract class MultiExtender {
 				$lines[] = "
 				{$modifiers} function {$method->name}({$paramString}){
 				        return parent::{$method->name}({$paramString});
-				    }        
+				    }
                 ";
 			}
 		}
@@ -155,8 +155,8 @@ abstract class MultiExtender {
 
 	/**
 	 * erstellt ein Object einer Klasse mit dem einer freien Anzahl Paramtern
-	 * 
-	 * @param String $className        	
+	 *
+	 * @param String $className
 	 * @param
 	 *        	Variant
 	 * @return Object
@@ -171,9 +171,9 @@ abstract class MultiExtender {
 
 	/**
 	 * erstellt ein Object einer Klasse mit dem Array $params als Argumente
-	 * 
-	 * @param String $className        	
-	 * @param Array $params        	
+	 *
+	 * @param String $className
+	 * @param Array $params
 	 * @return Object
 	 *
 	 * @example $obj = create_user_obj('myClass', array($paramter1, $paramter2));
@@ -187,5 +187,3 @@ abstract class MultiExtender {
 
 
 }
-
-?>

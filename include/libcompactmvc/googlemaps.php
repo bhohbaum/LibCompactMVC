@@ -24,8 +24,8 @@ class GoogleMaps {
 
 	/**
 	 * Make Google give me the location of the given address.
-	 * 
-	 * @param String $address        	
+	 *
+	 * @param String $address
 	 * @return The whole dataset received from Google.
 	 */
 	public static function encode($address) {
@@ -37,7 +37,7 @@ class GoogleMaps {
 		curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 		$ret = curl_exec($curl_session);
 		curl_close($curl_session);
-		
+
 		return json_decode($ret, true);
 	}
 
@@ -45,7 +45,7 @@ class GoogleMaps {
 	 * Let Google calculate e distance between two coordinates.
 	 * This function calculates the distance using existing roads.
 	 * Linear distance can be calculated using the MapRadius class.
-	 * 
+	 *
 	 * @param Float $lat_dep
 	 *        	Latitude start point
 	 * @param Float $lng_dep
@@ -62,11 +62,9 @@ class GoogleMaps {
 		curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 		$ret = curl_exec($curl_session);
 		curl_close($curl_session);
-		
+
 		return json_decode($ret, true);
 	}
 
 
 }
-
-?>

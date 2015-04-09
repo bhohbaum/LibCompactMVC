@@ -3,7 +3,7 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Simple PHP implementation of an SMTP client.
+ * Table characteristics.
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC

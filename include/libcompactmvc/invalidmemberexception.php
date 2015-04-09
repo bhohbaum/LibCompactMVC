@@ -3,5 +3,3 @@
 class InvalidMemberException extends Exception {
 
 }
-
-?>

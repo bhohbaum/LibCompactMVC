@@ -36,7 +36,7 @@ class Log {
 		$this->db = $db;
 		return $this;
 	}
-	
+
 	// general logging method
 	public function log($loglevel, $text) {
 		if ((($loglevel == Log::LOG_LVL_DEBUG) && (defined("DEBUG") && (DEBUG == 1))) || ($loglevel != Log::LOG_LVL_DEBUG)) {
@@ -47,7 +47,7 @@ class Log {
 			}
 		}
 	}
-	
+
 	// short methods
 	public function error($text) {
 		$this->log(Log::LOG_LVL_ERROR, $text);
@@ -67,5 +67,3 @@ class Log {
 
 
 }
-
-?>
