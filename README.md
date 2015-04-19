@@ -39,25 +39,25 @@ Methods to overwrite
 There are several methods that can be overwritten. It depends on the HTTP verb
 whitch ones are executed. These are their definitions:
 
-protected function retrieve_data_get();
-protected function retrieve_data_post();
-protected function retrieve_data_put();
-protected function retrieve_data_delete();
-protected function retrieve_data();
-protected function run_page_logic_get();
-protected function run_page_logic_post();
-protected function run_page_logic_put();
-protected function run_page_logic_delete();
-protected function run_page_logic();
-protected function exception_handler($e);
+- protected function retrieve_data_get();
+- protected function retrieve_data_post();
+- protected function retrieve_data_put();
+- protected function retrieve_data_delete();
+- protected function retrieve_data();
+- protected function run_page_logic_get();
+- protected function run_page_logic_post();
+- protected function run_page_logic_put();
+- protected function run_page_logic_delete();
+- protected function run_page_logic();
+- protected function exception_handler($e);
 
 For examplte, when a GET request occurs, the following methods are called in
 order:
 
-protected function retrieve_data_get():
-protected function retrieve_data();
-protected function run_page_logic_get();
-protected function run_page_logic();
+- protected function retrieve_data_get():
+- protected function retrieve_data();
+- protected function run_page_logic_get();
+- protected function run_page_logic();
 
 In case an exception occurs in one of the upper methods, exception_handler($e)
 is called, where it is up to you to re-throw the exception or to handle it in
@@ -66,7 +66,7 @@ some other way.
 In case you do not want to use the default database access object in a specific
 controller, overwrite:
 
-protected function dba();
+- protected function dba();
 
 and return the name of the DBA class as string. This will change the object
 referenced by $this->db to an instance of the corrensponding class.
