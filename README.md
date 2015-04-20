@@ -10,9 +10,10 @@ LibCompactMVC is a lightweight PHP framework including:
 - Cached Templating
 - Request Based Response Cache
 - Session Handling
+- Captcha Generator
 - ... and a lot of different useful functionalities.
 
-It can also be used for PHP based REST APIs.
+AND ALL THESE FEATURES ARE BROUGHT TO YOU BY ONLY 4K LINES OF CODE!!!
 
 Installation
 ============
