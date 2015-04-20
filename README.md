@@ -69,14 +69,32 @@ controller, overwrite:
 - protected function dba();
 
 and return the name of the DBA class as string. This will change the object
-referenced by $this->db to an instance of the corrensponding class.
+referenced by $this->db to an instance of the corrensponding class. Without
+overwriting the dba() method, $this->db will hold an instance of
+DBA_DEFAULT_CLASS, which is defined in include/config.php. In case
+DBA_DEFAULT_CLASS is not defined, $this->db will point to an DbAccess instance.
 For further details see section "ORM".
 
 Methods to call
 ---------------
 
+To retrieve data from the request, write:
 
+$value = $this->request("varname");
 
+This will give you the corresponding content in EVERY situation, even from PUT
+requests. Afterwards you can be shure, that:
+
+- The variable will be defined.
+- In case, the request did not contain such a field, it will be null.
+
+In most cases it will not be neccessary to use $this->request(). The method
+
+$this->populate_members();
+
+will create all "variables" received from the request as properties of your
+controller. The default behaviour if this should be done automatically can
+be set via the REGISTER_HTTP_VARS define in include/config.php.
 
 
 
