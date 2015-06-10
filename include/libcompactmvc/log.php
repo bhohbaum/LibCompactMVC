@@ -39,7 +39,7 @@ class Log {
 
 	// general logging method
 	public function log($loglevel, $text) {
-		if ((($loglevel == Log::LOG_LVL_DEBUG) && (defined("DEBUG") && (DEBUG == 1))) || ($loglevel != Log::LOG_LVL_DEBUG)) {
+		if ($loglevel <= LOG_LEVEL) {
 			if ($this->logtype == Log::LOG_TYPE_DB) {
 				$this->db->write2log($loglevel, date(DATE_ISO8601), $text);
 			} else if ($this->logtype == Log::LOG_TYPE_FILE) {

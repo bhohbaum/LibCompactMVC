@@ -11,7 +11,7 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum/libcompactmvc
  */
-class ActionDispatcher {
+class ActionDispatcher extends InputSanitizer {
 	private $actionname;
 	private $handlers;
 	private $action;
@@ -19,7 +19,9 @@ class ActionDispatcher {
 	private $control_action;
 
 	public function __construct($postgetvar) {
+		parent::__construct();
 		$this->actionname = $postgetvar;
+		$this->handlers = array();
 	}
 
 	public function set_handler($pgvvalue, $classname) {
@@ -51,6 +53,8 @@ class ActionDispatcher {
 					$this->handlers[$this->control_action]->view->clear();
 					$this->handlers[$this->control_action]->view->set_value($this->actionname, $this->action);
 					$this->handlers[$this->control_action]->run();
+				} catch (RBRCException $rbrce) {
+					DLOG("Returning response from the RBRC.");
 				} catch (Exception $e) {
 					$this->handlers[$this->control_action]->run_exception_handler($e);
 				}
@@ -70,6 +74,8 @@ class ActionDispatcher {
 					$this->handlers[$this->action]->view->clear();
 					$this->handlers[$this->action]->view->set_value($this->actionname, $this->action);
 					$this->handlers[$this->action]->run();
+				} catch (RBRCException $rbrce) {
+					DLOG("Returning response from the RBRC.");
 				} catch (Exception $e) {
 					$this->handlers[$this->action]->run_exception_handler($e);
 				}
@@ -79,25 +85,6 @@ class ActionDispatcher {
 
 	public function get_ob() {
 		return $this->handlers[$this->action]->get_ob();
-	}
-
-	private function request($var) {
-		switch (strtoupper($_SERVER['REQUEST_METHOD'])) {
-			case 'GET':
-				$data = $_REQUEST;
-				break;
-			case 'POST':
-				$data = $_REQUEST;
-				break;
-			case 'PUT':
-				// the action is always determined from the request url, so we can use $_REQUEST here.
-				$data = $_REQUEST;
-				break;
-			case 'DELETE':
-				$data = $_REQUEST;
-				break;
-		}
-		return isset($data[$var]) ? $data[$var] : null;
 	}
 
 

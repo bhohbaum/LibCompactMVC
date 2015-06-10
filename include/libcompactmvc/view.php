@@ -89,6 +89,10 @@ class View {
 	}
 
 	public function render($caching = CACHING_ENABLED) {
+		if (DEBUG == 0) {
+			@ob_end_clean();
+		}
+		ob_start();
 		if ($caching) {
 			$start = microtime(true);
 			$key = REDIS_KEY_RCACHE_PFX . md5(serialize($this));
@@ -105,10 +109,6 @@ class View {
 			DLOG($msg);
 			$out = "";
 		}
-		if (DEBUG == 0) {
-			@ob_end_clean();
-		}
-		ob_start();
 		if (count($this->tpls) > 0) {
 			foreach ($this->tpls as $t) {
 				if ((!defined("DEBUG")) || (DEBUG == 0)) {
@@ -137,9 +137,9 @@ class View {
 		$file1 = "./include/resources/templates/" . $tpl_name;
 		$file2 = "./templates/" . $tpl_name;
 		if (file_exists($file1)) {
-			include ($file1);
+			include($file1);
 		} else if (file_exists($file2)) {
-			include ($file2);
+			include($file2);
 		} else {
 			throw new Exception("Could not find template file: " . $tpl_name);
 		}

@@ -17,6 +17,11 @@ class RBRC {
 	private $rhash;
 	public $log;
 
+	/**
+	 *
+	 * @param unknown_type $rdata
+	 * @param unknown_type $observe_headers
+	 */
 	private function __construct($rdata, $observe_headers) {
 		DLOG(__METHOD__);
 		$this->redis = new Redis();
@@ -35,17 +40,23 @@ class RBRC {
 	public static function get_instance($rdata, $observe_headers = true) {
 		DLOG(__METHOD__);
 		if (!isset(self::$instance)) {
-			$name = get_class($this);
-			self::$instance = new $name($rdata, $observe_headers);
+			self::$instance = new RBRC($rdata, $observe_headers);
 		}
 		return self::$instance;
 	}
 
+	/**
+	 *
+	 * @param unknown_type $data
+	 */
 	public function put($data) {
 		$this->redis->set($this->rhash, $data);
 		$this->redis->expire($this->rhash, REDIS_KEY_RCACHE_TTL);
 	}
 
+	/**
+	 *
+	 */
 	public function get() {
 		$data = $this->redis->get($this->rhash);
 		$this->redis->expire($this->rhash, REDIS_KEY_RCACHE_TTL);

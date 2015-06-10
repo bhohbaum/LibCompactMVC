@@ -11,6 +11,6 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum/libcompactmvc
  */
-class InvalidMemberException extends Exception {
+class RBRCException extends Exception {
 
 }

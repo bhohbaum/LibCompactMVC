@@ -12,31 +12,25 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 abstract class DbAccess {
+	// keeps instance of the class
+	private static $instance;
 	protected static $mysqli;
 	public $log;
 
-	// keeps instance of the class
-	private static $instance;
-
-	//public abstract function write2log($loglevel, $date, $text);
-
 	protected function __construct() {
-		DLOG(__METHOD__);
 		$this->open_db();
 		$this->log = new Log(Log::LOG_TYPE_FILE);
 		$this->log->set_log_file(LOG_FILE);
 	}
 
 	public function __destruct() {
-		DLOG(__METHOD__);
 		// Do not close the DB, as other objects might still need a connection.
-		//$this->close_db();
+		// $this->close_db();
 	}
 
 	// prevent cloning
 	private function __clone() {
 		DLOG(__METHOD__);
-		;
 	}
 
 	/**
@@ -55,19 +49,25 @@ abstract class DbAccess {
 		return self::$instance[$name];
 	}
 
-	public function open_db() {
-		DLOG(__METHOD__);
+	/**
+	 *
+	 * @throws Exception
+	 */
+	protected function open_db() {
 		if (isset(self::$mysqli)) {
-			DLOG("DB already connected.");
 			return;
 		}
+		DLOG(__METHOD__ . ": Connecting to database...");
 		self::$mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
 		if (mysqli_connect_error()) {
 			throw new Exception('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error(), mysqli_connect_errno());
 		}
 	}
 
-	public function close_db() {
+	/**
+	 *
+	 */
+	protected function close_db() {
 		DLOG(__METHOD__);
 		if (self::$mysqli != null) {
 			self::$mysqli->close();
@@ -81,14 +81,13 @@ abstract class DbAccess {
 	 * @param String $query The query to execute.
 	 * @param Boolean $has_multi_result Is one object expected as result, or a list?
 	 * @param Boolean $object Return as array or as object
-	 * @param String $field True, if a single value shall be returned.
+	 * @param String $field Columnname if a single value shall be returned.
 	 * @param String $table Name of the table that is operated on.
 	 * @throws Exception
 	 * @return Ambigous <multitype:, NULL>
 	 */
 	protected function run_query($query, $has_multi_result = false, $object = false, $field = null, $table = null) {
-		DLOG(__METHOD__);
-		DLOG($query);
+		DLOG(__METHOD__ . ": " . $query);
 		$ret = null;
 		$object = ($field == null) ? $object : false;
 		if (!($result = self::$mysqli->query($query))) {
@@ -98,7 +97,7 @@ abstract class DbAccess {
 				if ($has_multi_result) {
 					if ($object) {
 						while ($row = $result->fetch_assoc()) {
-							$tmp = new DbObject($row);
+							$tmp = new DbObject($row, false);
 							if ($table != null) {
 								$tmp->table($table);
 							}
@@ -109,18 +108,14 @@ abstract class DbAccess {
 							if ($field != null) {
 								$ret[] = $row[$field];
 							} else {
-								$tmp = new DbObject($row);
-								if ($table != null) {
-									$tmp->table($table);
-								}
-								$ret[] = $tmp;
+								$ret[] = $row;
 							}
 						}
 					}
 				} else {
 					if ($object) {
 						while ($row = $result->fetch_assoc()) {
-							$tmp = new DbObject($row);
+							$tmp = new DbObject($row, false);
 							if ($table != null) {
 								$tmp->table($table);
 							}
@@ -147,13 +142,24 @@ abstract class DbAccess {
 		return $ret;
 	}
 
+	/**
+	 *
+	 * @param unknown_type $tablename
+	 * @param unknown_type $constraint
+	 */
 	public function by($tablename, $constraint) {
 		$qb = new QueryBuilder();
+		$constraint = ($constraint == null) ? array() : $constraint;
 		$q = $qb->select($tablename, $constraint);
 		$res = $this->run_query($q, true, true, null, $tablename);
 		return $res;
 	}
 
+	/**
+	 *
+	 * @param unknown_type $mode
+	 * @throws Exception
+	 */
 	public function autocommit($mode) {
 		DLOG(__METHOD__);
 		if (!self::$mysqli->autocommit($mode)) {
@@ -161,6 +167,10 @@ abstract class DbAccess {
 		}
 	}
 
+	/**
+	 *
+	 * @throws Exception
+	 */
 	public function begin_transaction() {
 		DLOG(__METHOD__);
 		if (function_exists("mysqli_begin_transaction")) {
@@ -171,6 +181,10 @@ abstract class DbAccess {
 		$this->autocommit(false);
 	}
 
+	/**
+	 *
+	 * @throws Exception
+	 */
 	public function commit() {
 		DLOG(__METHOD__);
 		if (!self::$mysqli->commit()) {
@@ -179,6 +193,10 @@ abstract class DbAccess {
 		$this->autocommit(true);
 	}
 
+	/**
+	 *
+	 * @throws Exception
+	 */
 	public function rollback() {
 		DLOG(__METHOD__);
 		if (!self::$mysqli->rollback()) {
@@ -186,8 +204,14 @@ abstract class DbAccess {
 		}
 	}
 
+	/**
+	 *
+	 * @param unknown_type $str
+	 * @throws Exception
+	 */
 	protected function escape($str) {
-		DLOG(__METHOD__);
+		// we don't DLOG here, it's spaming...
+		// DLOG(__METHOD__);
 		if (self::$mysqli) {
 			return self::$mysqli->real_escape_string($str);
 		}
@@ -213,7 +237,8 @@ abstract class DbAccess {
 	 * @return String value to concatenate with the rest of the sql query
 	 */
 	protected function sqlnull($var) {
-		DLOG(__METHOD__);
+		// we don't DLOG here, it's spaming...
+		// DLOG(__METHOD__);
 		if (is_numeric($var)) {
 			$var = ($var == null) ? "null" : $var;
 		} else {

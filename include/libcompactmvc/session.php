@@ -12,6 +12,7 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 class Session {
+	public $log;
 	// REMEMBER!!!
 	// NEVER use the $_SESSION directly when using this class!
 	// your data will get lost!
@@ -24,6 +25,7 @@ class Session {
 
 	// private constructor prevents direct instantiation
 	private function __construct() {
+		DLOG(__METHOD__);
 		if (!isset($_SESSION)) {
 			ini_set('session.cookie_httponly', 1);
 			session_start();
@@ -47,11 +49,12 @@ class Session {
 
 	// prevent cloning
 	private function __clone() {
-		;
+		DLOG(__METHOD__);
 	}
 
 	// store our data into the $_SESSION variable
 	public function __destruct() {
+		DLOG(__METHOD__ . ": Saving current content: " . var_export(self::$parray, true));
 		$_SESSION = self::$parray;
 	}
 
@@ -62,6 +65,7 @@ class Session {
 	 * @return Session
 	 */
 	public static function get_instance() {
+		DLOG(__METHOD__ . ": Current content: " . var_export(self::$parray, true));
 		if (!isset(self::$instance)) {
 			$c = __CLASS__;
 			self::$instance = new $c();
@@ -78,6 +82,7 @@ class Session {
 	 *        	property value. can be a scalar, array or object.
 	 */
 	public function set_property($pname, $value) {
+		DLOG(__METHOD__ . "('" . $pname . "', '" . $value . "')");
 		self::$parray[$pname] = $value;
 	}
 
@@ -88,7 +93,9 @@ class Session {
 	 * @return returns the property
 	 */
 	public function get_property($pname) {
-		return (isset(self::$parray[$pname])) ? self::$parray[$pname] : null;
+		$ret = (isset(self::$parray[$pname])) ? self::$parray[$pname] : null;
+		DLOG(__METHOD__ . "('" . $pname . "') return: '" . $ret . "'");
+		return $ret;
 	}
 
 	/**
@@ -97,6 +104,7 @@ class Session {
 	 *        	property name
 	 */
 	public function clear_property($pname) {
+		DLOG(__METHOD__);
 		unset(self::$parray[$pname]);
 	}
 
@@ -104,6 +112,7 @@ class Session {
 	 * clears all data from the session
 	 */
 	public function clear() {
+		DLOG(__METHOD__);
 		self::$parray = array();
 	}
 

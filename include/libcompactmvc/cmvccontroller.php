@@ -11,11 +11,8 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum/libcompactmvc
  */
-abstract class CMVCController {
+abstract class CMVCController extends InputSanitizer {
 	private $ob;
-	protected $member_variables;
-	private static $request_data;
-	private static $request_data_raw;
 	private static $rbrc;
 	public $view;
 
@@ -33,13 +30,25 @@ abstract class CMVCController {
 	public $redirect;
 
 	/**
+	 *
+	 */
+	public function __construct() {
+		// we don't DLOG here, it's spaming...
+		// DLOG(__METHOD__);
+		parent::__construct();
+		$this->view = new View();
+		$this->log = new Log(Log::LOG_TYPE_FILE);
+		$this->log->set_log_file(LOG_FILE);
+	}
+
+	/**
 	 * Has to return the name of the DBA class.
 	 *
 	 * @return String
 	 */
 	protected function dba() {
 		DLOG(__METHOD__);
-		return DBA_DEFAULT_CLASS;
+		return (defined("DBA_DEFAULT_CLASS")) ? DBA_DEFAULT_CLASS : "DbAccess";
 	}
 
 	protected function retrieve_data() {
@@ -66,6 +75,10 @@ abstract class CMVCController {
 		DLOG(__METHOD__);
 	}
 
+	protected function retrieve_data_exec() {
+		DLOG(__METHOD__);
+	}
+
 	protected function run_page_logic_get() {
 		DLOG(__METHOD__);
 	}
@@ -82,6 +95,10 @@ abstract class CMVCController {
 		DLOG(__METHOD__);
 	}
 
+	protected function run_page_logic_exec() {
+		DLOG(__METHOD__);
+	}
+
 	/**
 	 * Exception handler
 	 *
@@ -92,39 +109,31 @@ abstract class CMVCController {
 		throw $e;
 	}
 
-	public function __construct() {
-		// $this->view = View::instance();
-		$this->view = new View();
-		$this->log = new Log(Log::LOG_TYPE_FILE);
-		$this->log->set_log_file(LOG_FILE);
-		CMVCController::$request_data = null;
-		DLOG(__METHOD__);
-	}
-
-	protected function request($var = null) {
-		if (CMVCController::$request_data == null) {
-			parse_str(file_get_contents('php://input'), $put_vars);
-			CMVCController::$request_data_raw = $put_vars;
-			$data = array_merge($_REQUEST, $put_vars);
-			CMVCController::$request_data = $data;
-		} else {
-			$data = CMVCController::$request_data;
-		}
-		$ret = (isset($var)) ? (isset($data[$var]) ? $data[$var] : null) : $data;
-		DLOG(__METHOD__ . "(" . $var . ") return: " . var_export($ret, true));
-		return $ret;
-	}
-
+	/**
+	 *
+	 */
 	protected function get_raw_input() {
 		return CMVCController::$request_data_raw;
 	}
 
+	/**
+	 *
+	 */
 	protected function method() {
-		$method = strtoupper($_SERVER['REQUEST_METHOD']);
+		if (php_sapi_name() == "cli") {
+			$method = "exec";
+		} else {
+			$method = $_SERVER['REQUEST_METHOD'];
+		}
+		$method = strtoupper($method);
 		DLOG(__METHOD__ . " '" . $method . "'");
 		return $method;
 	}
 
+	/**
+	 *
+	 * @param unknown_type $obj
+	 */
 	protected function json_response($obj) {
 		DLOG(__METHOD__ . " " . var_export($obj, true));
 		$this->view->clear();
@@ -132,6 +141,10 @@ abstract class CMVCController {
 		$this->view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
 	}
 
+	/**
+	 *
+	 * @param unknown_type $obj
+	 */
 	protected function binary_response($obj) {
 		DLOG(__METHOD__);
 		$this->view->clear();
@@ -139,6 +152,11 @@ abstract class CMVCController {
 		$this->view->set_value("out", $obj);
 	}
 
+	/**
+	 *
+	 * @param unknown_type $code
+	 * @throws Exception
+	 */
 	protected function response_code($code) {
 		DLOG(__METHOD__ . "(" . $code . ")");
 		if (function_exists('http_response_code')) {
@@ -271,6 +289,11 @@ abstract class CMVCController {
 		return $code;
 	}
 
+	/**
+	 *
+	 * @param unknown_type $observe_headers
+	 * @throws RBRCException
+	 */
 	protected function rbrc($observe_headers = true) {
 		DLOG(__METHOD__);
 		self::$rbrc = RBRC::get_instance($this->request(), $observe_headers);
@@ -278,11 +301,14 @@ abstract class CMVCController {
 			$this->view->clear();
 			$this->view->add_template("out.tpl");
 			$this->view->set_value("out", self::$rbrc->get());
-			return true;
+			$this->ob = $this->view->render();
+			throw new RBRCException();
 		}
-		return false;
 	}
 
+	/**
+	 *
+	 */
 	public function run() {
 		DLOG(__METHOD__);
 		DLOG(var_export($_REQUEST, true));
@@ -305,6 +331,9 @@ abstract class CMVCController {
 			case 'DELETE':
 				$this->retrieve_data_delete();
 				break;
+			case 'EXEC':
+				$this->retrieve_data_exec();
+				break;
 		}
 		$this->retrieve_data();
 		switch ($this->method()) {
@@ -319,6 +348,9 @@ abstract class CMVCController {
 				break;
 			case 'DELETE':
 				$this->run_page_logic_delete();
+				break;
+			case 'EXEC':
+				$this->run_page_logic_exec();
 				break;
 		}
 		$this->run_page_logic();
@@ -347,24 +379,17 @@ abstract class CMVCController {
 		$this->ob = $this->view->render();
 	}
 
+	/**
+	 *
+	 */
 	public function get_ob() {
 		DLOG(__METHOD__);
 		return $this->ob;
 	}
 
-	public function __get($var_name) {
-		if (!array_key_exists($var_name, $this->member_variables)) {
-			$stack = debug_backtrace();
-			throw new InvalidMemberException('Member not defined: '.get_class($this).'::'.$var_name.' in "'.$stack[0]["file"].'" on line '.$stack[0]["line"]);
-		} else {
-			return $this->member_variables[$var_name];
-		}
-	}
-
-	public function __set($var_name, $value) {
-		$this->member_variables[$var_name] = $value;
-	}
-
+	/**
+	 *
+	 */
 	protected function populate_members() {
 		if (REGISTER_HTTP_VARS) {
 			foreach (array_keys($this->request(null)) as $key) {
