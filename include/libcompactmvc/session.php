@@ -13,6 +13,7 @@ LIBCOMPACTMVC_ENTRY;
  */
 class Session {
 	public $log;
+	private $session_id;
 	// REMEMBER!!!
 	// NEVER use the $_SESSION directly when using this class!
 	// your data will get lost!
@@ -25,12 +26,15 @@ class Session {
 
 	// private constructor prevents direct instantiation
 	private function __construct() {
-		DLOG(__METHOD__);
 		if (!isset($_SESSION)) {
-			ini_set('session.cookie_httponly', 1);
-			session_start();
+			if (php_sapi_name() != "cli") {
+				ini_set('session.cookie_httponly', 1);
+				session_start();
+			}
 		}
-		self::$parray = $_SESSION;
+		$this->session_id = (session_id() == "") ? $_ENV['PHPSESSID'] : session_id();
+		DLOG(__METHOD__ . ": Session ID = " . $this->session_id);
+		self::$parray = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id));
 
 		// The following lines change the session id with every click.
 		// This makes it harder for attackers to "steal" our session.
@@ -55,7 +59,8 @@ class Session {
 	// store our data into the $_SESSION variable
 	public function __destruct() {
 		DLOG(__METHOD__ . ": Saving current content: " . var_export(self::$parray, true));
-		$_SESSION = self::$parray;
+		RedisAdapter::get_instance()->set(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, serialize(self::$parray));
+		RedisAdapter::get_instance()->expire(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, SESSION_TIMEOUT);
 	}
 
 	/**

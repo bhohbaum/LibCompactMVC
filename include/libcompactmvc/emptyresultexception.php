@@ -13,4 +13,9 @@ LIBCOMPACTMVC_ENTRY;
  */
 class EmptyResultException extends Exception {
 
+	public function __construct($message = "Empty result", $code = null, $previous = null) {
+		$this->message = $message;
+		$this->code = $code;
+	}
+
 }

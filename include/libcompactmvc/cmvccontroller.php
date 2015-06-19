@@ -121,7 +121,7 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	protected function method() {
 		if (php_sapi_name() == "cli") {
-			$method = "exec";
+			$method = (array_key_exists("METHOD", $_ENV)) ? $_ENV['METHOD'] : "exec";
 		} else {
 			$method = $_SERVER['REQUEST_METHOD'];
 		}

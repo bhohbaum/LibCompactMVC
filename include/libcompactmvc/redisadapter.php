@@ -18,11 +18,11 @@ class RedisAdapter {
 
 	private function __construct() {
 		DLOG(__METHOD__);
-		$redis = new Redis();
-		$redis->connect(REDIS_HOST, REDIS_PORT);
+		$this->redis = new Redis();
+		$this->redis->connect(REDIS_HOST, REDIS_PORT);
 	}
 
-	public function get_instance() {
+	public static function get_instance() {
 		DLOG(__METHOD__);
 		if (!isset(self::$instance)) {
 			self::$instance = new RedisAdapter();
@@ -37,7 +37,7 @@ class RedisAdapter {
 
 	public function set($key, $val) {
 		DLOG(__METHOD__);
-		return $this->redis->get($key, $val);
+		return $this->redis->set($key, $val);
 	}
 
 	public function expire($key, $ttl) {

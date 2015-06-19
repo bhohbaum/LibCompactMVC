@@ -88,7 +88,11 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 *
 	 */
 	public function jsonSerialize() {
-		return $this->__member_variables;
+		$ret = array();
+		foreach ($this->__member_variables as $key => $val) {
+			$ret[$key] = $this->__get($key);
+		}
+		return $ret;
 	}
 
 	/**

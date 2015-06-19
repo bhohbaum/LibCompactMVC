@@ -15,6 +15,7 @@ class WSAdapter {
 	private static $instance;
 
 	private function __construct() {
+		DLOG(__METHOD__);
 		if (Session::get_instance()->get_property(ST_WS_SRV_IDX) == null) {
 			Session::get_instance()->set_property(ST_WS_SRV_IDX, rand(0, WS_SRV_COUNT - 1));
 		}
@@ -29,14 +30,13 @@ class WSAdapter {
 	}
 
 	public function get_srv_url() {
-		if (Session::get_instance()->get_property(ST_WS_BASE_URL) == null) {
-			Session::get_instance()->set_property(ST_WS_BASE_URL, $GLOBALS['WS_BASE_URL'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . md5(session_id()));
-		}
-		return Session::get_instance()->get_property(ST_WS_BASE_URL);
+		DLOG(__METHOD__);
+		return $GLOBALS['WS_BASE_URL'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . md5(session_id());
 	}
 
 	public function notify($msg) {
-		$cmd = "echo " . md5(session_id()) . " " . $msg . " | bin/libwebsockets-client " . $GLOBALS['WS_SRV_ADDR'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . " --port " . $GLOBALS['WS_SRV_PORT'][Session::get_instance()->get_property(ST_WS_SRV_IDX)];
+		DLOG(__METHOD__ . "('" . $msg . "')");
+		$cmd = "/bin/bash -c 'echo " . md5(session_id()) . " " . $msg . " | bin/libwebsockets-digimap-client " . $GLOBALS['WS_SRV_ADDR'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . " --port " . $GLOBALS['WS_SRV_PORT'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . "' &";
 		system($cmd);
 	}
 
