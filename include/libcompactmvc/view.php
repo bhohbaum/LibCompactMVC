@@ -20,12 +20,9 @@ class View {
 	private $comp;
 	private $vals;
 	private $tpls;
-	private $redis;
 	public $log;
 
 	public function __construct() {
-		$this->redis = new Redis();
-		$this->redis->connect(REDIS_HOST, REDIS_PORT);
 	}
 
 	public function activate($comp_name) {
@@ -96,9 +93,9 @@ class View {
 		if ($caching) {
 			$start = microtime(true);
 			$key = REDIS_KEY_RCACHE_PFX . md5(serialize($this));
-			$out = $this->redis->get($key);
+			$out = RedisAdapter::get_instance()->get($key);
 			if ($out !== false) {
-				$this->redis->expire($key, REDIS_KEY_RCACHE_TTL);
+				RedisAdapter::get_instance()->expire($key, REDIS_KEY_RCACHE_TTL);
 				$time_taken = (microtime(true) - $start) * 1000 . " ms";
 				$msg = 'Returning content from render cache... (' . $key . ' | ' . $time_taken . ')';
 				DLOG($msg);
@@ -124,8 +121,8 @@ class View {
 			@ob_start();
 		}
 		if ($caching) {
-			$this->redis->set($key, $out);
-			$this->redis->expire($key, REDIS_KEY_RCACHE_TTL);
+			RedisAdapter::get_instance()->set($key, $out);
+			RedisAdapter::get_instance()->expire($key, REDIS_KEY_RCACHE_TTL);
 			$time_taken = (microtime(true) - $start) * 1000 . " ms";
 			$msg = 'Returning rendered content... (' . $key . ' | ' . $time_taken . ')';
 			DLOG($msg);

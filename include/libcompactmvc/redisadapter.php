@@ -23,7 +23,6 @@ class RedisAdapter {
 	}
 
 	public static function get_instance() {
-		DLOG(__METHOD__);
 		if (!isset(self::$instance)) {
 			self::$instance = new RedisAdapter();
 		}
@@ -31,22 +30,22 @@ class RedisAdapter {
 	}
 
 	public function get($key) {
-		DLOG(__METHOD__);
+		DLOG(__METHOD__ . '("' . $key . '")');
 		return $this->redis->get($key);
 	}
 
 	public function set($key, $val) {
-		DLOG(__METHOD__);
+		DLOG(__METHOD__ . '("' . $key . '", "' . preg_replace('/[[:^print:]]/', '', $val) . '")');
 		return $this->redis->set($key, $val);
 	}
 
 	public function expire($key, $ttl) {
-		DLOG(__METHOD__);
+		DLOG(__METHOD__ . '("' . $key . '", ' . $ttl . ')');
 		return $this->redis->expire($key, $ttl);
 	}
 
 	public function keys($key) {
-		DLOG(__METHOD__);
+		DLOG(__METHOD__ . '("' . $key . '")');
 		return $this->redis->keys($key);
 	}
 

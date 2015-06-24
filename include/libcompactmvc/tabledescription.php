@@ -12,12 +12,9 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 class TableDescription extends DbAccess {
-	private $redis;
 
 	public function __construct() {
 		parent::__construct();
-		$this->redis = new Redis();
-		$this->redis->connect(REDIS_HOST, REDIS_PORT);
 	}
 
 	/**
@@ -25,14 +22,14 @@ class TableDescription extends DbAccess {
 	 * @param unknown_type $tablename
 	 */
 	public function columninfo($tablename) {
-		$desc = $this->redis->get(REDIS_KEY_TBLDESC_PFX . $tablename);
+		$desc = RedisAdapter::get_instance()->get(REDIS_KEY_TBLDESC_PFX . $tablename);
 		if ($desc !== false) {
 			$desc = unserialize($desc);
 			return $desc;
 		}
 		$q = "DESCRIBE " . $tablename;
 		$desc = $this->run_query($q, true, true);
-		$this->redis->set(REDIS_KEY_TBLDESC_PFX . $tablename, serialize($desc));
+		RedisAdapter::get_instance()->set(REDIS_KEY_TBLDESC_PFX . $tablename, serialize($desc));
 		return $desc;
 	}
 
@@ -41,7 +38,7 @@ class TableDescription extends DbAccess {
 	 * @param unknown_type $tablename
 	 */
 	public function fkinfo($tablename) {
-		$desc = $this->redis->get(REDIS_KEY_FKINFO_PFX . $tablename);
+		$desc = RedisAdapter::get_instance()->get(REDIS_KEY_FKINFO_PFX . $tablename);
 		if ($desc !== false) {
 			$desc = unserialize($desc);
 			return $desc;
@@ -56,7 +53,7 @@ class TableDescription extends DbAccess {
 				AND table_schema = '" . MYSQL_DB . "'
 				AND table_name = '" . $tablename . "'";
 		$desc = $this->run_query($q, true, true);
-		$this->redis->set(REDIS_KEY_FKINFO_PFX . $tablename, serialize($desc));
+		RedisAdapter::get_instance()->set(REDIS_KEY_FKINFO_PFX . $tablename, serialize($desc));
 		return $desc;
 	}
 

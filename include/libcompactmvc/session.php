@@ -121,5 +121,11 @@ class Session {
 		self::$parray = array();
 	}
 
-
+	/**
+	 * @return Session ID
+	 */
+	public function get_id() {
+		DLOG(__METHOD__ . ": Return: " . $this->session_id);
+		return $this->session_id;
+	}
 }

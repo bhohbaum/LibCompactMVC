@@ -135,7 +135,7 @@ abstract class CMVCController extends InputSanitizer {
 	 * @param unknown_type $obj
 	 */
 	protected function json_response($obj) {
-		DLOG(__METHOD__ . " " . var_export($obj, true));
+		DLOG(__METHOD__ . " " . UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
 		$this->view->clear();
 		$this->view->add_template("out.tpl");
 		$this->view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));

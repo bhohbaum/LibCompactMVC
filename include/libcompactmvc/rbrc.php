@@ -13,7 +13,6 @@ LIBCOMPACTMVC_ENTRY;
  */
 class RBRC {
 	private static $instance;
-	private $redis;
 	private $rhash;
 	public $log;
 
@@ -24,8 +23,6 @@ class RBRC {
 	 */
 	private function __construct($rdata, $observe_headers) {
 		DLOG(__METHOD__);
-		$this->redis = new Redis();
-		$this->redis->connect(REDIS_HOST, REDIS_PORT);
 		if ($observe_headers) {
 			$this->rhash = md5(serialize($rdata) . serialize(apache_request_headers()));
 		} else {
@@ -50,16 +47,16 @@ class RBRC {
 	 * @param unknown_type $data
 	 */
 	public function put($data) {
-		$this->redis->set($this->rhash, $data);
-		$this->redis->expire($this->rhash, REDIS_KEY_RCACHE_TTL);
+		RedisAdapter::get_instance()->set($this->rhash, $data);
+		RedisAdapter::get_instance()->expire($this->rhash, REDIS_KEY_RCACHE_TTL);
 	}
 
 	/**
 	 *
 	 */
 	public function get() {
-		$data = $this->redis->get($this->rhash);
-		$this->redis->expire($this->rhash, REDIS_KEY_RCACHE_TTL);
+		$data = RedisAdapter::get_instance()->get($this->rhash);
+		RedisAdapter::get_instance()->expire($this->rhash, REDIS_KEY_RCACHE_TTL);
 		return $data;
 	}
 

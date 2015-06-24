@@ -47,6 +47,13 @@ function cmvc_include($fname) {
 	}
 }
 
+function base_url() {
+	$ret = ".";
+	if (php_sapi_name() != "cli") {
+		$ret = sprintf("%s://%s", isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME']);
+	}
+	return $ret;
+}
 
 cmvc_include('log.php');
 
