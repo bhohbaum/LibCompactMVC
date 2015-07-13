@@ -49,4 +49,9 @@ class RedisAdapter {
 		return $this->redis->keys($key);
 	}
 
+	public function delete($key) {
+		DLOG(__METHOD__ . '("' . $key . '")');
+		return $this->redis->delete($key);
+	}
+
 }

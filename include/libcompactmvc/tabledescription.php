@@ -12,9 +12,15 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 class TableDescription extends DbAccess {
+	// static storage to buffer multiple foreign key lookups
+	// and reduce traffic between application server and redis cluster
+	private static $colinfoarr;
+	private static $fkinfoarr;
 
 	public function __construct() {
 		parent::__construct();
+		self::$colinfoarr = json_decode("{}", true);
+		self::$fkinfoarr = json_decode("{}", true);
 	}
 
 	/**
@@ -22,13 +28,18 @@ class TableDescription extends DbAccess {
 	 * @param unknown_type $tablename
 	 */
 	public function columninfo($tablename) {
+		if (array_key_exists($tablename, self::$colinfoarr)) {
+			return self::$colinfoarr[$tablename];
+		}
 		$desc = RedisAdapter::get_instance()->get(REDIS_KEY_TBLDESC_PFX . $tablename);
 		if ($desc !== false) {
 			$desc = unserialize($desc);
+			self::$colinfoarr[$tablename] = $desc;
 			return $desc;
 		}
 		$q = "DESCRIBE " . $tablename;
 		$desc = $this->run_query($q, true, true);
+		self::$colinfoarr[$tablename] = $desc;
 		RedisAdapter::get_instance()->set(REDIS_KEY_TBLDESC_PFX . $tablename, serialize($desc));
 		return $desc;
 	}
@@ -38,9 +49,13 @@ class TableDescription extends DbAccess {
 	 * @param unknown_type $tablename
 	 */
 	public function fkinfo($tablename) {
+		if (array_key_exists($tablename, self::$fkinfoarr)) {
+			return self::$fkinfoarr[$tablename];
+		}
 		$desc = RedisAdapter::get_instance()->get(REDIS_KEY_FKINFO_PFX . $tablename);
 		if ($desc !== false) {
 			$desc = unserialize($desc);
+			self::$fkinfoarr[$tablename] = $desc;
 			return $desc;
 		}
 		$q = "SELECT
@@ -53,6 +68,7 @@ class TableDescription extends DbAccess {
 				AND table_schema = '" . MYSQL_DB . "'
 				AND table_name = '" . $tablename . "'";
 		$desc = $this->run_query($q, true, true);
+		self::$fkinfoarr[$tablename] = $desc;
 		RedisAdapter::get_instance()->set(REDIS_KEY_FKINFO_PFX . $tablename, serialize($desc));
 		return $desc;
 	}

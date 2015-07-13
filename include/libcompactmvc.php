@@ -55,6 +55,14 @@ function base_url() {
 	return $ret;
 }
 
+function is_tls_con() {
+	$ret = null;
+	if (php_sapi_name() != "cli") {
+		$ret = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] != 'off') ? true : false;
+	}
+	return $ret;
+}
+
 cmvc_include('log.php');
 
 // first include the configuration
@@ -85,6 +93,7 @@ cmvc_include('centermap.php');
 cmvc_include('cmvccontroller.php');
 cmvc_include('dbaccess.php');
 cmvc_include('dbobject.php');
+cmvc_include('dtotool.php');
 cmvc_include('emptyresultexception.php');
 cmvc_include('error_messages.php');
 cmvc_include('functions.php');

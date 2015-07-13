@@ -32,7 +32,7 @@ class Session {
 				session_start();
 			}
 		}
-		$this->session_id = (session_id() == "") ? $_ENV['PHPSESSID'] : session_id();
+		$this->session_id = (session_id() == "") ? (array_key_exists('PHPSESSID', $_ENV)) ? $_ENV['PHPSESSID'] : "" : session_id();
 		DLOG(__METHOD__ . ": Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id));
 
@@ -45,9 +45,10 @@ class Session {
 				setcookie($sname, '', time() - 42000);
 				unset($_COOKIE[$sname]);
 			}
-			session_destroy();
+// 			session_destroy();
 			ini_set('session.cookie_httponly', 1);
-			session_start();
+			session_regenerate_id(true);
+// 			session_start();
 		}
 	}
 
