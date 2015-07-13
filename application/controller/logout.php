@@ -11,11 +11,7 @@ LIBCOMPACTMVC_ENTRY;
  * @link		http://www.adrodev.de
  */
 class Logout extends CMVCController {
-	
-	protected function dba() {
-		return "DBA";
-	}
-	
+
 	protected function run_page_logic() {
 		DLOG(__METHOD__);
 		Session::get_instance()->clear();

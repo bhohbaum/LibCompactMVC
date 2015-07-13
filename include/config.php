@@ -12,6 +12,12 @@ LIBCOMPACTMVC_ENTRY;
  */
 
 // Set global constants
+// Debug messages & logging
+// 0	off
+// 1	on
+define('DEBUG', 1);
+define('LOG_LEVEL', Log::LOG_LVL_DEBUG);
+
 
 // DB Server:
 
@@ -29,17 +35,25 @@ define("MYSQL_PASS", "Mausi_303");
 
 define("DBA_DEFAULT_CLASS", "DBA");
 
+// populate controllers with POST/GET variables?
+define('REGISTER_HTTP_VARS', true);
+
+// Session
+define('SESSION_DYNAMIC_ID_DISABLED', true);
+define('SESSION_TIMEOUT', 1200);
+
 // Further constants to be set at installation time
 define('UPLOAD_BASE_DIR', './files/upload');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
 define('CSV_BASE_DIR', './files/csv');						// relative to $_SERVER['DOCUMENT_ROOT']
-define('LOG_FILE', '/home/botho/log/cmvc.log');				// relative to $_SERVER['DOCUMENT_ROOT']
+define('LOG_FILE', '/var/log/php/cmvc.log');				// relative to $_SERVER['DOCUMENT_ROOT']
 define('BASE_URL', 'http://libcompactmvc.local');
 define('DEFAULT_TIMEZONE', 'CET');
 
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);
+define('CACHING_ENABLED', DEBUG != 1 || true);
 
 define('REDIS_KEY_PRAEFIX', 'CMVC_');
 define('REDIS_KEY_RCACHE_PFX', REDIS_KEY_PRAEFIX . 'RENDERCACHE_');
@@ -73,14 +87,21 @@ define('TRACKING_MAIL_SENT', 	"mail_sent");
 define('TRACKING_MAIL_OPENED', 	"mail_opened");
 define('TRACKING_LINK_CLICKED',	"link_clicked");
 
-// Session
-define('SESSION_DYNAMIC_ID_DISABLED', true);
+define('TBL_EVENT_TYPES', 'event_types');
+define('TBL_IMAGES', 'images');
+define('TBL_MAILINGS', 'mailings');
+define('TBL_MAILINGS_HAS_RECEIVERS', 'mailings_has_receivers');
+define('TBL_MAILPARTS', 'mailparts');
+define('TBL_MAILPART_TYPES', 'mailpart_types');
+define('TBL_RECEIVERS', 'receivers');
+define('TBL_TEXTS', 'texts');
+define('TBL_TRACKING_EVENTS', 'tracking_events');
 
-// Debug messages & logging
-// 0	off
-// 1	on
-define('DEBUG', 1);
+define('TBLV_NEXT_RECEIVER', 'next_receiver');
+define('TBLV_SEND_LIST', 'send_list');
+define('TBLV_TODAYS_MAILINGS', 'todays_mailings');
+define('TBLV_TRACKING_COMBINED', 'tracking_combined');
 
-
+define('TBLP_TRACKING_OVERVIEW', 'tracking_overview');
 
 ?>

@@ -11,20 +11,16 @@ LIBCOMPACTMVC_ENTRY;
  * @link		http://www.adrodev.de
  */
 class Login extends CMVCController {
-	
+
 	private $user;
 	private $pass;
-	
-	protected function dba() {
-		return "DBA";
-	}
-	
+
 	protected function retrieve_data_post() {
 		DLOG(__METHOD__);
 		$this->user = $this->request("user");
 		$this->pass = $this->request("pass");
 	}
-	
+
 	protected function run_page_logic() {
 		DLOG(__METHOD__);
 		$this->view->add_template("header.tpl");

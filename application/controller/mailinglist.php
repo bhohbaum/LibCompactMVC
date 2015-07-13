@@ -11,19 +11,15 @@ LIBCOMPACTMVC_ENTRY;
  * @link		http://www.adrodev.de
  */
 class MailingList extends CMVCController {
-	
-	protected function dba() {
-		return "DBA";
-	}
-	
+
 	protected function run_page_logic() {
 		DLOG(__METHOD__);
 		$this->view->add_template("header.tpl");
 		$this->view->add_template("mailinglist.tpl");
 		$this->view->add_template("footer.tpl");
-		$this->view->set_value("mailings", $this->db->get_all_mailings());
+		$this->view->set_value("mailings", $this->db->by(TBL_MAILINGS, array()));
 	}
-	
+
 }
 
 ?>

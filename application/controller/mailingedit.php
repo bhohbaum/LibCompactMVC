@@ -25,10 +25,6 @@ class MailingEdit extends CMVCController {
 	private $subject;
 	private $link;
 
-	protected function dba() {
-		return "DBA";
-	}
-
 	protected function retrieve_data() {
 		DLOG(__METHOD__);
 		$this->param0 = $this->request("param0");

@@ -21,7 +21,7 @@
 	</div>
 </div>
 
-<!-- 
+<!--
 <div>
 	<button class="btn btn-primary" onclick="window.location.href='/app/mailingedit/new'">Neu...</button>
 </div>
@@ -38,9 +38,9 @@
 	<tbody>
 		<?php foreach ($this->get_value("mailings") as $mailing) { ?>
 			<tr>
-				<td><a href="/app/mailingedit/<?= $mailing["id"] ?>"><?= UTF8::encode($mailing["name"]) ?></a></td>
-				<td><a href="/app/mailingedit/<?= $mailing["id"] ?>"><?= $mailing["send_date"] ?></a></td>
-				<td><a href="/app/trackingstats/<?= $mailing["id"] ?>">Tracking</a></td>
+				<td><a href="/app/mailingedit/<?= $mailing->id ?>"><?= UTF8::encode($mailing->name) ?></a></td>
+				<td><a href="/app/mailingedit/<?= $mailing->id ?>"><?= $mailing->send_date ?></a></td>
+				<td><a href="/app/trackingstats/<?= $mailing->id ?>">Tracking</a></td>
 			</tr>
 		<?php } ?>
 	</tbody>

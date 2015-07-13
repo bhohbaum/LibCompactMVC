@@ -11,21 +11,17 @@ LIBCOMPACTMVC_ENTRY;
  * @link		http://www.adrodev.de
  */
 class TrackingStats extends CMVCController {
-	
+
 	private $param0;
 	private $param1;
 	private $param2;
 	private $param3;
-	
+
 	private $mailingid;
-	
+
 	private $sort_key;
 	private $sort_dir;
-	
-	protected function dba() {
-		return "DBA";
-	}
-	
+
 	protected function retrieve_data() {
 		DLOG(__METHOD__);
 		$this->param0 = $this->request("param0");
@@ -36,7 +32,7 @@ class TrackingStats extends CMVCController {
 			$this->mailingid = $this->param0;
 		}
 	}
-	
+
 	protected function run_page_logic_get() {
 		DLOG(__METHOD__);
 		$events = array();
@@ -100,7 +96,7 @@ class TrackingStats extends CMVCController {
 		$this->view->set_value("events", $events);
 		$this->view->set_value("sort_type", ($this->param2 == null) ? SORT_ASC : ($this->param2 == SORT_ASC) ? SORT_DESC : SORT_ASC);
 	}
-	
+
 	private function cmp($a, $b)
 	{
 	    if ($a[$this->sort_key] == $b[$this->sort_key]) {
@@ -112,7 +108,7 @@ class TrackingStats extends CMVCController {
 	    	return ($a[$this->sort_key] > $b[$this->sort_key]) ? 1 : -1;
 	    }
 	}
-	
+
 }
 
 ?>

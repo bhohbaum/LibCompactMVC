@@ -11,13 +11,13 @@ LIBCOMPACTMVC_ENTRY;
  * @link		http://www.adrodev.de
  */
 class Main {
-	
+
 	private $ad;
-	
+
 	public function __construct() {
 		;
 	}
-	
+
 	public function app() {
 		$this->ad = new ActionDispatcher("action");
 		$this->ad->set_handler("", 				"Login");
@@ -34,13 +34,20 @@ class Main {
 		$this->ad->run();
 		echo($this->ad->get_ob());
 	}
-	
-	
+
+
 }
 
 // redirect
-if (substr($_SERVER["REQUEST_URI"], 0, 4) != "/app") {
-	header("Location: /app/");
+if (php_sapi_name() != "cli") {
+	if (substr($_SERVER["REQUEST_URI"], 0, 4) != "/app") {
+		header("Location: /app");
+		exit();
+	}
+} else {
+	if ($argc <= 1) {
+		die("CLI Mode detected: Please give a valid CLI submodule name as first parameter.\nValid modules are: cli\n");
+	}
 }
 
 // entry point (MAIN)
@@ -48,6 +55,13 @@ try {
 	$run = new Main();
 	$run->app();
 } catch (Exception $e) {
-	echo("<pre>".$e->getTraceAsString()."</pre>");
+	if (defined('DEBUG') && DEBUG) {
+		echo("<h2>An unhandled exception occured</h2>");
+		echo("<h4>Message:</h4>");
+		echo("<p>".$e->getMessage()."</p>");
+		echo("<h4>Stacktrace:</h4>");
+		echo("<pre>".$e->getTraceAsString()."</pre>");
+	}
+	$run->log($e->getTraceAsString());
 }
 
