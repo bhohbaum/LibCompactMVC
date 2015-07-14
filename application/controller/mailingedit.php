@@ -80,8 +80,10 @@ class MailingEdit extends CMVCController {
 			$fname = @basename($fnames[0]);
 			$paramarr = explode("_", $upload->get_param_name(0));
 			$this->ordinal = $paramarr[1];
-			$mailpart = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $paramarr[1]);
-			if ($mailpart == null) {
+			$mailpart = new DbObject();
+			try {
+				$mailpart->table(TBL_MAILPARTS)->by(array("fk_id_mailings" => $this->mailingid, "ordinal" => $this->ordinal));
+			} catch (Exception $e) {
 				$mailpart = new DbObject(array(
 						"ordinal" => $this->ordinal,
 						"fk_id_mailings" => $this->mailingid,
