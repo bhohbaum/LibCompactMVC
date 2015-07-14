@@ -27,11 +27,12 @@ class Mail extends CMVCController {
 		$this->param1 = $this->request("param1");
 		$this->param2 = $this->request("param2");
 
+		$this->mailing = new DbObject();
 		if ($this->param0 == "byid") {
-			$this->mailing = $this->db->get_mailing_by_id($this->param1, true);
+			$this->mailing->table(TBL_MAILINGS)->by(array("id" => $this->param1));
 		} else if ($this->param0 == "byident") {
 			$this->mhr = $this->db->get_mhr_by_ident($this->param1);
-			$this->mailing = $this->db->get_mailing_by_id($this->mhr["fk_id_mailings"], true);
+			$this->mailing->table(TBL_MAILINGS)->by(array("id" => $this->mhr["fk_id_mailings"]));
 			$this->receiver = $this->db->get_receiver_by_id($this->mhr["fk_id_receivers"], true);
 		}
 	}
@@ -42,7 +43,8 @@ class Mail extends CMVCController {
 		$mailparts = $this->db->get_mailparts_by_mailing_id($this->mailing->id);
 		foreach ($mailparts as $key => $mailpart) {
 			if ($mailpart["fk_id_texts"] != null) {
-				$mailparts[$key]["fk_id_texts"] = $this->db->get_text_by_id($mailpart["fk_id_texts"], true);
+				$text = new DbObject();
+				$mailparts[$key]["fk_id_texts"] = $text->table(TBL_TEXTS)->by(array("id" => $mailpart["fk_id_texts"]));
 			}
 			if ($mailpart["fk_id_images"] != null) {
 				$img = new DbObject();

@@ -50,14 +50,19 @@ class QueryBuilder extends DbAccess {
 	 * @param unknown_type $fields
 	 */
 	public function insert($tablename, $fields) {
+		$nofields = true;
 		$desc = $this->td->columninfo($tablename);
 		$q = "INSERT INTO " . $tablename . " (";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {
 				$q .= $val->Field . ", ";
+				$nofields = false;
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 2);
+		if ($nofields) {
+			return $q . " () VALUES ()";
+		}
 		$q .= ") VALUES (";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {

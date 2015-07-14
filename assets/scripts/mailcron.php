@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?php
+@include_once('./include/libcompactmvc.php');
 @include_once('../include/libcompactmvc.php');
+@include_once('../../include/libcompactmvc.php');
 
 /**
  * Import script

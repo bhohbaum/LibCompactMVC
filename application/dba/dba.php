@@ -11,55 +11,6 @@
  */
 class DBA extends DbAccess {
 
-	public function get_image_by_id($id, $obj = false) {
-		$q = "SELECT	*
-				FROM	images
-				WHERE	id = '".$this->escape($id)."'";
-		return $this->run_query($q, false, $obj);
-	}
-
-	public function get_text_by_id($id, $obj = false) {
-		$q = "SELECT	*
-				FROM	texts
-				WHERE	id = '".$this->escape($id)."'";
-		return $this->run_query($q, false, $obj);
-	}
-
-	public function get_mailpart_by_id($id, $obj = false) {
-		$q = "SELECT	*
-				FROM	mailparts
-				WHERE	id = '".$this->escape($id)."'";
-		return $this->run_query($q, false, $obj);
-	}
-
-	public function get_event_type_by_id($id, $obj = false) {
-		$q = "SELECT	*
-				FROM	event_types
-				WHERE	id = '".$this->escape($id)."'";
-		return $this->run_query($q, false, $obj);
-	}
-
-	public function get_event_type_by_name($id, $obj = false) {
-		$q = "SELECT	*
-				FROM	event_types
-				WHERE	name = '".$this->escape($id)."'";
-		return $this->run_query($q, false, $obj);
-	}
-
-	public function get_mailing_by_id($id, $obj = false) {
-		$q = "SELECT	*
-				FROM	mailings
-				WHERE	id = ".$this->escape($id);
-		return $this->run_query($q, false, $obj);
-	}
-
-	public function get_mailpart_type_by_name($name, $obj = false) {
-		$q = "SELECT	*
-				FROM	mailpart_types
-				WHERE	name = '".$this->escape($name)."'";
-		return $this->run_query($q, false, $obj);
-	}
-
 	public function get_mailpart_type_by_id($id, $obj = false) {
 		$q = "SELECT	*
 				FROM	mailpart_types
@@ -142,8 +93,9 @@ class DBA extends DbAccess {
 
 	public function create_tracking_event($fk_id_mailings_has_receivers, $fk_id_event_types, $fk_id_mailparts) {
 		if (!is_numeric($fk_id_event_types)) {
-			$event_type = $this->get_event_type_by_name($fk_id_event_types);
-			$fk_id_event_types = $event_type["id"];
+			$et = new DbObject();
+			$event_type = $et->table(TBL_EVENT_TYPES)->by(array("name" => $fk_id_event_types));
+			$fk_id_event_types = $event_type->id;
 		}
 		$fk_id_mailings_has_receivers = ($fk_id_mailings_has_receivers == null) ? "null" : $fk_id_mailings_has_receivers;
 		$fk_id_event_types = ($fk_id_event_types == null) ? "null" : $fk_id_event_types;
@@ -300,24 +252,22 @@ class DBA extends DbAccess {
 	}
 
 	public function delete_image_by_id($id) {
-		$image = $this->get_image_by_id($id);
-		unlink(IMAGES_BASE_DIR."/".$image["name"].".jpg");
-		$q = "DELETE FROM	images
-				WHERE		id = '".$this->escape($id)."'";
-		return $this->run_query($q, false);
+		$image = new DbObject();
+		$image->table(TBL_IMAGES)->by(array("id" => $id));
+		unlink(IMAGES_BASE_DIR."/".$image->name.".jpg");
+		return $image->delete();
 	}
 
 	public function delete_mailpart_by_id($id) {
-		$mailpart = $this->get_mailpart_by_id($id);
-		if ($mailpart["fk_id_texts"] != null) {
-			$this->delete_text_by_id($mailpart["fk_id_texts"]);
+		$mailpart = new DbObject();
+		$mailpart->table(TBL_MAILPARTS)->by(array("id" => $id));
+		if ($mailpart->fk_id_texts != null) {
+			$this->delete_text_by_id($mailpart->fk_id_texts);
 		}
-		if ($mailpart["fk_id_images"] != null) {
-			$this->delete_image_by_id($mailpart["fk_id_images"]);
+		if ($mailpart->fk_id_images != null) {
+			$this->delete_image_by_id($mailpart->fk_id_images);
 		}
-		$q = "DELETE FROM	mailparts
-				WHERE		id = '".$this->escape($id)."'";
-		return $this->run_query($q, false);
+		return $mailpart->delete();
 	}
 
 	public function delete_mailing_by_id($id) {

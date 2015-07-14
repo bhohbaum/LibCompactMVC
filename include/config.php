@@ -57,8 +57,9 @@ define('CACHING_ENABLED', DEBUG != 1 || true);
 
 define('REDIS_KEY_PRAEFIX', 'CMVC_');
 define('REDIS_KEY_RCACHE_PFX', REDIS_KEY_PRAEFIX . 'RENDERCACHE_');
-define('REDIS_KEY_TBLDESC_PFX', REDIS_KEY_PRAEFIX . 'TBLDESC_');
 define('REDIS_KEY_RCACHE_TTL', '600');
+define('REDIS_KEY_TBLDESC_PFX', REDIS_KEY_PRAEFIX . 'TBLDESC_');
+define('REDIS_KEY_FKINFO_PFX', REDIS_KEY_PRAEFIX . 'FKINFO_');
 
 define('CAPTCHA_RES_PATH', "./include/resources");			// relative to $_SERVER['DOCUMENT_ROOT']
 define('CAPTCHA_SESS_VAR', "captcha");

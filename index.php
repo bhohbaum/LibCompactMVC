@@ -11,11 +11,15 @@ LIBCOMPACTMVC_ENTRY;
  * @link		http://www.adrodev.de
  */
 class Main {
-
 	private $ad;
+	public $log;
 
 	public function __construct() {
-		;
+		DLOG(__METHOD__ . ": ########################## A NEW REQUEST IS BEEING PROCESSED. ##########################");
+	}
+
+	public function log($msg) {
+		DLOG($msg);
 	}
 
 	public function app() {
@@ -33,6 +37,7 @@ class Main {
 		$this->ad->set_control("control");
 		$this->ad->run();
 		echo($this->ad->get_ob());
+		DLOG(__METHOD__ . ": ####### APPLICATION FINISHED SUCCESSFULLY! SENDING RESPONSE TO CLIENT... #######################");
 	}
 
 

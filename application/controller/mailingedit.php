@@ -36,11 +36,16 @@ class MailingEdit extends CMVCController {
 		$this->dataurl = urldecode($this->request("dataurl"));
 		$this->subject = urldecode($this->request("subject"));
 		$this->link = $this->request("link");
-		$type = $this->db->get_mailpart_type_by_name($this->request("type"));
-		if ($type == null) {
-			$type = $this->db->get_mailpart_type_by_name($this->param2);
+		$type = new DbObject();
+		try {
+			$type->table(TBL_MAILPART_TYPES)->by(array("name" => $this->request("type")));
+		} catch (EmptyResultException $e) {
+			try {
+				$type->table(TBL_MAILPART_TYPES)->by(array("name" => $this->param2));
+			} catch (EmptyResultException $e) {
+			}
 		}
-		$this->type = $type["id"];
+		$this->type = $type->id;
 		$this->ordinal = $this->request("ordinal");
 		if ($this->ordinal == null) {
 			if (is_numeric($this->param1)) {
@@ -77,26 +82,29 @@ class MailingEdit extends CMVCController {
 			$this->ordinal = $paramarr[1];
 			$mailpart = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $paramarr[1]);
 			if ($mailpart == null) {
-				$mailpartid = $this->db->create_mailpart($this->ordinal, $this->mailingid, $this->type, null, null);
-				$mailpart = $this->db->get_mailpart_by_id($mailpartid);
+				$mailpart = new DbObject(array(
+						"ordinal" => $this->ordinal,
+						"fk_id_mailings" => $this->mailingid,
+						"fk_id_mailpart_types" => $this->type));
+				$mailpart->table(TBL_MAILPARTS)->save();
+				$mailpart->by(array("id" => $mailpart->id));
 			}
-			if ($mailpart["fk_id_images"] != null) {
-				$img = $this->db->get_image_by_id($mailpart["fk_id_images"]);
-				if ($img == null) {
-					$imgid = $this->db->create_image();
-					$img = $this->db->get_image_by_id($imgid);
+			if ($mailpart->fk_id_images != null) {
+				try {
+					$img = new DbObject();
+					$img->table(TBL_IMAGES)->by(array("id" => $mailpart->fk_id_images));
+				} catch (EmptyResultException $e) {
+					$img->table(TBL_IMAGES)->save();
+					$img->by(array($img->id));
 				}
 			} else {
-				$imgid = $this->db->create_image();
-				$img = $this->db->get_image_by_id($imgid);
+				$img = new DbObject();
+				$img->table(TBL_IMAGES)->save();
+				$img->by(array($img->id));
 			}
-			$this->db->update_mailpart(	$mailpart["id"],
-										null,
-										$mailpart["ordinal"],
-										$mailpart["fk_id_mailings"],
-										$mailpart["fk_id_mailpart_types"],
-										$mailpart["fk_id_texts"],
-										$img["id"]);
+			$img = $img->to_array();
+			$mailpart->fk_id_images = $img["id"];
+			$mailpart->save();
 			if (!rename(UPLOAD_BASE_DIR."/".$fname, IMAGES_BASE_DIR."/".$img["name"].".jpg")) {
 				if ((file_exists(UPLOAD_BASE_DIR."/".$fname)) && (file_exists(IMAGES_BASE_DIR."/".$img["name"].".jpg"))) {
 					unlink(IMAGES_BASE_DIR."/".$img["name"].".jpg");
@@ -130,45 +138,50 @@ class MailingEdit extends CMVCController {
 				}
 			}
 		} else if ($this->param1 == "txt") {
-			$mailpart = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $this->ordinal);
-			if ($mailpart == null) {
-				$mailpartid = $this->db->create_mailpart($this->ordinal, $this->mailingid, $this->type, null, null);
-				$mailpart = $this->db->get_mailpart_by_id($mailpartid);
+			$mailpart = new DbObject();
+			try {
+				$mailpart->table(TBL_MAILPARTS)->by(array("fk_id_mailing_id" => $this->mailingid, "ordinal" => $this->ordinal));
+			} catch (EmptyResultException $e) {
+				$mailpart = new DbObject(array(
+						"ordinal" => $this->ordinal,
+						"fk_id_mailings" => $this->mailingid,
+						"fk_id_mailpart_types" => $this->type));
+				$mailpart->table(TBL_MAILPARTS)->save();
+				$mailpart->by(array("id" => $mailpart->id));
 			}
-			if ($mailpart["fk_id_texts"] != null) {
-				$txt = $this->db->get_text_by_id($mailpart["fk_id_texts"]);
-				if ($txt == null) {
-					$txtid = $this->db->create_text($this->text);
-					$txt = $this->db->get_text_by_id($txtid);
-				} else {
-					$this->db->update_text($txt["id"], $this->text);
+			if ($mailpart->fk_id_texts != null) {
+				$txt = new DbObject();
+				try {
+					$txt->table(TBL_TEXTS)->by(array("id" => $mailpart->fk_id_texts->id));
+					$txt->text = $this->text;
+					$txt->save();
+				} catch (Exception $e) {
+					$txt->table(TBL_TEXTS)->save();
 				}
 			} else {
-				$txtid = $this->db->create_text($this->text);
-				$txt = $this->db->get_text_by_id($txtid);
+				$txt = new DbObject();
+				$txt->table(TBL_TEXTS);
+				$txt->text = $this->text;
+				$txt->save();
 			}
-			$this->db->update_mailpart(	$mailpart["id"],
-										$mailpart["link"],
-										$mailpart["ordinal"],
-										$mailpart["fk_id_mailings"],
-										$mailpart["fk_id_mailpart_types"],
-										$txt["id"],
-										$mailpart["fk_id_images"]);
+			$mailpart->fk_id_texts = $txt->id;
+			$mailpart->save();
 		} else if ($this->param1 == "lnk") {
-			$mailpart = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $this->ordinal);
-			if ($mailpart == null) {
-				$mailpartid = $this->db->create_mailpart($this->ordinal, $this->mailingid, $this->type, null, null);
-				$mailpart = $this->db->get_mailpart_by_id($mailpartid);
+			$mailpart = new DbObject();
+			try {
+				$mailpart->table(TBL_MAILPARTS)->by(array("fk_id_mailing_id" => $this->mailingid, "ordinal" => $this->ordinal));
+				$mailpart->link = $this->link;
+				$mailpart->save();
+			} catch (Exception $e) {
+				$mailpart = new DbObject(array(
+						"ordinal" => $this->ordinal,
+						"fk_id_mailings" => $this->mailingid,
+						"fk_id_mailpart_types" => $this->type));
+				$mailpart->table(TBL_MAILPARTS)->save();
+				$mailpart->by(array("id" => $mailpart->id));
 			}
-			$this->db->update_mailpart(	$mailpart["id"],
-										$this->link,
-										$mailpart["ordinal"],
-										$mailpart["fk_id_mailings"],
-										$mailpart["fk_id_mailpart_types"],
-										$mailpart["fk_id_texts"],
-										$mailpart["fk_id_images"]);
 		} else if ($this->param1 == "testmail") {
-			if (system("cd assets/scripts ; ./mailcron.php -d -t ".$this->param2." ".$this->mailingid." >> ".LOG_FILE) !== false) {
+			if (system("./assets/scripts/mailcron.php -d -t ".$this->param2." ".$this->mailingid." >> ".LOG_FILE) !== false) {
 				$this->json_response(true);
 			} else {
 				$this->json_response(false);
@@ -196,14 +209,21 @@ class MailingEdit extends CMVCController {
 			$this->json_response($this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $this->ordinal));
 		} else if ($this->param1 == "txt") {
 			$response["mailpart"] = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $this->ordinal);
-			$response["text"] = $this->db->get_text_by_id($response["mailpart"]["fk_id_texts"]);
+			$txt = new DbObject();
+			$response["text"] = $txt->table(TBL_TEXTS)->by(array("id" => $response["mailpart"]["fk_id_texts"]))->to_array();
 			$this->json_response($response);
 		} else if ($this->param1 == "img") {
 			$response["mailpart"] = $this->db->get_mailpart_by_mailing_id_and_ordinal($this->mailingid, $this->ordinal);
-			$response["image"] = $this->db->get_image_by_id($response["mailpart"]["fk_id_images"]);
+			$img = new DbObject();
+			try {
+				$response["image"] = $img->table(TBL_IMAGES)->by(array("id" => $response["mailpart"]["fk_id_images"]))->to_array();
+			} catch (EmptyResultException $e) {
+			}
 			$this->json_response($response);
 		} else if ($this->param1 == "mailing") {
-			$response["mailing"] = $this->db->get_mailing_by_id($this->mailingid);
+			$mailing = new DbObject();
+			$mailing->table(TBL_MAILINGS)->by(array("id" => $this->mailingid));
+			$response["mailing"] = $mailing->to_array();
 			$response["mailparts"] = $this->db->get_mailparts_by_mailing_id($this->mailingid);
 			foreach ($response["mailparts"] as $key => $mailpart) {
 				$response["mailparttypes"][$key] = $this->db->get_mailpart_type_by_id($mailpart["fk_id_mailpart_types"]);
@@ -212,7 +232,10 @@ class MailingEdit extends CMVCController {
 		} else if ($this->param1 == "ordinals") {
 			$mailparts = $this->db->get_mailparts_by_mailing_id($this->mailingid, true);
 			foreach ($mailparts as $key => $mailpart) {
-				$this->db->update_mailpart($mailpart->id, $mailpart->link, $key + 1, $mailpart->fk_id_mailings, $mailpart->fk_id_mailpart_types, $mailpart->fk_id_texts, $mailpart->fk_id_images);
+				$mp = new DbObject();
+				$mp->table(TBL_MAILPARTS)->by(array("id" => $mailpart->id));
+				$mp->ordinal = $key + 1;
+				$mp->save();
 			}
 			$this->json_response(true);
 		}

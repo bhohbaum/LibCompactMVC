@@ -22,6 +22,10 @@ class TrackingStats extends CMVCController {
 	private $sort_key;
 	private $sort_dir;
 
+	protected function dba() {
+		return "DBA";
+	}
+
 	protected function retrieve_data() {
 		DLOG(__METHOD__);
 		$this->param0 = $this->request("param0");
@@ -54,10 +58,16 @@ class TrackingStats extends CMVCController {
 		} else if ($this->param0 == "mail") {
 			$mhr = $this->db->get_mhr_by_id($this->param1, true);
 			$receiver = $this->db->get_receiver_by_id($mhr->fk_id_receivers, true);
-			$mailing = $this->db->get_mailing_by_id($mhr->fk_id_mailings, true);
+			$mailing = new DbObject();
+			$mailing = $mailing->table(TBL_MAILINGS)->by(array("id" => $mhr->fk_id_mailings));
 			$events = $this->db->get_tracking_events_by_mhr_id($this->param1, true);
 			foreach ($events as $key => $val) {
-				$events[$key]->mailpart = $this->db->get_mailpart_by_id($val->te_fk_id_mailparts, true);
+				try {
+					$mp = new DbObject();
+					$mp->table(TBL_MAILPARTS)->by(array("id" => $val->te_fk_id_mailparts));
+					$events[$key]->mailpart = $mp;
+				} catch (EmptyResultException $e) {
+				}
 			}
 			$this->view->add_template("header.tpl");
 			$this->view->add_template("receiverevents.tpl");
@@ -68,7 +78,9 @@ class TrackingStats extends CMVCController {
 			$this->view->set_value("events", $events);
 			return;
 		}
-		$this->view->set_value("mailing", $this->db->get_mailing_by_id($this->mailingid, true));
+		$mailing = new DbObject();
+		$mailing = $mailing->table(TBL_MAILINGS)->by(array("id" => $mhr->fk_id_mailings));
+		$this->view->set_value("mailing", $mailing);
 		try {
 			$events = $this->db->get_tracking_overview($this->mailingid);
 		} catch (Exception $e) {
