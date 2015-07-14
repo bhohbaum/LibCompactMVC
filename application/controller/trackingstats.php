@@ -79,7 +79,7 @@ class TrackingStats extends CMVCController {
 			return;
 		}
 		$mailing = new DbObject();
-		$mailing = $mailing->table(TBL_MAILINGS)->by(array("id" => $mhr->fk_id_mailings));
+		$mailing = $mailing->table(TBL_MAILINGS)->by(array("id" => $this->mailingid));
 		$this->view->set_value("mailing", $mailing);
 		try {
 			$events = $this->db->get_tracking_overview($this->mailingid);

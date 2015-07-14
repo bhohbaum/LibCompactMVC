@@ -76,7 +76,7 @@ define('MAIL_DEBUG_ADDR', 'b.hohbaum@googlemail.com');
 // allowed users (login)
 // to get the hash on a terminal, type:
 // php -r 'echo(md5("your-password-goes-here")."\n");'
-define('LOGIN_USERS', '{"adrodev": 	"c0e8bf3bdd9583f9650fefd8ec590b5c",
+define('LOGIN_USERS', '{"kmundp": 	"25e31c17258e73c6ca3d090b21656762",
 						"admin": 	"64ab07516f3e7adb0a79cc5ec9ca529d"}');
 
 // special DB content
