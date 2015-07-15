@@ -36,7 +36,7 @@ class WSAdapter {
 
 	public function notify($msg) {
 		DLOG(__METHOD__ . "('" . $msg . "')");
-		$cmd = "/bin/bash -c 'echo " . md5(Session::get_instance()->get_id()) . " " . $msg . " | bin/libwebsockets-digimap-client " . $GLOBALS['WS_SRV_ADDR'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . " --port " . $GLOBALS['WS_SRV_PORT'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . "' &";
+		$cmd = "/bin/bash -c 'echo " . md5(Session::get_instance()->get_id()) . " " . $msg . " | bin/libwebsockets-client " . $GLOBALS['WS_SRV_ADDR'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . " --port " . $GLOBALS['WS_SRV_PORT'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . "' &";
 		system($cmd);
 	}
 
