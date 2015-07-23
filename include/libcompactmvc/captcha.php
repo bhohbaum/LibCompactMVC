@@ -233,6 +233,10 @@ class Captcha {
 		$this->Cleanup();
 	}
 
+	public function GetText() {
+		return Session::get_instance()->get_property($this->session_var);
+	}
+
 	/**
 	 * Creates the image resources
 	 */

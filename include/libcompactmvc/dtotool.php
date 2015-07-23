@@ -13,7 +13,9 @@ LIBCOMPACTMVC_ENTRY;
  */
 class DTOTool {
 	public $log;
+
 	/**
+	 * Copy DTO members from one object to another
 	 *
 	 * @param DTO $src in / out
 	 * @param DTO $dst in / out
