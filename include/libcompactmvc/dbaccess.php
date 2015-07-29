@@ -57,11 +57,7 @@ abstract class DbAccess {
 		if (isset(self::$mysqli)) {
 			return;
 		}
-		DLOG(__METHOD__ . ": Connecting to database...");
-		self::$mysqli = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB);
-		if (mysqli_connect_error()) {
-			throw new Exception('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error(), mysqli_connect_errno());
-		}
+		self::$mysqli = MySQLAdapter::get_instance($GLOBALS['MYSQL_HOSTS']);
 	}
 
 	/**
@@ -83,15 +79,33 @@ abstract class DbAccess {
 	 * @param Boolean $object Return as array or as object
 	 * @param String $field Columnname if a single value shall be returned.
 	 * @param String $table Name of the table that is operated on.
+	 * @param Boolean $is_write_access Set to true when issuing a write query.
 	 * @throws Exception
 	 * @return Ambigous <multitype:, NULL>
 	 */
-	protected function run_query($query, $has_multi_result = false, $object = false, $field = null, $table = null) {
+	protected function run_query($query, $has_multi_result = false, $object = false, $field = null, $table = null, $is_write_access = true) {
 		DLOG(__METHOD__ . ": " . $query);
 		$ret = null;
+		$key = REDIS_KEY_TBLCACHE_PFX . $table . "_" . md5($query);
 		$object = ($field == null) ? $object : false;
-		if (!($result = self::$mysqli->query($query))) {
-			throw new Exception(ErrorMessages::DB_QUERY_ERROR . '"' . self::$mysqli->error . '"' . "\nQuery: " . $query);
+		if (!array_key_exists($table, $GLOBALS['MYSQL_NO_CACHING'])) {
+			if ($is_write_access) {
+				$delkey = REDIS_KEY_TBLCACHE_PFX;
+				$delkey .= ($table == null) ? "*" : $table . "*";
+				$keys = RedisAdapter::get_instance()->keys($delkey);
+				foreach ($keys as $k) {
+					RedisAdapter::get_instance()->delete($k);
+				}
+			} else {
+				$res = RedisAdapter::get_instance()->get($key);
+				if ($res !== false) {
+					RedisAdapter::get_instance()->expire($key, REDIS_KEY_TBLCACHE_TTL);
+					return unserialize($res);
+				}
+			}
+		}
+		if (!($result = self::$mysqli->query($query, $is_write_access, $table))) {
+			throw new Exception(ErrorMessages::DB_QUERY_ERROR . '"' . self::$mysqli->get_errno() . '"' . "\nQuery: " . $query);
 		} else {
 			if (is_object($result)) {
 				if ($has_multi_result) {
@@ -133,25 +147,31 @@ abstract class DbAccess {
 				}
 				$result->close();
 			} else {
-				$ret = self::$mysqli->insert_id;
+				$ret = self::$mysqli->get_insert_id();
 			}
 		}
 		if (($ret == null) && ($has_multi_result == true)) {
 			$ret = array();
+		}
+		if (!array_key_exists($table, $GLOBALS['MYSQL_NO_CACHING'])) {
+			if (!$is_write_access) {
+				RedisAdapter::get_instance()->set($key, serialize($ret));
+				RedisAdapter::get_instance()->expire($key, REDIS_KEY_TBLCACHE_TTL);
+			}
 		}
 		return $ret;
 	}
 
 	/**
 	 *
-	 * @param unknown_type $tablename
-	 * @param unknown_type $constraint
+	 * @param String $tablename
+	 * @param String $constraint
 	 */
 	public function by($tablename, $constraint) {
 		$qb = new QueryBuilder();
 		$constraint = ($constraint == null) ? array() : $constraint;
 		$q = $qb->select($tablename, $constraint);
-		$res = $this->run_query($q, true, true, null, $tablename);
+		$res = $this->run_query($q, true, true, null, $tablename, false);
 		return $res;
 	}
 
@@ -162,9 +182,7 @@ abstract class DbAccess {
 	 */
 	public function autocommit($mode) {
 		DLOG(__METHOD__);
-		if (!self::$mysqli->autocommit($mode)) {
-			throw new Exception(__METHOD__." MySQLi error: ".self::$mysqli->error);
-		}
+		self::$mysqli->autocommit($mode);
 	}
 
 	/**
@@ -173,12 +191,7 @@ abstract class DbAccess {
 	 */
 	public function begin_transaction() {
 		DLOG(__METHOD__);
-		if (function_exists("mysqli_begin_transaction")) {
-			if (!self::$mysqli->begin_transaction()) {
-				throw new Exception(__METHOD__." MySQLi error: ".self::$mysqli->error);
-			}
-		}
-		$this->autocommit(false);
+		self::$mysqli->begin_transaction();
 	}
 
 	/**
@@ -187,10 +200,7 @@ abstract class DbAccess {
 	 */
 	public function commit() {
 		DLOG(__METHOD__);
-		if (!self::$mysqli->commit()) {
-			throw new Exception(__METHOD__." MySQLi error: ".self::$mysqli->error);
-		}
-		$this->autocommit(true);
+		self::$mysqli->commit();
 	}
 
 	/**
@@ -199,9 +209,7 @@ abstract class DbAccess {
 	 */
 	public function rollback() {
 		DLOG(__METHOD__);
-		if (!self::$mysqli->rollback()) {
-			throw new Exception(__METHOD__." MySQLi error: ".self::$mysqli->error);
-		}
+		self::$mysqli->rollback();
 	}
 
 	/**

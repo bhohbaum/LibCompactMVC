@@ -45,7 +45,7 @@ class Captcha {
 	/**
 	 * Sessionname to store the original text
 	 */
-	public $session_var = CAPTCHA_SESS_VAR;
+	public $session_var = ST_CAPTCHA_SESS_VAR;
 
 	/**
 	 * Background color in RGB-array
@@ -75,15 +75,15 @@ class Captcha {
 					36,
 					7
 			) // red
-    );
+	);
 
 	/**
 	 * Shadow color in RGB-array or null
 	 */
 	public $shadowColor = null; //array(0, 0, 0);
 
-    /** Horizontal line through the text */
-    // array(0, 0, 0);
+	/** Horizontal line through the text */
+	// array(0, 0, 0);
 	public $lineWidth = 0;
 
 	/**
@@ -212,18 +212,24 @@ class Captcha {
 		Session::get_instance()->set_property($this->session_var, $text);
 		//$_SESSION[$this->session_var] = $text;
 
-        /** Transformations */
-        if (!empty($this->lineWidth)) {
+		/** Transformations */
+		if (!empty($this->lineWidth)) {
 			$this->WriteLine();
 		}
 		$this->WaveImage();
 		if ($this->blur && function_exists('imagefilter')) {
-			imagefilter($this->im, IMG_FILTER_GAUSSIAN_BLUR);
+			$res = imagefilter($this->im, IMG_FILTER_GAUSSIAN_BLUR);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 		$this->ReduceImage();
 
 		if ($this->debug) {
-			imagestring($this->im, 1, 1, $this->height - 8, "$text {$fontcfg['font']} " . round((microtime(true) - $ini) * 1000) . "ms", $this->GdFgColor);
+			$res = imagestring($this->im, 1, 1, $this->height - 8, "$text {$fontcfg['font']} " . round((microtime(true) - $ini) * 1000) . "ms", $this->GdFgColor);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 
 		/**
@@ -242,23 +248,38 @@ class Captcha {
 	 */
 	protected function ImageAllocate() {
 		// Cleanup
-        if (!empty($this->im)) {
-			imagedestroy($this->im);
+		if (!empty($this->im)) {
+			$res = imagedestroy($this->im);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 
 		$this->im = imagecreatetruecolor($this->width * $this->scale, $this->height * $this->scale);
+		if ($this->im === false) {
+			throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+		}
 
 		// Background color
-        $this->GdBgColor = imagecolorallocate($this->im, $this->backgroundColor[0], $this->backgroundColor[1], $this->backgroundColor[2]);
-		imagefilledrectangle($this->im, 0, 0, $this->width * $this->scale, $this->height * $this->scale, $this->GdBgColor);
+		$this->GdBgColor = imagecolorallocate($this->im, $this->backgroundColor[0], $this->backgroundColor[1], $this->backgroundColor[2]);
+		$res = imagefilledrectangle($this->im, 0, 0, $this->width * $this->scale, $this->height * $this->scale, $this->GdBgColor);
+		if ($res === false) {
+			throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+		}
 
 		// Foreground color
-        $color = $this->colors[mt_rand(0, sizeof($this->colors) - 1)];
+		$color = $this->colors[mt_rand(0, sizeof($this->colors) - 1)];
 		$this->GdFgColor = imagecolorallocate($this->im, $color[0], $color[1], $color[2]);
+		if ($this->GdFgColor === false) {
+			throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+		}
 
 		// Shadow color
-        if (!empty($this->shadowColor) && is_array($this->shadowColor) && sizeof($this->shadowColor) >= 3) {
+		if (!empty($this->shadowColor) && is_array($this->shadowColor) && sizeof($this->shadowColor) >= 3) {
 			$this->GdShadowColor = imagecolorallocate($this->im, $this->shadowColor[0], $this->shadowColor[1], $this->shadowColor[2]);
+			if ($this->GdShadowColor === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 	}
 
@@ -305,7 +326,7 @@ class Captcha {
 	 * Random dictionary word generation
 	 *
 	 * @param boolean $extended
-	 *        	Add extended "fake" words
+	 *			Add extended "fake" words
 	 * @return string Word
 	 */
 	function GetDictionaryCaptchaText($extended = false) {
@@ -314,7 +335,7 @@ class Captcha {
 		}
 
 		// Full path of words file
-        if (substr($this->wordsFile, 0, 1) == '/') {
+		if (substr($this->wordsFile, 0, 1) == '/') {
 			$wordsfile = $this->wordsFile;
 		} else {
 			$wordsfile = $this->resourcesPath . '/' . $this->wordsFile;
@@ -370,7 +391,10 @@ class Captcha {
 		$width = $this->lineWidth / 2 * $this->scale;
 
 		for($i = $width * -1; $i <= $width; $i++) {
-			imageline($this->im, $x1, $y1 + $i, $x2, $y2 + $i, $this->GdFgColor);
+			$res = imageline($this->im, $x1, $y1 + $i, $x2, $y2 + $i, $this->GdFgColor);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 	}
 
@@ -380,11 +404,11 @@ class Captcha {
 	protected function WriteText($text, $fontcfg = array()) {
 		if (empty($fontcfg)) {
 			// Select the font configuration
-            $fontcfg = $this->fonts[array_rand($this->fonts)];
+			$fontcfg = $this->fonts[array_rand($this->fonts)];
 		}
 
 		// Full path of font file
-        $fontfile = $this->resourcesPath . '/fonts/' . $fontcfg['font'];
+		$fontfile = $this->resourcesPath . '/fonts/' . $fontcfg['font'];
 
 		/**
 		 * Increase font-size for shortest words: 9% for each glyp missing
@@ -393,7 +417,7 @@ class Captcha {
 		$fontSizefactor = 1 + ($lettersMissing * 0.09);
 
 		// Text generation (char by char)
-        $x = 20 * $this->scale;
+		$x = 20 * $this->scale;
 		$y = round(($this->height * 27 / 40) * $this->scale);
 		$length = strlen($text);
 		for($i = 0; $i < $length; $i++) {
@@ -403,8 +427,14 @@ class Captcha {
 
 			if ($this->shadowColor) {
 				$coords = imagettftext($this->im, $fontsize, $degree, $x + $this->scale, $y + $this->scale, $this->GdShadowColor, $fontfile, $letter);
+				if ($coords === false) {
+					throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+				}
 			}
 			$coords = imagettftext($this->im, $fontsize, $degree, $x, $y, $this->GdFgColor, $fontfile, $letter);
+			if ($coords === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 			$x += ($coords[2] - $x) + ($fontcfg['spacing'] * $this->scale);
 		}
 
@@ -416,17 +446,23 @@ class Captcha {
 	 */
 	protected function WaveImage() {
 		// X-axis wave generation
-        $xp = $this->scale * $this->Xperiod * rand(1, 3);
+		$xp = $this->scale * $this->Xperiod * rand(1, 3);
 		$k = rand(0, 100);
 		for($i = 0; $i < ($this->width * $this->scale); $i++) {
-			imagecopy($this->im, $this->im, $i - 1, sin($k + $i / $xp) * ($this->scale * $this->Xamplitude), $i, 0, 1, $this->height * $this->scale);
+			$res = imagecopy($this->im, $this->im, $i - 1, sin($k + $i / $xp) * ($this->scale * $this->Xamplitude), $i, 0, 1, $this->height * $this->scale);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 
 		// Y-axis wave generation
-        $k = rand(0, 100);
+		$k = rand(0, 100);
 		$yp = $this->scale * $this->Yperiod * rand(1, 2);
 		for($i = 0; $i < ($this->height * $this->scale); $i++) {
-			imagecopy($this->im, $this->im, sin($k + $i / $yp) * ($this->scale * $this->Yamplitude), $i - 1, 0, $i, $this->width * $this->scale, 1);
+			$res = imagecopy($this->im, $this->im, sin($k + $i / $yp) * ($this->scale * $this->Yamplitude), $i - 1, 0, $i, $this->width * $this->scale, 1);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 	}
 
@@ -435,9 +471,18 @@ class Captcha {
 	 */
 	protected function ReduceImage() {
 		// Reduzco el tamaÒo de la imagen
-        $imResampled = imagecreatetruecolor($this->width, $this->height);
-		imagecopyresampled($imResampled, $this->im, 0, 0, 0, 0, $this->width, $this->height, $this->width * $this->scale, $this->height * $this->scale);
-		imagedestroy($this->im);
+		$imResampled = imagecreatetruecolor($this->width, $this->height);
+		if ($imResampled === false) {
+			throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+		}
+		$res = imagecopyresampled($imResampled, $this->im, 0, 0, 0, 0, $this->width, $this->height, $this->width * $this->scale, $this->height * $this->scale);
+		if ($res === false) {
+			throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+		}
+		$res = imagedestroy($this->im);
+		if ($res === false) {
+			throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+		}
 		$this->im = $imResampled;
 	}
 
@@ -446,11 +491,19 @@ class Captcha {
 	 */
 	protected function WriteImage() {
 		if ($this->imageFormat == 'png' && function_exists('imagepng')) {
+			DLOG(__METHOD__ . ": Sending image in PNG format.");
 			header("Content-type: image/png");
-			imagepng($this->im);
+			$res = imagepng($this->im);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		} else {
+			DLOG(__METHOD__ . ": Sending image in JPG format.");
 			header("Content-type: image/jpeg");
-			imagejpeg($this->im, null, 80);
+			$res = imagejpeg($this->im, null, 80);
+			if ($res === false) {
+				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+			}
 		}
 	}
 
@@ -458,7 +511,10 @@ class Captcha {
 	 * Cleanup
 	 */
 	protected function Cleanup() {
-		imagedestroy($this->im);
+		$res = imagedestroy($this->im);
+		if ($res === false) {
+			throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
+		}
 	}
 
 

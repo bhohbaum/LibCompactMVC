@@ -7,7 +7,7 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
  * @package     LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
- * @link		http://www.adrodev.de
+ * @link		http://www.github.com/bhohbaum
  */
 
 function cmvc_include($fname) {
@@ -63,10 +63,11 @@ function is_tls_con() {
 	return $ret;
 }
 
+cmvc_include('mysqlhost.php');
+cmvc_include('config.php');
 cmvc_include('log.php');
 
 // first include the configuration
-cmvc_include('config.php');
 
 if (!defined("LOG_FILE")) {
 	die("LOG_FILE is undefined, please define it in config.php - exiting.\n");
@@ -85,6 +86,7 @@ if (defined('DEBUG') && (DEBUG == 0)) {
 
 // framework
 cmvc_include('inputsanitizer.php');
+cmvc_include('singleton.php');
 
 cmvc_include('actiondispatcher.php');
 cmvc_include('arraylist.php');
@@ -102,6 +104,7 @@ cmvc_include('htmlmail.php');
 cmvc_include('invalidmemberexception.php');
 cmvc_include('map_radius.php');
 cmvc_include('multiextender.php');
+cmvc_include('mysqladapter.php');
 cmvc_include('network.php');
 cmvc_include('querybuilder.php');
 cmvc_include('rbrc.php');

@@ -16,24 +16,7 @@ LIBCOMPACTMVC_ENTRY;
 // 0	off
 // 1	on
 define('DEBUG', 1);
-define('LOG_LEVEL', Log::LOG_LVL_DEBUG);
-
-
-// DB Server:
-
-// DB Server (IP or hostname)
-define("MYSQL_HOST", "localhost");
-
-// default DB
-define("MYSQL_DB", "libcompactmvc");
-
-// DB user
-define("MYSQL_USER", "botho");
-
-// DB password
-define("MYSQL_PASS", "Mausi_303");
-
-define("DBA_DEFAULT_CLASS", "DBA");
+define('LOG_LEVEL', 3);
 
 // populate controllers with POST/GET variables?
 define('REGISTER_HTTP_VARS', true);
@@ -57,9 +40,11 @@ define('CACHING_ENABLED', DEBUG != 1 || true);
 
 define('REDIS_KEY_PRAEFIX', 'CMVC_');
 define('REDIS_KEY_RCACHE_PFX', REDIS_KEY_PRAEFIX . 'RENDERCACHE_');
-define('REDIS_KEY_RCACHE_TTL', '600');
+define('REDIS_KEY_RCACHE_TTL', 600);
 define('REDIS_KEY_TBLDESC_PFX', REDIS_KEY_PRAEFIX . 'TBLDESC_');
 define('REDIS_KEY_FKINFO_PFX', REDIS_KEY_PRAEFIX . 'FKINFO_');
+define('REDIS_KEY_TBLCACHE_PFX', REDIS_KEY_PRAEFIX . 'TBLCACHE_');
+define('REDIS_KEY_TBLCACHE_TTL', 600);
 
 define('CAPTCHA_RES_PATH', "./include/resources");			// relative to $_SERVER['DOCUMENT_ROOT']
 define('CAPTCHA_SESS_VAR', "captcha");
@@ -104,5 +89,20 @@ define('TBLV_TODAYS_MAILINGS', 'todays_mailings');
 define('TBLV_TRACKING_COMBINED', 'tracking_combined');
 
 define('TBLP_TRACKING_OVERVIEW', 'tracking_overview');
+
+// DB Server:
+// DB schema name for ORM learning
+define('MYSQL_SCHEMA', 'libcompactmvc');
+$GLOBALS['MYSQL_HOSTS'] = array(
+		new MySQLHost("localhost", "kmundp", "kmundppasswd", MYSQL_SCHEMA, MySQLHost::SRV_TYPE_READWRITE)
+);
+$GLOBALS['MYSQL_NO_CACHING'] = array(
+		TBLV_NEXT_RECEIVER,
+		TBLV_SEND_LIST,
+		TBLV_TODAYS_MAILINGS,
+		TBLV_TRACKING_COMBINED,
+		TBLP_TRACKING_OVERVIEW
+);
+define("DBA_DEFAULT_CLASS", "DBA");
 
 ?>

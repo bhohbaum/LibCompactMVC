@@ -65,7 +65,7 @@ class TableDescription extends DbAccess {
 				    information_schema.key_column_usage
 				WHERE
 				    referenced_table_name IS NOT NULL
-				AND table_schema = '" . MYSQL_DB . "'
+				AND table_schema = '" . MYSQL_SCHEMA . "'
 				AND table_name = '" . $tablename . "'";
 		$desc = $this->run_query($q, true, true);
 		self::$fkinfoarr[$tablename] = $desc;

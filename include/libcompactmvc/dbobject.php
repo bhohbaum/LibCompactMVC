@@ -62,7 +62,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 			if ($column == $var_name) {
 				$qb = new QueryBuilder();
 				$q = $qb->select($reftab, array($refcol => $this->__member_variables[$var_name]));
-				$ret = DbAccess::get_instance(DBA_DEFAULT_CLASS)->run_query($q, true, true, null, $reftab);
+				$ret = DbAccess::get_instance(DBA_DEFAULT_CLASS)->run_query($q, true, true, null, $reftab, false);
 			}
 		}
 		if (count($ret) == 1) {
@@ -119,7 +119,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$constraint = ($constraint == null) ? array() : $constraint;
 		$qb = new QueryBuilder();
 		$q = $qb->select($this->__tablename, $constraint);
-		$res = $this->run_query($q, false, false);
+		$res = $this->run_query($q, false, false, null, $this->__tablename, false);
 		if (!$res) {
 			throw new EmptyResultException();
 		}
@@ -160,7 +160,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 			}
 			$q = $qb->update($this->__tablename, $fields, $constraint);
 		}
-		$ret = $this->run_query($q);
+		$ret = $this->run_query($q, false, false, null, $this->__tablename, true);
 		if ($this->__isnew && count($pks) == 1) {
 			$this->__member_variables[$pks[0]] = $ret;
 		}
@@ -182,7 +182,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$qb = new QueryBuilder();
 		$q = $qb->delete($this->__tablename, $constraint);
 		$this->__isnew = true;
-		return $this->run_query($q);
+		return $this->run_query($q, false, false, null, $this->__tablename, true);
 	}
 
 	/**
