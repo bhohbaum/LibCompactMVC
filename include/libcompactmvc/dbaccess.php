@@ -86,7 +86,7 @@ abstract class DbAccess {
 	protected function run_query($query, $has_multi_result = false, $object = false, $field = null, $table = null, $is_write_access = true) {
 		DLOG(__METHOD__ . ": " . $query);
 		$ret = null;
-		$key = REDIS_KEY_TBLCACHE_PFX . $table . "_" . md5($query);
+		$key = REDIS_KEY_TBLCACHE_PFX . $table . "_" . $is_write_access . "_" . $field . "_" . $object . "_" . $has_multi_result . "_" . md5($query);
 		$object = ($field == null) ? $object : false;
 		if (!array_key_exists($table, $GLOBALS['MYSQL_NO_CACHING'])) {
 			if ($is_write_access) {
@@ -167,7 +167,7 @@ abstract class DbAccess {
 	 * @param String $tablename
 	 * @param String $constraint
 	 */
-	public function by($tablename, $constraint) {
+	public function by($tablename, $constraint = null) {
 		$qb = new QueryBuilder();
 		$constraint = ($constraint == null) ? array() : $constraint;
 		$q = $qb->select($tablename, $constraint);
@@ -247,7 +247,9 @@ abstract class DbAccess {
 	protected function sqlnull($var) {
 		// we don't DLOG here, it's spaming...
 		// DLOG(__METHOD__);
-		if (is_numeric($var)) {
+		$leadingzero = substr($var, 0, 1) == "0";
+		$iszero = ($var === "0");
+		if ($iszero || (is_numeric($var) && !$leadingzero)) {
 			$var = ($var == null) ? "null" : $var;
 		} else {
 			$var = ($var == null) ? "null" : "'" . $var . "'";

@@ -129,4 +129,19 @@ class Session {
 		DLOG(__METHOD__ . ": Return: " . $this->session_id);
 		return $this->session_id;
 	}
+
+	/**
+	 * Forcibly set the given session id and load their data.
+	 *
+	 * @param unknown_type $id
+	 */
+	public function force_id($id) {
+		DLOG(__METHOD__ . ": Saving current content: " . var_export(self::$parray, true));
+		RedisAdapter::get_instance()->set(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, serialize(self::$parray));
+		RedisAdapter::get_instance()->expire(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, SESSION_TIMEOUT);
+		session_id($id);
+		$this->session_id = $id;
+		DLOG(__METHOD__ . ": Session ID = " . $this->session_id);
+		self::$parray = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id));
+	}
 }

@@ -41,6 +41,9 @@ class ArrayList {
 
 	public function get_prev_item() {
 		$this->ptr--;
+		if ($this->ptr < 0) {
+			$this->ptr = count($this->items) - 1;
+		}
 		if (isset($this->items[$this->ptr])) {
 			return $this->items[$this->ptr];
 		} else {
@@ -58,6 +61,9 @@ class ArrayList {
 
 	public function get_next_item() {
 		$this->ptr++;
+		if ($this->ptr >= count($this->items)) {
+			$this->ptr = 0;
+		}
 		if (isset($this->items[$this->ptr])) {
 			return $this->items[$this->ptr];
 		} else {

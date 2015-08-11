@@ -91,10 +91,15 @@ class QueryBuilder extends DbAccess {
 		}
 		$q = substr($q, 0, strlen($q) - 2);
 		$q .= " WHERE ";
+		$noconstraint = true;
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $constraint)) {
+				$noconstraint = false;
 				$q .= $val->Field . " = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 			}
+		}
+		if ($noconstraint) {
+			throw new InvalidArgumentException("Constraint missing. Query: '" . $q . "'");
 		}
 		$q = substr($q, 0, strlen($q) - 5);
 		DLOG($q);

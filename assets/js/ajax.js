@@ -75,6 +75,60 @@ var $ajax = function() {
 		this._cberr = cb;
 		return this;
 	};
+	this.init = function() {
+		$(".ajax").each(function() {
+			var $this = $(this);
+			var url = "/" + $this.attr("data-path") + "/" +
+			$this.attr("data-param0") + "/" +
+			$this.attr("data-param1") + "/" +
+			$this.attr("data-param2") + "/" +
+			$this.attr("data-param3") + "/" +
+			$this.attr("data-param4");
+			while (url != url.replace("/undefined", "")) {
+				url = url.replace("/undefined", "");
+			}
+			var content = $this.attr("data-content");
+			events = ["keydown", "keypress", "keyup",
+			          "click", "dblclick",
+			          "mousedown", "mouseup", "mouseover", "mousemove", "mouseout",
+			          "dragstart", "drag", "dragenter", "dragleave", "dragover", "drop", "dragend",
+			          "load", "unload", "abort", "error", "resize", "scroll",
+			          "select", "change", "submit", "reset", "focus", "blur",
+			          "focusin", "focusout"];
+			for (var i = 0; i < events.length; i++) {
+				if ($this.attr("data-" + events[i]) != null) {
+					$this.on(events[i], function(event) {
+						var addThis = ($this.attr("data-" + event.type).substring(0, 6) == "$this.") ? "" : "$this.";
+						var cmd = 'var data = ' + addThis + $this.attr("data-" + event.type);
+						try {
+							eval(cmd);
+							var rnd = Math.round(Math.random() * 1000000);
+							new $ajax().data("&data=" + escape(data)).ok(function(result) {
+								var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
+								try {
+									eval(cmd);
+								} catch (e) {
+									console.log(e);
+								}
+							}).post(url + "#toserver" + rnd);
+						} catch (e) {
+							console.log(e);
+						}
+					});
+				}
+			}
+			var rnd = Math.round(Math.random() * 1000000);
+			new $ajax().ok(function(result) {
+				var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
+				try {
+					eval(cmd);
+				} catch (e) {
+					console.log(e);
+				}
+			}).get(url + "#fromserver" + rnd);
+			$this.removeClass("ajax");
+		});
+	};
 
 	/**
 	 * internal functions
@@ -118,60 +172,9 @@ var $ajax = function() {
 		return this;
 	};
 
-
 };
 
 $(document).ready(function() {
-	$(".ajax").each(function() {
-		var $this = $(this);
-		var url = "/" + $this.attr("data-path") + "/" +
-						$this.attr("data-param0") + "/" +
-						$this.attr("data-param1") + "/" +
-						$this.attr("data-param2") + "/" +
-						$this.attr("data-param3") + "/" +
-						$this.attr("data-param4");
-		while (url != url.replace("/undefined", "")) {
-			url = url.replace("/undefined", "");
-		}
-		var content = $this.attr("data-content");
-		events = ["keydown", "keypress", "keyup",
-		          "click", "dblclick",
-		          "mousedown", "mouseup", "mouseover", "mousemove", "mouseout",
-		          "dragstart", "drag", "dragenter", "dragleave", "dragover", "drop", "dragend",
-		          "load", "unload", "abort", "error", "resize", "scroll",
-		          "select", "change", "submit", "reset", "focus", "blur",
-		          "focusin", "focusout"];
-		for (var i = 0; i < events.length; i++) {
-			if ($this.attr("data-" + events[i]) != null) {
-				$this.on(events[i], function(event) {
-					var addThis = ($this.attr("data-" + event.type).substring(0, 6) == "$this.") ? "" : "$this.";
-					var cmd = 'var data = ' + addThis + $this.attr("data-" + event.type);
-					try {
-						eval(cmd);
-						var rnd = Math.round(Math.random() * 1000000);
-						new $ajax().data("&data=" + escape(data)).ok(function(result) {
-							var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
-							try {
-								eval(cmd);
-							} catch (e) {
-								console.log(e);
-							}
-						}).post(url + "#toserver" + rnd);
-					} catch (e) {
-						console.log(e);
-					}
-				});
-			}
-		}
-		var rnd = Math.round(Math.random() * 1000000);
-		new $ajax().ok(function(result) {
-			var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
-			try {
-				eval(cmd);
-			} catch (e) {
-				console.log(e);
-			}
-		}).get(url + "#fromserver" + rnd);
-	});
+	new $ajax().init();
 });
 
