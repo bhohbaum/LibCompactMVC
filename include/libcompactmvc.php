@@ -89,6 +89,8 @@ cmvc_include('inputsanitizer.php');
 cmvc_include('singleton.php');
 
 cmvc_include('actiondispatcher.php');
+cmvc_include('applepushnotification.php');
+cmvc_include('ApnsPHP/Autoload.php');
 cmvc_include('arraylist.php');
 cmvc_include('captcha.php');
 cmvc_include('centermap.php');
