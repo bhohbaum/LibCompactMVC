@@ -17,6 +17,7 @@ class Upload {
 	private $names_arr;
 
 	public function __construct($path) {
+		DLOG();
 		$this->ul_path = $path;
 		$this->files_arr = $_FILES;
 	}
@@ -28,6 +29,7 @@ class Upload {
 	 * @throws Exception
 	 */
 	public function save() {
+		DLOG();
 		$ret = array();
 		$i = 0;
 		foreach ($this->files_arr as $key => $value) {
@@ -50,6 +52,7 @@ class Upload {
 	 * @throws Exception
 	 */
 	public function save_sub() {
+		DLOG();
 		$ret = array();
 		foreach ($this->files_arr as $key => $value) {
 			if ($value['name'] != "") {
@@ -64,6 +67,7 @@ class Upload {
 	}
 
 	public function get_param_name($index) {
+		DLOG();
 		if (!isset($index)) {
 			return $this->names_arr;
 		}

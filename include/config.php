@@ -31,6 +31,7 @@ define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMEN
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
 define('CSV_BASE_DIR', './files/csv');						// relative to $_SERVER['DOCUMENT_ROOT']
 define('LOG_FILE', '/var/log/php/cmvc.log');				// relative to $_SERVER['DOCUMENT_ROOT']
+define('LOG_TYPE', 0);
 define('BASE_URL', 'http://libcompactmvc.local');
 define('DEFAULT_TIMEZONE', 'CET');
 

@@ -15,14 +15,14 @@ class WSAdapter {
 	private static $instance;
 
 	private function __construct() {
-		DLOG(__METHOD__);
+		DLOG();
 		if (Session::get_instance()->get_property(ST_WS_SRV_IDX) == null) {
 			Session::get_instance()->set_property(ST_WS_SRV_IDX, rand(0, WS_SRV_COUNT - 1));
 		}
 	}
 
 	public static function get_instance() {
-		DLOG(__METHOD__);
+		DLOG();
 		if (!isset(self::$instance)) {
 			self::$instance = new WSAdapter();
 		}
@@ -30,7 +30,7 @@ class WSAdapter {
 	}
 
 	public function get_srv_url() {
-		DLOG(__METHOD__);
+		DLOG();
 		return $GLOBALS['WS_BASE_URL'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . md5(session_id());
 	}
 

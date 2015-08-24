@@ -19,7 +19,7 @@ abstract class DbAccess {
 
 	protected function __construct() {
 		$this->open_db();
-		$this->log = new Log(Log::LOG_TYPE_FILE);
+		$this->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$this->log->set_log_file(LOG_FILE);
 	}
 
@@ -30,7 +30,7 @@ abstract class DbAccess {
 
 	// prevent cloning
 	private function __clone() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	/**
@@ -38,7 +38,7 @@ abstract class DbAccess {
 	 * @return returns the instance of this class. this is a singleton. there can only be one instance per derived class.
 	 */
 	public static function get_instance($name) {
-		DLOG(__METHOD__);
+		DLOG();
 		if ((!isset(self::$instance)) || (!array_key_exists($name, self::$instance))) {
 			if (($name == null) || ($name == "")) {
 				$name = get_class($this);
@@ -64,7 +64,7 @@ abstract class DbAccess {
 	 *
 	 */
 	protected function close_db() {
-		DLOG(__METHOD__);
+		DLOG();
 		if (self::$mysqli != null) {
 			self::$mysqli->close();
 			self::$mysqli = null;
@@ -181,7 +181,7 @@ abstract class DbAccess {
 	 * @throws Exception
 	 */
 	public function autocommit($mode) {
-		DLOG(__METHOD__);
+		DLOG();
 		self::$mysqli->autocommit($mode);
 	}
 
@@ -190,7 +190,7 @@ abstract class DbAccess {
 	 * @throws Exception
 	 */
 	public function begin_transaction() {
-		DLOG(__METHOD__);
+		DLOG();
 		self::$mysqli->begin_transaction();
 	}
 
@@ -199,7 +199,7 @@ abstract class DbAccess {
 	 * @throws Exception
 	 */
 	public function commit() {
-		DLOG(__METHOD__);
+		DLOG();
 		self::$mysqli->commit();
 	}
 
@@ -208,7 +208,7 @@ abstract class DbAccess {
 	 * @throws Exception
 	 */
 	public function rollback() {
-		DLOG(__METHOD__);
+		DLOG();
 		self::$mysqli->rollback();
 	}
 
@@ -219,7 +219,7 @@ abstract class DbAccess {
 	 */
 	protected function escape($str) {
 		// we don't DLOG here, it's spaming...
-		// DLOG(__METHOD__);
+		// DLOG();
 		if (self::$mysqli) {
 			return self::$mysqli->real_escape_string($str);
 		}
@@ -233,7 +233,7 @@ abstract class DbAccess {
 	 * @return DbObject instance
 	 */
 	protected function mkobj($var) {
-		DLOG(__METHOD__);
+		DLOG();
 		return (is_object($var)) ? $var : new DbObject($var);
 	}
 
@@ -246,7 +246,7 @@ abstract class DbAccess {
 	 */
 	protected function sqlnull($var) {
 		// we don't DLOG here, it's spaming...
-		// DLOG(__METHOD__);
+		// DLOG();
 		$leadingzero = substr($var, 0, 1) == "0";
 		$iszero = ($var === "0");
 		if ($iszero || (is_numeric($var) && !$leadingzero)) {

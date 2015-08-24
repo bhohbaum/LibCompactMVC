@@ -25,7 +25,7 @@ abstract class MultiExtender {
 	const C_PROPERTY = 'properties';
 
 	/**
-	 * ein weitere ExtendesClasse hinzufügen
+	 * ein weitere Extended Class hinzufügen
 	 *
 	 * @param String $name
 	 * @param Array $params

@@ -17,7 +17,7 @@ abstract class Singleton {
 	public $log;
 
 	protected function __construct() {
-		$this->log = new Log(Log::LOG_TYPE_FILE);
+		$this->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$this->log->set_log_file(LOG_FILE);
 	}
 
@@ -26,7 +26,7 @@ abstract class Singleton {
 
 	// prevent cloning
 	private function __clone() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	/**
@@ -34,7 +34,7 @@ abstract class Singleton {
 	 * @return returns the instance of this class. this is a singleton. there can only be one instance per derived class.
 	 */
 	public static function get_instance($params) {
-		DLOG(__METHOD__);
+		DLOG();
 		if ((!isset(self::$instance)) || (!array_key_exists($name, self::$instance))) {
 			$name = get_called_class();
 			self::$instance[$name] = new $name($params);

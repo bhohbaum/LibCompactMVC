@@ -14,17 +14,21 @@ LIBCOMPACTMVC_ENTRY;
 class Log {
 	private $db;
 	private $fname;
+	private $logtarget;
 	private $logtype;
-	const LOG_TYPE_DB = 0;
-	const LOG_TYPE_FILE = 1;
+	const LOG_TARGET_DB = 0;
+	const LOG_TARGET_FILE = 1;
+	const LOG_TYPE_MULTILINE = 0;
+	const LOG_TYPE_SINGLELINE = 1;
 	const LOG_LVL_ERROR = 0;
 	const LOG_LVL_WARNING = 1;
 	const LOG_LVL_NOTICE = 2;
 	const LOG_LVL_DEBUG = 3;
 
-	public function __construct($logtype) {
-		$this->logtype = $logtype;
+	public function __construct($logtarget, $logtype = Log::LOG_TYPE_MULTILINE) {
+		$this->logtarget = $logtarget;
 		date_default_timezone_set(DEFAULT_TIMEZONE);
+		$this->logtype = $logtype;
 	}
 
 	public function set_log_file($fname) {
@@ -39,10 +43,11 @@ class Log {
 
 	// general logging method
 	public function log($loglevel, $text) {
+		$text = ($this->logtype == Log::LOG_TYPE_SINGLELINE) ? str_replace("\n", "", $text) : $text;
 		if ($loglevel <= LOG_LEVEL) {
-			if ($this->logtype == Log::LOG_TYPE_DB) {
+			if ($this->logtarget == Log::LOG_TARGET_DB) {
 				$this->db->write2log($loglevel, date(DATE_ISO8601), $text);
-			} else if ($this->logtype == Log::LOG_TYPE_FILE) {
+			} else if ($this->logtarget == Log::LOG_TARGET_FILE) {
 				error_log($loglevel . " " . date(DATE_ISO8601) . " " . $text . "\n", 3, LOG_FILE);
 			}
 		}
@@ -72,40 +77,40 @@ class Log {
  * The XLOG() functions can be used in all controller classes. PHP doesn't know c-like macros.
 * hence we use the debug_backtrace() trick to get the callers object.
 */
-function ELOG($msg) {
+function ELOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TYPE_FILE);
+		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->error($msg);
+	$stack[1]["object"]->log->error($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
-function WLOG($msg) {
+function WLOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TYPE_FILE);
+		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->warning($msg);
+	$stack[1]["object"]->log->warning($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
-function NLOG($msg) {
+function NLOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TYPE_FILE);
+		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->notice($msg);
+	$stack[1]["object"]->log->notice($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
-function DLOG($msg) {
+function DLOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TYPE_FILE);
+		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->debug($msg);
+	$stack[1]["object"]->log->debug($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 /**

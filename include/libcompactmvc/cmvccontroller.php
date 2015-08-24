@@ -34,10 +34,10 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	public function __construct() {
 		// we don't DLOG here, it's spaming...
-		// DLOG(__METHOD__);
+		// DLOG();
 		parent::__construct();
 		$this->view = new View();
-		$this->log = new Log(Log::LOG_TYPE_FILE);
+		$this->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$this->log->set_log_file(LOG_FILE);
 	}
 
@@ -47,56 +47,56 @@ abstract class CMVCController extends InputSanitizer {
 	 * @return String
 	 */
 	protected function dba() {
-		DLOG(__METHOD__);
+		DLOG();
 		return (defined("DBA_DEFAULT_CLASS")) ? DBA_DEFAULT_CLASS : "DbAccess";
 	}
 
 	protected function retrieve_data() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function run_page_logic() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function retrieve_data_get() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function retrieve_data_post() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function retrieve_data_put() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function retrieve_data_delete() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function retrieve_data_exec() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function run_page_logic_get() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function run_page_logic_post() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function run_page_logic_put() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function run_page_logic_delete() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	protected function run_page_logic_exec() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	/**
@@ -105,7 +105,8 @@ abstract class CMVCController extends InputSanitizer {
 	 * @param Exception $e
 	 */
 	protected function exception_handler($e) {
-		DLOG(__METHOD__);
+		DLOG();
+		$this->response_code($e->getCode());
 		throw $e;
 	}
 
@@ -146,7 +147,7 @@ abstract class CMVCController extends InputSanitizer {
 	 * @param unknown_type $obj
 	 */
 	protected function binary_response($obj) {
-		DLOG(__METHOD__);
+		DLOG();
 		$this->view->clear();
 		$this->view->add_template("out.tpl");
 		$this->view->set_value("out", $obj);
@@ -295,7 +296,7 @@ abstract class CMVCController extends InputSanitizer {
 	 * @throws RBRCException
 	 */
 	protected function rbrc($observe_headers = true) {
-		DLOG(__METHOD__);
+		DLOG();
 		self::$rbrc = RBRC::get_instance($this->request(), $observe_headers);
 		if (self::$rbrc->get()) {
 			$this->view->clear();
@@ -310,7 +311,7 @@ abstract class CMVCController extends InputSanitizer {
 	 *
 	 */
 	public function run() {
-		DLOG(__METHOD__);
+		DLOG();
 		DLOG(var_export($_REQUEST, true));
 		$this->redirect = "";
 		$this->db = DbAccess::get_instance($this->dba());
@@ -383,7 +384,7 @@ abstract class CMVCController extends InputSanitizer {
 	 *
 	 */
 	public function get_ob() {
-		DLOG(__METHOD__);
+		DLOG();
 		return $this->ob;
 	}
 

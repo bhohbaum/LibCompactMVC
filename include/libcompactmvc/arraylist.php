@@ -3,7 +3,7 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Double linked list
+ * Circular double linked list.
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
@@ -12,11 +12,12 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 class ArrayList {
+	// TODO: implementation
 	private $ptr;
 	private $items;
 
 	public function __construct() {
-		$this->ptr = 0;
+		$this->ptr = null;
 		$this->items = array();
 	}
 

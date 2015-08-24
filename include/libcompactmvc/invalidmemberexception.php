@@ -14,6 +14,7 @@ LIBCOMPACTMVC_ENTRY;
 class InvalidMemberException extends Exception {
 
 	public function __construct($message = "Invalid member", $code = null, $previous = null) {
+		DLOG();
 		$this->message = $message;
 		$this->code = $code;
 	}

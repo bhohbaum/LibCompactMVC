@@ -19,7 +19,7 @@ class MySQLAdapter extends Singleton {
 	private $last_host;
 
 	protected  function __construct($hosts) {
-		DLOG(__METHOD__);
+		DLOG();
 		parent::__construct();
 		foreach ($hosts as $host) {
 			if ($host->get_type() == MySQLHost::SRV_TYPE_READ || $host->get_type() == MySQLHost::SRV_TYPE_READWRITE) {

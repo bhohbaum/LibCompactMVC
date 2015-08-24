@@ -33,7 +33,7 @@ class Session {
 			}
 		}
 		$this->session_id = (session_id() == "") ? (array_key_exists('PHPSESSID', $_ENV)) ? $_ENV['PHPSESSID'] : "" : session_id();
-		DLOG(__METHOD__ . ": Session ID = " . $this->session_id);
+		DLOG("Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id));
 
 		// The following lines change the session id with every click.
@@ -54,7 +54,7 @@ class Session {
 
 	// prevent cloning
 	private function __clone() {
-		DLOG(__METHOD__);
+		DLOG();
 	}
 
 	// store our data into the $_SESSION variable
@@ -110,7 +110,7 @@ class Session {
 	 *        	property name
 	 */
 	public function clear_property($pname) {
-		DLOG(__METHOD__);
+		DLOG();
 		unset(self::$parray[$pname]);
 	}
 
@@ -118,7 +118,7 @@ class Session {
 	 * clears all data from the session
 	 */
 	public function clear() {
-		DLOG(__METHOD__);
+		DLOG();
 		self::$parray = array();
 	}
 

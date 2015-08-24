@@ -17,7 +17,7 @@ class RedisAdapter {
 	public $log;
 
 	private function __construct() {
-		DLOG(__METHOD__);
+		DLOG();
 		$this->redis = new Redis();
 		$this->redis->connect(REDIS_HOST, REDIS_PORT);
 	}
@@ -35,7 +35,7 @@ class RedisAdapter {
 	}
 
 	public function set($key, $val) {
-		DLOG(__METHOD__ . '("' . $key . '", "' . preg_replace('/[[:^print:]]/', '', $val) . '")');
+		DLOG(__METHOD__ . '("' . $key . '", <content>)');
 		return $this->redis->set($key, $val);
 	}
 

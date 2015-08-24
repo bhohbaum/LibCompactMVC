@@ -16,7 +16,7 @@ LIBCOMPACTMVC_ENTRY;
  * Filesystem helper
  */
 function rrmdir($path, $ignore = array()) {
-	DLOG(__METHOD__);
+	DLOG();
 	foreach ($ignore as $i) {
 		if (pathinfo($path, PATHINFO_BASENAME) == $i) {
 			DLOG(__METHOD__ . " " . $path . " is on ignore list, leaving it undeleted...\n");

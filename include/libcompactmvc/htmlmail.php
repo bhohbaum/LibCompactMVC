@@ -54,6 +54,7 @@ class HTMLMail {
 	 * @param Integer $type
 	 */
 	public function __construct($type = self::MAIL_TYPE_HTML) {
+		DLOG();
 		$this->mailtype = $type;
 		$this->transfertype = self::TRANS_TYPE_MAIL;
 		$this->htmlbody = "";
@@ -76,6 +77,7 @@ class HTMLMail {
 	 * @param Integer $type
 	 */
 	public function set_mail_type($type) {
+		DLOG();
 		$this->mailtype = $type;
 	}
 
@@ -89,6 +91,7 @@ class HTMLMail {
 	 * @param unknown_type $type
 	 */
 	public function set_transfer_type($type) {
+		DLOG();
 		$this->transfertype = $type;
 	}
 
@@ -105,6 +108,7 @@ class HTMLMail {
 	 *        	login password (optional)
 	 */
 	public function set_smtp_access($server, $user = "", $pass = "") {
+		DLOG();
 		$this->smtpserver = $server;
 		$this->smtpuser = $user;
 		$this->smtppass = $pass;
@@ -119,6 +123,7 @@ class HTMLMail {
 	 *        	name of the receiver (optional)
 	 */
 	public function set_receiver($email, $name = "") {
+		DLOG();
 		$this->receiver_name = UTF8::encode($name);
 		$this->receiver_mail = UTF8::encode($email);
 	}
@@ -132,6 +137,7 @@ class HTMLMail {
 	 *        	name of the sender (optional)
 	 */
 	public function set_sender($email, $name = "") {
+		DLOG();
 		$this->sender_name = UTF8::encode($name);
 		$this->sender_mail = UTF8::encode($email);
 	}
@@ -146,6 +152,7 @@ class HTMLMail {
 	 *        	name (optional)
 	 */
 	public function set_reply_to($email, $name = "") {
+		DLOG();
 		$this->replyto_name = UTF8::encode($name);
 		$this->replyto_mail = UTF8::encode($email);
 	}
@@ -159,6 +166,7 @@ class HTMLMail {
 	 *        	name (optional)
 	 */
 	public function set_return_path($email, $name = "") {
+		DLOG();
 		$this->returnpath_name = UTF8::encode($name);
 		$this->returnpath_mail = UTF8::encode($email);
 	}
@@ -172,6 +180,7 @@ class HTMLMail {
 	 *        	name (optional)
 	 */
 	public function add_cc($email, $name = "") {
+		DLOG();
 		mb_internal_encoding('UTF-8');
 		$this->cc[] = mb_encode_mimeheader(UTF8::encode($name), "UTF-8", "Q") . " <" . $email . ">";
 	}
@@ -185,6 +194,7 @@ class HTMLMail {
 	 *        	name (optional)
 	 */
 	public function add_bcc($email, $name = "") {
+		DLOG();
 		mb_internal_encoding('UTF-8');
 		$this->bcc[] = mb_encode_mimeheader(UTF8::encode($name), "UTF-8", "Q") . " <" . $email . ">";
 	}
@@ -196,6 +206,7 @@ class HTMLMail {
 	 *        	the subject
 	 */
 	public function set_subject($subject) {
+		DLOG();
 		$this->subject = UTF8::encode($subject);
 	}
 
@@ -206,6 +217,7 @@ class HTMLMail {
 	 *        	the HTML body
 	 */
 	public function set_html_body($body) {
+		DLOG();
 		$this->htmlbody = UTF8::encode($body);
 	}
 
@@ -219,6 +231,7 @@ class HTMLMail {
 	 *        	text mail body
 	 */
 	public function set_text_body($body) {
+		DLOG();
 		$this->textbody = UTF8::encode($body);
 	}
 
@@ -232,6 +245,7 @@ class HTMLMail {
 	 *        	full path or URL to the file to be attached
 	 */
 	public function add_inline($file) {
+		DLOG();
 		$this->inline[] = UTF8::encode($file);
 	}
 
@@ -243,6 +257,7 @@ class HTMLMail {
 	 *        	full path or URL to the file to be attached
 	 */
 	public function add_attachment($file) {
+		DLOG();
 		$this->attachment[] = UTF8::encode($file);
 	}
 
@@ -252,6 +267,7 @@ class HTMLMail {
 	 * @throws Exception
 	 */
 	public function send() {
+		DLOG();
 		mb_internal_encoding('UTF-8');
 		$this->replace_image_tags();
 		$this->auto_text_body();
@@ -297,6 +313,7 @@ class HTMLMail {
 	 * Puts everything together.
 	 */
 	private function assemble_mail() {
+		DLOG();
 		mb_internal_encoding('UTF-8');
 		$this->mailheader = 'Subject: ' . mb_encode_mimeheader($this->subject, "UTF-8", "Q") . "\n";
 		$this->mailheader .= 'From: ' . mb_encode_mimeheader($this->sender_name, "UTF-8", "Q") . ' <' . $this->sender_mail . ">\n";
@@ -392,6 +409,7 @@ class HTMLMail {
 	 * Generates the text body from the HTML body.
 	 */
 	private function auto_text_body() {
+		DLOG();
 		if ($this->mailtype == self::MAIL_TYPE_HTML) {
 			if ($this->textbody == "") {
 				$this->textbody = str_replace("\r", "", $this->htmlbody);
@@ -409,6 +427,7 @@ class HTMLMail {
 	 * this will automaticcaly rewritten to internal images using cid: in the src attribute.
 	 */
 	private function replace_image_tags() {
+		DLOG();
 		if (count($this->inline) > 0) {
 			foreach ($this->inline as $i) {
 				$bn = basename($i);
@@ -427,6 +446,7 @@ class HTMLMail {
 	 * @return String MIME type
 	 */
 	private function mime_type($ext = '') {
+		DLOG();
 		$mimes = array(
 				'hqx' => 'application/mac-binhex40',
 				'cpt' => 'application/mac-compactpro',

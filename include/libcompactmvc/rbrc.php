@@ -22,7 +22,7 @@ class RBRC {
 	 * @param unknown_type $observe_headers
 	 */
 	private function __construct($rdata, $observe_headers) {
-		DLOG(__METHOD__);
+		DLOG();
 		if ($observe_headers) {
 			$this->rhash = md5(serialize($rdata) . serialize(apache_request_headers()));
 		} else {
@@ -35,7 +35,7 @@ class RBRC {
 	 * @return returns the instance of this class. this is a singleton. there can only be one instance per derived class.
 	 */
 	public static function get_instance($rdata, $observe_headers = true) {
-		DLOG(__METHOD__);
+		DLOG();
 		if (!isset(self::$instance)) {
 			self::$instance = new RBRC($rdata, $observe_headers);
 		}
