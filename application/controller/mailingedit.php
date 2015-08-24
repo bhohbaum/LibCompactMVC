@@ -183,7 +183,9 @@ class MailingEdit extends CMVCController {
 				$mailpart->by(array("id" => $mailpart->id));
 			}
 		} else if ($this->param1 == "testmail") {
-			if (system("./assets/scripts/mailcron.php -d -t ".$this->param2." ".$this->mailingid." >> ".LOG_FILE) !== false) {
+			$cmd = "./assets/scripts/mailcron.php -d -t " . $this->param2 . " " . $this->mailingid . " >> " . LOG_FILE;
+			DLOG("COMMAND: " . $cmd);
+			if (system($cmd) !== false) {
 				$this->json_response(true);
 			} else {
 				$this->json_response(false);

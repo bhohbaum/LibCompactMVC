@@ -8,9 +8,9 @@
  * Import script
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
- * @package     Birk Mailing
+ * @package     Newsletter System
  * @copyright   Copyright (c) Botho Hohbaum 19.02.2014
- * @link		http://www.adrodev.de
+ * @link		http://www.github.com/bhohbaum
  */
 
 /**
