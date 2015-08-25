@@ -38,7 +38,7 @@ a {
 p {
 	margin: 0px;
 }
-	
+
 img {
 	border: 0;
 	height: auto;
@@ -309,12 +309,12 @@ h4,.h4 {
 										<td valign="top" style="border-collapse: collapse;"></td>
 										<td valign="top" width="190"
 											style="border-collapse: collapse;">
-											<div
-												style="color: #FFFFFF; font-family: Arial; font-size: 10px; line-height: 100%; text-align: left;">
-												<?= @UTF8::encode($this->get_value("receiver")->salutation) ?>
-												<?= @UTF8::encode($this->get_value("receiver")->lastname) ?>,
-												im Folgenden erhalten Sie das neueste Mailing von Media Impression Unit 08.
-											</div>
+											<?php if ($this->get_value("mhr") != null) { ?>
+												<span style="font-size: 9px; font-family: Arial, sans-serif; color: #FFFFFF;">
+													Wird diese E-Mail nicht korrekt angezeigt?
+													<a href="<?= BASE_URL."/app/mail/byident/".$this->get_value("ident") ?>"><br />Im Browser ansehen</a>
+												</span>
+											<?php } ?>
 										</td>
 									</tr>
 								</table>
@@ -333,12 +333,6 @@ h4,.h4 {
 									<tr>
 										<td class="headerContent"
 											style="border-collapse: collapse; color: #FFFFFF; font-family: Arial; font-size: 34px; font-weight: bold; line-height: 100%; padding: 20px 0px; text-align: left; vertical-align: middle;">
-											<?php if ($this->get_value("mhr") != null) { ?> 
-												<span style="font-size: 9px; font-family: Arial, sans-serif; color: #FFFFFF;">
-													Wird diese E-Mail nicht korrekt angezeigt? 
-													<a href="<?= BASE_URL."/app/mail/byident/".$this->get_value("ident") ?>">Im Browser ansehen</a>
-												</span> 
-											<?php } ?>
 											<img
 												src="<?= BASE_URL ?>/assets/img/logo-w.jpg"
 												alt="" border="0"
@@ -366,7 +360,11 @@ h4,.h4 {
 										<td colspan="3" valign="top" class="bodyContent" style="border-collapse: collapse; background-color: #000000;">
 											<table border="0" cellpadding="20" cellspacing="0" width="100%">
 												<tr>
-													<?= @UTF8::encode($this->get_value("receiver")->salutation) ?> <?= @UTF8::encode($this->get_value("receiver")->firstname) ?> <?= @UTF8::encode($this->get_value("receiver")->lastname) ?>
+													<td>
+														<span style="font-size: 14px; font-family: Arial, sans-serif; color: #FFFFFF; margin-left: 15 px;">
+															<?= @UTF8::encode($this->get_value("receiver")->salutation) ?> <?= @UTF8::encode($this->get_value("receiver")->firstname) ?> <?= @UTF8::encode($this->get_value("receiver")->lastname) ?>
+														</span>
+													</td>
 												</tr>
 												<tr>
 													<td valign="top" style="border-collapse: collapse;">
@@ -428,32 +426,32 @@ h4,.h4 {
 									<tr>
 										<td valign="top" class="footerContent"
 											style="border-collapse: collapse;">
-											
+
 											<table style=" background-color:#000000; height:20px; line-height:12px; color: #FFFFFF; font-size:10px;" width="650" border="0" cellspacing="0" cellpadding="5">
-											    <tbody>
-											    	<tr>
-											    		<td width="8" style="width:8px;">&nbsp;</td>
-											      		<td width="30%">
-											      			<p>ANSCHRIFT</p>
-											      			<p>Media Impression - UNIT 08 GmbH<br>
-											          		Uhlandstraße 21<br>
-											      			71638 Ludwigsburg</p>
-											      		</td>
-											      		<td width="30%">
-											      			<p>KONTAKT</p>
-											        		<p>T. 0 7141 - 56 44 2 - 0<br>
-											          		F. 0 7141 - 56 44 2 - 56<br>
-											      			M info@miu08.de</p>
-											      		</td>
-											      		<td width="38%">HRB 751853 Amtsgericht Stuttgart<br>
-											        	USt.-Id.-Nr. DE815 549 169<br>
+												<tbody>
+													<tr>
+														<td width="8" style="width:8px;">&nbsp;</td>
+														<td width="30%">
+															<p>ANSCHRIFT</p>
+															<p>Media Impression - UNIT 08 GmbH<br>
+															Uhlandstraße 21<br>
+															71638 Ludwigsburg</p>
+														</td>
+														<td width="30%">
+															<p>KONTAKT</p>
+															<p>T. 0 7141 - 56 44 2 - 0<br>
+															F. 0 7141 - 56 44 2 - 56<br>
+															M info@miu08.de</p>
+														</td>
+														<td width="38%">HRB 751853 Amtsgericht Stuttgart<br>
+														USt.-Id.-Nr. DE815 549 169<br>
 														Geschäftsführer: <br>
 														Klaus-Dieter Krüger, Dennis Maitzen
 														</td>
 													</tr>
 												</tbody>
 											</table>
-											      
+
 											<table border="0" cellpadding="10" cellspacing="0" width="100%">
 												<tr>
 													<td colspan="2" valign="middle" style="border-collapse: collapse; background-color: #000000; border: 0;">
