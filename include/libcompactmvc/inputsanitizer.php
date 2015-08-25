@@ -11,7 +11,7 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum/libcompactmvc
  */
-abstract class InputSanitizer {
+abstract class InputSanitizer implements JsonSerializable {
 	protected static $request_data;
 	protected static $request_data_raw;
 	protected $member_variables;
@@ -71,6 +71,17 @@ abstract class InputSanitizer {
 	 */
 	public function __set($var_name, $value) {
 		$this->member_variables[$var_name] = $value;
+	}
+
+	/**
+	 *
+	 */
+	public function jsonSerialize() {
+		$ret = array();
+		foreach ($this->member_variables as $key => $val) {
+			$ret[$key] = $this->__get($key);
+		}
+		return $ret;
 	}
 
 }
