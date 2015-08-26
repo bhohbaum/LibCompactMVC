@@ -40,6 +40,7 @@ class HTMLMail {
 	private $smtpuser;
 	private $smtppass;
 	private $mailbody;
+	public $log;
 	const MAIL_TYPE_TEXT = 1;
 	const MAIL_TYPE_HTML = 2;
 	const TRANS_TYPE_MAIL = 1;
