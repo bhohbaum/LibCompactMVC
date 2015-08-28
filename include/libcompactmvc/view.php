@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+@include_once ('../libpartactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 // This class is used for template handling.
@@ -10,34 +10,39 @@ LIBCOMPACTMVC_ENTRY;
  * Template handling
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
- * @package LibCompactMVC
+ * @package LibpartactMVC
  * @copyright Copyright (c) Botho Hohbaum 24.01.2012
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @link https://github.com/bhohbaum/libpartactmvc
  */
 class View {
 	private static $instance;
-	private $comp;
+	private $part;
 	private $vals;
 	private $tpls;
+	private $comp;
 	public $log;
 
 	public function __construct() {
+		$this->part = array();
+		$this->vals = array();
+		$this->tpls = array();
+		$this->comp = array();
 	}
 
-	public function activate($comp_name) {
-		$this->comp[$comp_name] = true;
+	public function activate($part_name) {
+		$this->part[$part_name] = true;
 		return $this;
 	}
 
-	public function deactivate($comp_name) {
-		$this->comp[$comp_name] = false;
+	public function deactivate($part_name) {
+		$this->part[$part_name] = false;
 		return $this;
 	}
 
-	private function is_active($comp_name) {
-		if (isset($this->comp[$comp_name])) {
-			return $this->comp[$comp_name];
+	private function is_active($part_name) {
+		if (isset($this->part[$part_name])) {
+			return $this->part[$part_name];
 		} else {
 			return false;
 		}
@@ -48,7 +53,7 @@ class View {
 		return $this;
 	}
 
-	public function get_value($key) {
+	private function get_value($key) {
 		if (isset($this->vals[$key])) {
 			return $this->vals[$key];
 		} else {
@@ -56,7 +61,16 @@ class View {
 		}
 	}
 
-	public function encode($val) {
+	public function set_component($key, CMVCController $component) {
+		$this->comp[$key] = $component;
+		return $this;
+	}
+
+	private function component($key) {
+		return $this->comp->get_ob();
+	}
+
+	private function encode($val) {
 		return htmlentities(UTF8::encode($val), ENT_QUOTES | ENT_HTML401, 'UTF-8');
 	}
 
@@ -75,9 +89,10 @@ class View {
 	}
 
 	public function clear() {
-		$this->comp = array();
+		$this->part = array();
 		$this->vals = array();
 		$this->tpls = array();
+		$this->comp = array();
 		return $this;
 	}
 
@@ -88,6 +103,9 @@ class View {
 	public function render($caching = CACHING_ENABLED) {
 		if (DEBUG == 0) {
 			@ob_end_clean();
+		}
+		foreach ($this->comp as $c) {
+			$c->run();
 		}
 		ob_start();
 		if ($caching) {

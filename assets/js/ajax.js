@@ -89,12 +89,12 @@ var $ajax = function() {
 			}
 			var content = $this.attr("data-content");
 			events = ["keydown", "keypress", "keyup",
-			          "click", "dblclick",
-			          "mousedown", "mouseup", "mouseover", "mousemove", "mouseout",
-			          "dragstart", "drag", "dragenter", "dragleave", "dragover", "drop", "dragend",
-			          "load", "unload", "abort", "error", "resize", "scroll",
-			          "select", "change", "submit", "reset", "focus", "blur",
-			          "focusin", "focusout"];
+					"click", "dblclick",
+					"mousedown", "mouseup", "mouseover", "mousemove", "mouseout",
+					"dragstart", "drag", "dragenter", "dragleave", "dragover", "drop", "dragend",
+					"load", "unload", "abort", "error", "resize", "scroll",
+					"select", "change", "submit", "reset", "focus", "blur",
+					"focusin", "focusout"];
 			for (var i = 0; i < events.length; i++) {
 				if ($this.attr("data-" + events[i]) != null) {
 					$this.on(events[i], function(event) {
@@ -102,7 +102,6 @@ var $ajax = function() {
 						var cmd = 'var data = ' + addThis + $this.attr("data-" + event.type);
 						try {
 							eval(cmd);
-							var rnd = Math.round(Math.random() * 1000000);
 							new $ajax().data("&data=" + escape(data)).ok(function(result) {
 								var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
 								try {
@@ -110,14 +109,13 @@ var $ajax = function() {
 								} catch (e) {
 									console.log(e);
 								}
-							}).post(url + "#toserver" + rnd);
+							}).post(url);
 						} catch (e) {
 							console.log(e);
 						}
 					});
 				}
 			}
-			var rnd = Math.round(Math.random() * 1000000);
 			new $ajax().ok(function(result) {
 				var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
 				try {
@@ -125,7 +123,7 @@ var $ajax = function() {
 				} catch (e) {
 					console.log(e);
 				}
-			}).get(url + "#fromserver" + rnd);
+			}).get(url);
 			$this.removeClass("ajax");
 		});
 	};
@@ -158,6 +156,8 @@ var $ajax = function() {
 		}
 	};
 	this._doRequest = function(method, url) {
+		var rnd = Math.round(Math.random() * 1000000);
+		url = url + "#doRequest" + rnd;
 		var xhr = new XMLHttpRequest();
 		xhr.open(method, url, true);
 		xhr.responseType = this._responseType;
