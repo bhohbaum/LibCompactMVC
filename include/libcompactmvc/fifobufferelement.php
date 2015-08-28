@@ -11,15 +11,18 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum/libcompactmvc
  */
-class ArrayListElement {
+class FIFOBufferElement {
+	private $id;
 	private $data;
 	private $prev;
 	private $next;
 
-	public function __construct($data, $prev, $next) {
-		$this->data = $data;
-		$this->prev = $prev;
-		$this->next = $next;
+	public function __construct() {
+		$this->id = md5(microtime() . rand(0, 255));
+	}
+
+	public function get_id() {
+		return $this->id;
 	}
 
 	public function get_data() {
