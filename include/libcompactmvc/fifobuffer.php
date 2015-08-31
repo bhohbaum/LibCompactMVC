@@ -16,12 +16,12 @@ class FIFOBuffer {
 	private $first;
 	private $last;
 
-	public function __construct(String $id = null) {
+	public function __construct($id = null) {
 		if ($id == null) {
 			$this->id = md5(microtime() . rand(0, 255));
 		} else {
 			$this->id = $id;
-			$state = RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id);
+			$state = json_decode(RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id), true);
 			RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id, REDIS_KEY_FIFOBUFF_TTL);
 			if ($state === false) throw new FIFOBufferException("Unable to initialize FIFO buffer.");
 			$this->first = $state["first"];
@@ -31,7 +31,7 @@ class FIFOBuffer {
 
 	public function __destruct() {
 		$state = array("first" => $this->first, "last" => $this->last);
-		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id, serialize($state));
+		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id, json_encode($state));
 		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id, REDIS_KEY_FIFOBUFF_TTL);
 	}
 
@@ -51,8 +51,12 @@ class FIFOBuffer {
 	}
 
 	private function save_element(FIFOBufferElement $elem) {
-		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $elem->get_id(), $elem);
+		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $elem->get_id(), serialize($elem));
 		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $elem->get_id(), REDIS_KEY_FIFOBUFF_TTL);
+	}
+
+	private function delete_element($id) {
+		RedisAdapter::get_instance()->delete(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $id);
 	}
 
 	public function get_id() {
@@ -85,11 +89,17 @@ class FIFOBuffer {
 	public function read() {
 		if ($this->is_empty()) return;
 		$elem = $this->load_element($this->first);
-		$firstelem = $this->load_element($elem->get_next());
-		$firstelem->set_prev(null);
-		$this->save_element($firstelem);
-		$this->first = $firstelem->get_id();
-		return $elem->data;
+		if ($elem->get_next() != null) {
+			$firstelem = $this->load_element($elem->get_next());
+			$firstelem->set_prev(null);
+			$this->save_element($firstelem);
+			$this->first = $firstelem->get_id();
+		} else {
+			$this->first = null;
+			$this->last = null;
+		}
+		$this->delete_element($elem->get_id());
+		return $elem->get_data();
 	}
 
 }

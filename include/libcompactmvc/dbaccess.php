@@ -100,6 +100,7 @@ abstract class DbAccess {
 				$res = RedisAdapter::get_instance()->get($key);
 				if ($res !== false) {
 					RedisAdapter::get_instance()->expire($key, REDIS_KEY_TBLCACHE_TTL);
+					DLOG("Query was cached!!!");
 					return unserialize($res);
 				}
 			}
@@ -159,6 +160,7 @@ abstract class DbAccess {
 				RedisAdapter::get_instance()->expire($key, REDIS_KEY_TBLCACHE_TTL);
 			}
 		}
+		DLOG("Query was NOT cached!!!");
 		return $ret;
 	}
 
