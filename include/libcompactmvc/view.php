@@ -67,7 +67,7 @@ class View {
 	}
 
 	private function component($key) {
-		return $this->comp->get_ob();
+		return $this->comp[$key]->get_ob();
 	}
 
 	private function encode($val) {
@@ -156,7 +156,7 @@ class View {
 		} else if (file_exists($file2)) {
 			include($file2);
 		} else {
-			throw new Exception("Could not find template file: " . $tpl_name);
+			throw new Exception("Could not find template file: " . $tpl_name, 404);
 		}
 	}
 

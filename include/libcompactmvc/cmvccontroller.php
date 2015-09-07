@@ -378,6 +378,7 @@ abstract class CMVCController extends InputSanitizer {
 		DLOG(__METHOD__ . " Exception " . $e->getCode() . " '" . $e->getMessage() . "'");
 		$this->exception_handler($e);
 		$this->ob = $this->view->render();
+		$this->response_code($e->getCode());
 	}
 
 	/**

@@ -60,10 +60,10 @@ try {
 	$run = new Main();
 	$run->app();
 } catch (Exception $e) {
+	echo("<h2>An unhandled exception occured</h2>");
+	echo("<h4>Message:</h4>");
+	echo("<p>".$e->getMessage()."</p>");
 	if (defined('DEBUG') && DEBUG) {
-		echo("<h2>An unhandled exception occured</h2>");
-		echo("<h4>Message:</h4>");
-		echo("<p>".$e->getMessage()."</p>");
 		echo("<h4>Stacktrace:</h4>");
 		echo("<pre>".$e->getTraceAsString()."</pre>");
 	}
