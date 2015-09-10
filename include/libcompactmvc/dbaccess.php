@@ -35,7 +35,7 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @return returns the instance of this class. this is a singleton. there can only be one instance per derived class.
+	 * @return DbAccess the instance of this class. this is a singleton. there can only be one instance per derived class.
 	 */
 	public static function get_instance($name) {
 		DLOG();

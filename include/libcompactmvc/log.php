@@ -83,7 +83,7 @@ function ELOG($msg = "") {
 		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->error($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$stack[1]["object"]->log->error(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function WLOG($msg = "") {
@@ -92,7 +92,7 @@ function WLOG($msg = "") {
 		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->warning($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$stack[1]["object"]->log->warning(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function NLOG($msg = "") {
@@ -101,7 +101,7 @@ function NLOG($msg = "") {
 		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->notice($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$stack[1]["object"]->log->notice(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function DLOG($msg = "") {
@@ -110,7 +110,7 @@ function DLOG($msg = "") {
 		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
-	$stack[1]["object"]->log->debug($stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$stack[1]["object"]->log->debug(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 /**
