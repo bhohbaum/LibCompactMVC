@@ -32,7 +32,7 @@ class Session {
 				session_start();
 			}
 		}
-		$this->session_id = (session_id() == "") ? (array_key_exists('PHPSESSID', $_ENV)) ? $_ENV['PHPSESSID'] : "" : session_id();
+		$this->session_id = (session_id() == "") ? (getenv("PHPSESSID") !== false) ? getenv("PHPSESSID") : "" : session_id();
 		DLOG("Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id));
 

@@ -37,7 +37,7 @@ abstract class CMVCController extends InputSanitizer {
 		// DLOG();
 		parent::__construct();
 		$this->view = new View();
-		$this->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
+		$this->log = new Log(LOG_TARGET, LOG_TYPE);
 		$this->log->set_log_file(LOG_FILE);
 	}
 
@@ -122,7 +122,7 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	protected function method() {
 		if (php_sapi_name() == "cli") {
-			$method = (array_key_exists("METHOD", $_ENV)) ? $_ENV['METHOD'] : "exec";
+			$method = (getenv("METHOD") !== false) ? getenv("METHOD") : "exec";
 		} else {
 			$method = $_SERVER['REQUEST_METHOD'];
 		}

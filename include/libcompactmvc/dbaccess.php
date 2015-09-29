@@ -19,7 +19,7 @@ abstract class DbAccess {
 
 	protected function __construct() {
 		$this->open_db();
-		$this->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
+		$this->log = new Log(LOG_TARGET, LOG_TYPE);
 		$this->log->set_log_file(LOG_FILE);
 	}
 

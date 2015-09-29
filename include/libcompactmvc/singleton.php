@@ -17,7 +17,7 @@ abstract class Singleton {
 	public $log;
 
 	protected function __construct() {
-		$this->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
+		$this->log = new Log(LOG_TARGET, LOG_TYPE);
 		$this->log->set_log_file(LOG_FILE);
 	}
 

@@ -18,6 +18,7 @@ class Log {
 	private $logtype;
 	const LOG_TARGET_DB = 0;
 	const LOG_TARGET_FILE = 1;
+	const LOG_TARGET_SYSLOG = 2;
 	const LOG_TYPE_MULTILINE = 0;
 	const LOG_TYPE_SINGLELINE = 1;
 	const LOG_LVL_ERROR = 0;
@@ -29,6 +30,16 @@ class Log {
 		$this->logtarget = $logtarget;
 		date_default_timezone_set(DEFAULT_TIMEZONE);
 		$this->logtype = $logtype;
+		if ($this->logtype == Log::LOG_TARGET_SYSLOG) {
+			if (!defined("LOG_IDENT") && !defined("LOG_FACILITY")) {
+				throw new Exception("When Syslog is configured as log output, LOG_IDENT and LOG_FACILITY must be defined.", 500);
+			}
+			openlog(LOG_IDENT, LOG_ODELAY | LOG_PID, LOG_FACILITY);
+		}
+	}
+
+	public function __destruct() {
+		closelog();
 	}
 
 	public function set_log_file($fname) {
@@ -43,12 +54,15 @@ class Log {
 
 	// general logging method
 	public function log($loglevel, $text) {
-		$text = ($this->logtype == Log::LOG_TYPE_SINGLELINE) ? str_replace("\n", "", $text) : $text;
+		$text = ($this->logtype == Log::LOG_TYPE_SINGLELINE) ? str_replace("\n", " ", $text) : $text;
 		if ($loglevel <= LOG_LEVEL) {
 			if ($this->logtarget == Log::LOG_TARGET_DB) {
 				$this->db->write2log($loglevel, date(DATE_ISO8601), $text);
 			} else if ($this->logtarget == Log::LOG_TARGET_FILE) {
 				error_log($loglevel . " " . date(DATE_ISO8601) . " " . $text . "\n", 3, LOG_FILE);
+			} else if ($this->logtarget == Log::LOG_TARGET_SYSLOG) {
+				$lvl = ($loglevel == Log::LOG_LVL_DEBUG) ? LOG_DEBUG : ($loglevel == Log::LOG_LVL_NOTICE) ? LOG_NOTICE : ($loglevel == Log::LOG_LVL_WARNING) ? LOG_WARNING : ($loglevel == Log::LOG_LVL_ERROR) ? LOG_ERR : 0;
+				syslog($lvl, LOG_IDENT . " " . preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $text));
 			}
 		}
 	}
@@ -80,7 +94,7 @@ class Log {
 function ELOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
+		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
 	$stack[1]["object"]->log->error(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
@@ -89,7 +103,7 @@ function ELOG($msg = "") {
 function WLOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
+		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
 	$stack[1]["object"]->log->warning(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
@@ -98,7 +112,7 @@ function WLOG($msg = "") {
 function NLOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
+		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
 	$stack[1]["object"]->log->notice(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
@@ -107,7 +121,7 @@ function NLOG($msg = "") {
 function DLOG($msg = "") {
 	$stack = debug_backtrace();
 	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(Log::LOG_TARGET_FILE, LOG_TYPE);
+		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
 		$stack[1]["object"]->log->set_log_file(LOG_FILE);
 	}
 	$stack[1]["object"]->log->debug(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);

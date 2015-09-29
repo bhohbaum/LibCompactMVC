@@ -22,7 +22,7 @@ var $ajax = function() {
 	this._cberr = null;
 
 	/**
-	 * functions for public use
+	 * public functions
 	 */
 	this.get = function(url) {
 		return this._doRequest('GET', url);
@@ -170,6 +170,54 @@ var $ajax = function() {
 		$_ajax[url] = this;
 		xhr.send(this._data);
 		return this;
+	};
+
+};
+
+var $ws = function() {
+
+	this.url = null;
+	this.socket = null;
+	this.handlers = [];
+	this.numhandlers = 0;
+
+	/**
+	 * public functions
+	 */
+	this.init = function(url) {
+		this.url = url;
+		ws = this;
+		try {
+			this.socket = new WebSocket(this.url, "event-dispatch-protocol");
+			console.log('WebSocket - status ' + this.socket.readyState);
+			this.socket.onopen = function(msg) {
+				console.log("Welcome - status " + this.readyState);
+			};
+			this.socket.onmessage = function(msg) {
+				console.log("Received: " + msg.data);
+				ws._run_handlers(msg.data);
+			};
+			this.socket.onclose = function(msg) {
+				console.log("Disconnected - status " + this.readyState);
+			};
+		} catch (ex) {
+			console.log(ex);
+		}
+		return this;
+	};
+
+	this.add_handler = function(handler) {
+		this.handlers[this.numhandlers++] = handler;
+		return this;
+	};
+
+	/**
+	 * internal functions
+	 */
+	this._run_handlers = function(data) {
+		for (var i = 0; i < this.handlers.length; i++) {
+			this.handlers[i](data);
+		}
 	};
 
 };
