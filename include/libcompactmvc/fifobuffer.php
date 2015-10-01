@@ -145,6 +145,26 @@ class FIFOBuffer {
 	}
 
 	/**
+	 * Returns the number of elements in the buffer.
+	 *
+	 * @throws FIFOBufferException
+	 * @return int Number of elements
+	 */
+	public function size() {
+		$this->check_buffer_status();
+		if ($this->is_empty()) {
+			return 0;
+		}
+		$elem = $this->load_element($this->first);
+		$count = 1;
+		while ($elem->get_next() != null) {
+			$elem = $this->load_element($elem->get_next());
+			$count ++;
+		}
+		return $count;
+	}
+
+	/**
 	 * Add an element to the buffer queue.
 	 *
 	 * @param mixed $data
@@ -172,7 +192,7 @@ class FIFOBuffer {
 	}
 
 	/**
-	 * Read the next element from the buffer.
+	 * Read the next element from the buffer and delete it.
 	 *
 	 * @throws FIFOBufferException
 	 * @return mixed Element data.
@@ -196,6 +216,25 @@ class FIFOBuffer {
 	}
 
 	/**
+	 * Read an element at the given position.
+	 *
+	 * @param int $idx
+	 *        	Element index
+	 * @throws FIFOBufferException
+	 * @return mixed Element data.
+	 */
+	public function read_at($idx) {
+		$this->check_buffer_status();
+		if ($this->is_empty())
+			return null;
+		$elem = $this->load_element($this->first);
+		for($i = 0; $i < $idx; $i ++) {
+			$elem = $this->load_element($elem->get_next());
+		}
+		return $elem->get_data();
+	}
+
+	/**
 	 * Destroy the buffer.
 	 * All subsequent method calls on this buffer will throw a FIFOBufferException.
 	 *
@@ -203,7 +242,7 @@ class FIFOBuffer {
 	 */
 	public function destroy() {
 		$this->check_buffer_status();
-		while ( ! $this->is_empty() ) {
+		while (! $this->is_empty()) {
 			$this->read();
 		}
 		RedisAdapter::get_instance()->delete(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id);
