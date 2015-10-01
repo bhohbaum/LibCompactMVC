@@ -243,7 +243,7 @@ class FIFOBuffer {
 	public function delete_at($idx) {
 		$this->check_buffer_status();
 		if ($this->is_empty())
-			throw new FIFOBufferException("Invalid index, buffer is empty.", 500);
+			throw new FIFOBufferException("Invalid index, buffer is empty.", 404);
 		$elem = $this->load_element($this->first);
 		for($i = 0; $i < $idx; $i ++) {
 			$elem = $this->load_element($elem->get_next());
