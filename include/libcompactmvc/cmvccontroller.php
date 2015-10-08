@@ -308,6 +308,16 @@ abstract class CMVCController extends InputSanitizer {
 	}
 
 	/**
+	 * Proxy method to $this->view->set_component($key, CMVCController $component)
+	 *
+	 * @param String $key
+	 * @param CMVCController $component
+	 */
+	protected function set_component($key, CMVCController $component) {
+		$this->view->set_component($key, $component);
+	}
+
+	/**
 	 *
 	 */
 	public function run() {

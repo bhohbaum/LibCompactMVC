@@ -26,6 +26,7 @@ function cmvc_include($fname) {
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
 					"application/",
+					"application/component/",
 					"application/controller/",
 					"application/dba/",
 					"application/framework/",
