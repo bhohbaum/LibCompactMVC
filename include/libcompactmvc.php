@@ -90,6 +90,8 @@ cmvc_include('inputsanitizer.php');
 cmvc_include('singleton.php');
 
 cmvc_include('actiondispatcher.php');
+cmvc_include('actionmapperinterface.php');
+cmvc_include('actionmapper.php');
 cmvc_include('applepushnotification.php');
 cmvc_include('ApnsPHP/Autoload.php');
 cmvc_include('captcha.php');
@@ -107,6 +109,8 @@ cmvc_include('functions.php');
 cmvc_include('googlemaps.php');
 cmvc_include('htmlmail.php');
 cmvc_include('invalidmemberexception.php');
+cmvc_include('linkbuilder.php');
+cmvc_include('linkproperty.php');
 cmvc_include('map_radius.php');
 cmvc_include('multiextender.php');
 cmvc_include('mysqladapter.php');

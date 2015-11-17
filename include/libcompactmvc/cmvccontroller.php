@@ -106,7 +106,6 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	protected function exception_handler($e) {
 		DLOG();
-		$this->response_code($e->getCode());
 		throw $e;
 	}
 
@@ -387,8 +386,17 @@ abstract class CMVCController extends InputSanitizer {
 	public function run_exception_handler($e) {
 		DLOG(__METHOD__ . " Exception " . $e->getCode() . " '" . $e->getMessage() . "'");
 		$this->exception_handler($e);
-		$this->ob = $this->view->render();
-		$this->response_code($e->getCode());
+		if ($e instanceof RedirectException) {
+			$this->response_code($e->getCode());
+			if ($e->is_internal()) {
+				$this->redirect = $e->getMessage();
+			} else {
+				header("Location: " . $e->getMessage());
+			}
+		} else {
+			$this->ob = $this->view->render();
+			$this->response_code($e->getCode());
+		}
 	}
 
 	/**
@@ -398,17 +406,5 @@ abstract class CMVCController extends InputSanitizer {
 		DLOG();
 		return $this->ob;
 	}
-
-	/**
-	 *
-	 */
-	protected function populate_members() {
-		if (REGISTER_HTTP_VARS) {
-			foreach (array_keys($this->request(null)) as $key) {
-				$this->{$key} = $this->request($key);
-			}
-		}
-	}
-
 
 }

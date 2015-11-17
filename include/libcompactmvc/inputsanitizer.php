@@ -12,25 +12,14 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 abstract class InputSanitizer implements JsonSerializable {
+	private $members_populated;
 	protected static $request_data;
 	protected static $request_data_raw;
 	protected $member_variables;
 	public $log;
 
 	protected function __construct() {
-		CMVCController::$request_data = null;
-		$this->member_variables = array();
-		global $argv;
-		if (is_array($argv)) {
-			$var = "action";
-			$this->member_variables[$var] = $argv[1];
-			for ($i = 1; $i <=5 ; $i++) {
-				if (array_key_exists($i + 1, $argv)) {
-					$var = "param" . ($i - 1);
-					$this->member_variables[$var] = $argv[$i + 1];
-				}
-			}
-		}
+		$this->populate_members();
 	}
 
 	protected function request($var = null) {
@@ -48,6 +37,34 @@ abstract class InputSanitizer implements JsonSerializable {
 		}
 		DLOG(__METHOD__ . "(" . $var . ") return: " . var_export($ret, true));
 		return $ret;
+	}
+
+	protected function populate_members() {
+		if ($this->members_populated === true) {
+			return;
+		}
+		CMVCController::$request_data = null;
+		$this->member_variables = array();
+		global $argv;
+		if (REGISTER_HTTP_VARS) {
+			if (php_sapi_name() == "cli") {
+				if (is_array($argv)) {
+					$var = "action";
+					$this->member_variables[$var] = $argv[1];
+					for ($i = 1; $i <=5 ; $i++) {
+						if (array_key_exists($i + 1, $argv)) {
+							$var = "param" . ($i - 1);
+							$this->member_variables[$var] = $argv[$i + 1];
+						}
+					}
+				}
+			} else {
+				foreach (array_keys($this->request(null)) as $key) {
+					$this->{$key} = $this->request($key);
+				}
+			}
+		}
+		$this->members_populated = true;
 	}
 
 	/**

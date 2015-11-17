@@ -16,11 +16,14 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libpartactmvc
  */
 class View {
-	private static $instance;
 	private $part;
 	private $vals;
 	private $tpls;
 	private $comp;
+	/**
+	 * @var LinkBuilder
+	 */
+	private $lb;
 	public $log;
 
 	public function __construct() {
@@ -28,6 +31,7 @@ class View {
 		$this->vals = array();
 		$this->tpls = array();
 		$this->comp = array();
+		$this->lb = LinkBuilder::get_instance();
 	}
 
 	public function activate($part_name) {
@@ -72,6 +76,10 @@ class View {
 
 	private function encode($val) {
 		return htmlentities(UTF8::encode($val), ENT_QUOTES | ENT_HTML401, 'UTF-8');
+	}
+
+	private function link(ActionMapperInterface $mapper, $action = null, $subaction = null, $urltail = null) {
+		return $this->lb->get_link($mapper, $action, $subaction, $urltail);
 	}
 
 	public function set_template($index, $name) {
