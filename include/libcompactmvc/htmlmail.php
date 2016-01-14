@@ -12,8 +12,9 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
- * @link http://www.gnu.org/licenses/lgpl.html
+ * @link https://github.com/bhohbaum
  */
 class HTMLMail {
 	private $inline;
@@ -149,12 +150,9 @@ class HTMLMail {
 	 *
 	 * @param String $email
 	 *        	E-Mail address
-	 * @param String $name
-	 *        	name (optional)
 	 */
-	public function set_reply_to($email, $name = "") {
+	public function set_reply_to($email) {
 		DLOG();
-		$this->replyto_name = UTF8::encode($name);
 		$this->replyto_mail = UTF8::encode($email);
 	}
 
@@ -163,12 +161,9 @@ class HTMLMail {
 	 *
 	 * @param String $email
 	 *        	E-Mail address
-	 * @param String $name
-	 *        	name (optional)
 	 */
-	public function set_return_path($email, $name = "") {
+	public function set_return_path($email) {
 		DLOG();
-		$this->returnpath_name = UTF8::encode($name);
 		$this->returnpath_mail = UTF8::encode($email);
 	}
 
@@ -272,10 +267,7 @@ class HTMLMail {
 		mb_internal_encoding('UTF-8');
 		$this->replace_image_tags();
 		$this->auto_text_body();
-		if ($this->replyto_name == "") {
-			$this->replyto_name = $this->sender_name;
-		}
-		if ($this->replyto_mail == "") {
+		if ($this->replyto_mail == "" || !isset($this->replyto_mail)) {
 			$this->replyto_mail = $this->sender_mail;
 		}
 		$this->assemble_mail();
@@ -321,9 +313,9 @@ class HTMLMail {
 		if ($this->transfertype != self::TRANS_TYPE_MAIL) {
 			$this->mailheader .= 'To: ' . mb_encode_mimeheader($this->receiver_name, "UTF-8", "Q") . ' <' . $this->receiver_mail . ">\n";
 		}
-		$this->mailheader .= 'Reply-To: ' . mb_encode_mimeheader($this->replyto_name, "UTF-8", "Q") . ' <' . $this->replyto_mail . ">\n";
-		if ((isset($this->returnpath_mail)) && (isset($this->returnpath_name))) {
-			$this->mailheader .= 'Return-Path: ' . mb_encode_mimeheader($this->returnpath_name, "UTF-8", "Q") . ' <' . $this->returnpath_mail . ">\n";
+		$this->mailheader .= 'Reply-To: ' . $this->replyto_mail . "\n";
+		if (isset($this->returnpath_mail)) {
+			$this->mailheader .= 'Return-Path: <' . $this->returnpath_mail . ">\n";
 		}
 		$this->mailheader .= 'CC: ' . implode(', ', $this->cc) . "\n";
 		$this->mailheader .= 'BCC: ' . implode(', ', $this->bcc) . "\n";
@@ -357,6 +349,10 @@ class HTMLMail {
 				if (strtoupper(substr($i, 0, 4)) == "HTTP") {
 					$curl = curl_init($i);
 					curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+					if (defined('PROXY_CONFIG') && defined('PROXY_PORT')) {
+						curl_setopt($curl, CURLOPT_PROXY, PROXY_CONFIG);
+						curl_setopt($curl, CURLOPT_PROXYPORT, PROXY_PORT);
+					}
 					$fcont = curl_exec($curl);
 				} else {
 					$fcont = file_get_contents($i);
@@ -384,6 +380,10 @@ class HTMLMail {
 				if (strtoupper(substr($a, 0, 4)) == "HTTP") {
 					$curl = curl_init($a);
 					curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+					if (defined('PROXY_CONFIG') && defined('PROXY_PORT')) {
+						curl_setopt($curl, CURLOPT_PROXY, PROXY_CONFIG);
+						curl_setopt($curl, CURLOPT_PROXYPORT, PROXY_PORT);
+					}
 					$fcont = curl_exec($curl);
 				} else {
 					$fcont = file_get_contents($a);
