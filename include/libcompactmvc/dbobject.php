@@ -7,9 +7,9 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @link https://github.com/bhohbaum
  */
 class DbObject extends DbAccess implements JsonSerializable {
 	private $__member_variables;
@@ -90,7 +90,8 @@ class DbObject extends DbAccess implements JsonSerializable {
 	public function jsonSerialize() {
 		$ret = array();
 		foreach ($this->__member_variables as $key => $val) {
-			$ret[$key] = $this->__get($key);
+			$val = $this->__get($key);
+			$ret[$key] = (!is_string($val)) ? $val : UTF8::encode($val);
 		}
 		return $ret;
 	}
