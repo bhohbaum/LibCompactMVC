@@ -7,13 +7,14 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @link https://github.com/bhohbaum
  */
 class ActionDispatcher extends InputSanitizer {
 	private $actionname;
 	private $handlers;
+	private $handlersobj;
 	private $action;
 	private $action_default;
 	private $control_action;
@@ -22,17 +23,13 @@ class ActionDispatcher extends InputSanitizer {
 		parent::__construct();
 		$this->actionname = $postgetvar;
 		$this->handlers = array();
+		$this->handlersobj = array();
 	}
 
 	public function set_handler($pgvvalue, $classname) {
-		$this->handlers[$pgvvalue] = new $classname();
+		$this->handlers[$pgvvalue] = $classname;
 		$this->action_default = "";
 		$this->control_action = "";
-		if (is_subclass_of($this->handlers[$pgvvalue], "CMVCController")) {
-			return true;
-		} else {
-			throw new Exception("ActionDispatcher::set_handler(\"$pgvvalue\", \"$classname\"): Class must be a subclass of CMVCController.");
-		}
 	}
 
 	public function set_default($pgvvalue) {
@@ -50,42 +47,52 @@ class ActionDispatcher extends InputSanitizer {
 				throw new Exception("ActionDispatcher error: No handler registered for action " . $this->control_action);
 			} else {
 				try {
-					$this->handlers[$this->control_action]->view->clear();
-					$this->handlers[$this->control_action]->view->set_value($this->actionname, $this->action);
-					$this->handlers[$this->control_action]->run();
+					$this->get_handlersobj($this->control_action)->view->clear();
+					$this->get_handlersobj($this->control_action)->view->set_value($this->actionname, $this->action);
+					$this->get_handlersobj($this->control_action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
 				} catch (Exception $e) {
-					$this->handlers[$this->control_action]->run_exception_handler($e);
+					$this->get_handlersobj($this->control_action)->run_exception_handler($e);
 				}
-				if ($this->handlers[$this->control_action]->redirect != "") {
-					$this->action = $this->handlers[$this->control_action]->redirect;
+				if ($this->get_handlersobj($this->control_action)->redirect != "") {
+					$this->action = $this->get_handlersobj($this->control_action)->redirect;
 				}
 			}
 		}
 		do {
-			if (isset($this->handlers[$this->action]) && $this->handlers[$this->action]->redirect != "") {
-				$this->action = $this->handlers[$this->action]->redirect;
+			if (isset($this->handlers[$this->action]) && $this->get_handlersobj($this->action)->redirect != "") {
+				$this->action = $this->get_handlersobj($this->action)->redirect;
 			}
 			if (!isset($this->handlers[$this->action])) {
 				throw new Exception("Redirect error: No handler registered for action '" . $this->action . "'");
 			} else {
 				try {
-					$this->handlers[$this->action]->view->clear();
-					$this->handlers[$this->action]->view->set_value($this->actionname, $this->action);
-					$this->handlers[$this->action]->run();
+					$this->get_handlersobj($this->action)->view->clear();
+					$this->get_handlersobj($this->action)->view->set_value($this->actionname, $this->action);
+					$this->get_handlersobj($this->action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
 				} catch (Exception $e) {
-					$this->handlers[$this->action]->run_exception_handler($e);
+					$this->get_handlersobj($this->action)->run_exception_handler($e);
 				}
 			}
-		} while ($this->handlers[$this->action]->redirect != "");
+		} while ($this->get_handlersobj($this->action)->redirect != "");
 	}
 
 	public function get_ob() {
-		return $this->handlers[$this->action]->get_ob();
+		return $this->get_handlersobj($this->action)->get_ob();
 	}
 
+	private function get_handlersobj($action) {
+		if (!@array_key_exists($action, $this->handlersobj)) {
+			$this->handlersobj[$action] = new $this->handlers[$action]();
+		}
+		if (!is_subclass_of($this->handlersobj[$action], "CMVCController")) {
+			unset($this->handlersobj[$action]);
+			throw new Exception("ActionDispatcher::get_handlersobj(\"$action\"): Class must be a subclass of CMVCController.");
+		}
+		return $this->handlersobj[$action];
+	}
 
 }
