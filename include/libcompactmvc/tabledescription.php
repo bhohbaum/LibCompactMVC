@@ -7,9 +7,9 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @link https://github.com/bhohbaum
  */
 class TableDescription extends DbAccess {
 	// static storage to buffer multiple foreign key lookups
@@ -59,12 +59,12 @@ class TableDescription extends DbAccess {
 			return $desc;
 		}
 		$q = "SELECT
-				    CONCAT(table_name, '.', column_name) as 'fk',
-				    CONCAT(referenced_table_name, '.', referenced_column_name) as 'ref'
+					CONCAT(table_name, '.', column_name) as 'fk',
+					CONCAT(referenced_table_name, '.', referenced_column_name) as 'ref'
 				FROM
-				    information_schema.key_column_usage
+					information_schema.key_column_usage
 				WHERE
-				    referenced_table_name IS NOT NULL
+					referenced_table_name IS NOT NULL
 				AND table_schema = '" . MYSQL_SCHEMA . "'
 				AND table_name = '" . $tablename . "'";
 		$desc = $this->run_query($q, true, true);

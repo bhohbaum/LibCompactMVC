@@ -88,7 +88,7 @@ abstract class DbAccess {
 		$ret = null;
 		$key = REDIS_KEY_TBLCACHE_PFX . $table . "_" . $is_write_access . "_" . $field . "_" . $object . "_" . $has_multi_result . "_" . md5($query);
 		$object = ($field == null) ? $object : false;
-		if (!array_key_exists($table, $GLOBALS['MYSQL_NO_CACHING'])) {
+		if (array_search($table, $GLOBALS['MYSQL_NO_CACHING']) === false) {
 			if ($is_write_access) {
 				$delkey = REDIS_KEY_TBLCACHE_PFX;
 				$delkey .= ($table == null) ? "*" : $table . "*";
@@ -250,8 +250,9 @@ abstract class DbAccess {
 		// we don't DLOG here, it's spaming...
 		// DLOG();
 		$leadingzero = substr($var, 0, 1) == "0";
+		$leadingplus = substr($var, 0, 1) == "+";
 		$iszero = ($var === "0");
-		if ($iszero || (is_numeric($var) && !$leadingzero)) {
+		if ($iszero || (is_numeric($var) && !$leadingzero && !$leadingplus)) {
 			$var = ($var == null) ? "null" : $var;
 		} else {
 			$var = ($var == null) ? "null" : "'" . $var . "'";

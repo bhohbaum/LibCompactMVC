@@ -39,12 +39,13 @@ var $ajax = function() {
 	this.reload = function() {
 		$(".ajax").each(function() {
 			var $this = $(this);
-			var url = "/" + $this.attr("data-path") + "/" +
-							$this.attr("data-param0") + "/" +
-							$this.attr("data-param1") + "/" +
-							$this.attr("data-param2") + "/" +
-							$this.attr("data-param3") + "/" +
-							$this.attr("data-param4");
+			var praefix = ($this.attr("data-path").substring(0, 4) == "http") ? "" : "/";
+			var url = praefix + $this.attr("data-path") + "/" +
+								$this.attr("data-param0") + "/" +
+								$this.attr("data-param1") + "/" +
+								$this.attr("data-param2") + "/" +
+								$this.attr("data-param3") + "/" +
+								$this.attr("data-param4");
 			while (url != url.replace("/undefined", "")) {
 				url = url.replace("/undefined", "");
 			}
@@ -78,12 +79,13 @@ var $ajax = function() {
 	this.init = function() {
 		$(".ajax").each(function() {
 			var $this = $(this);
-			var url = "/" + $this.attr("data-path") + "/" +
-			$this.attr("data-param0") + "/" +
-			$this.attr("data-param1") + "/" +
-			$this.attr("data-param2") + "/" +
-			$this.attr("data-param3") + "/" +
-			$this.attr("data-param4");
+			var praefix = ($this.attr("data-path").substring(0, 4) == "http") ? "" : "/";
+			var url = praefix + $this.attr("data-path") + "/" +
+								$this.attr("data-param0") + "/" +
+								$this.attr("data-param1") + "/" +
+								$this.attr("data-param2") + "/" +
+								$this.attr("data-param3") + "/" +
+								$this.attr("data-param4");
 			while (url != url.replace("/undefined", "")) {
 				url = url.replace("/undefined", "");
 			}
@@ -102,7 +104,7 @@ var $ajax = function() {
 						var cmd = 'var data = ' + addThis + $this.attr("data-" + event.type);
 						try {
 							eval(cmd);
-							new $ajax().data("&data=" + escape(data)).ok(function(result) {
+							new $ajax().data("&data=" + encodeURIComponent(data)).ok(function(result) {
 								var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
 								try {
 									eval(cmd);
@@ -180,12 +182,14 @@ var $ws = function() {
 	this.socket = null;
 	this.handlers = [];
 	this.numhandlers = 0;
+	this.id = null;
 
 	/**
 	 * public functions
 	 */
 	this.init = function(url) {
 		this.url = url;
+		this.id = url.substring(url.length - 32, url.length);
 		ws = this;
 		try {
 			this.socket = new WebSocket(this.url, "event-dispatch-protocol");
@@ -211,12 +215,34 @@ var $ws = function() {
 		return this;
 	};
 
+	this.set_handler = function(event, handler) {
+		if (!Number.isInteger(event)) {
+			this.handlers[event] = handler;
+		}
+		return this;
+	};
+
+	this.send = function(msg) {
+		try {
+			this.socket.send(this.id + " " + msg);
+		} catch (ex) {
+			console.log(ex);
+		}
+		return this;
+	}
+
 	/**
 	 * internal functions
 	 */
 	this._run_handlers = function(data) {
-		for (var i = 0; i < this.handlers.length; i++) {
-			this.handlers[i](data);
+		for (idx in this.handlers) {
+			if (Number.isInteger(parseInt(idx))) {
+				this.handlers[idx](data);
+			} else {
+				if (data.substring(33, 33 + idx.length) == idx) {
+					this.handlers[idx](data.substring(33 + idx.length + 1, data.length));
+				}
+			}
 		}
 	};
 

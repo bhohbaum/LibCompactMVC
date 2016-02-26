@@ -8,9 +8,13 @@ LIBCOMPACTMVC_ENTRY;
 // TODO Bei doppelten Properties/Methodes bestimmen welcher Parent gilt
 
 /**
- * ============================
  * Abstrakte Klasse
- * ============================
+ *
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @license LGPL version 3
+ * @link https://github.com/bhohbaum
  *
  * verwendung:
  * im konstruktor der abgeleiteten klasse die parent classes mit
@@ -109,12 +113,12 @@ abstract class MultiExtender {
 		// Die Classe zusammenstellen
 		$lines[] = "class {$wrapperName} extends {$className}{";
 		$lines[] = '
-		    public function __construct(){
-		        $pStrings  = $params = func_get_args();
-		        array_walk($pStrings, create_function(\'&$item, $key\', \'$item = "\$params[{$key}]";\'));
-		        eval(\'parent::__construct(\' . implode(\',\', $pStrings) . \');\');
-		    }
-        ';
+			public function __construct(){
+				$pStrings  = $params = func_get_args();
+				array_walk($pStrings, create_function(\'&$item, $key\', \'$item = "\$params[{$key}]";\'));
+				eval(\'parent::__construct(\' . implode(\',\', $pStrings) . \');\');
+			}
+		';
 		// Die Methoden hinzufügen
 		self::createWrapperMethodes($lines, $ref);
 		$lines[] = '}';
@@ -146,9 +150,9 @@ abstract class MultiExtender {
 				$paramString = implode(', ', $params);
 				$lines[] = "
 				{$modifiers} function {$method->name}({$paramString}){
-				        return parent::{$method->name}({$paramString});
-				    }
-                ";
+						return parent::{$method->name}({$paramString});
+					}
+				";
 			}
 		}
 	}

@@ -5,10 +5,11 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * linkproperty.php
  *
- * @author      Botho Hohbaum <bhohbaum@googlemail.com>
- * @package     digimap
- * @copyright   Copyright (c) PIKMA GmbH
- * @link		http://www.pikma.de
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @license LGPL version 3
+ * @link https://github.com/bhohbaum
  */
 class LinkProperty {
 	private $path;

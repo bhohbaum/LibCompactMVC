@@ -4,6 +4,7 @@ LIBCOMPACTMVC_ENTRY;
 
 /**
  * Redis Adapter
+ * With additional variable cache.
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
@@ -14,12 +15,14 @@ LIBCOMPACTMVC_ENTRY;
 class RedisAdapter {
 	private static $instance;
 	private $redis;
+	private $data;
 	public $log;
 
 	private function __construct() {
 		DLOG();
 		$this->redis = new Redis();
 		$this->redis->connect(REDIS_HOST, REDIS_PORT);
+		$this->data = array();
 	}
 
 	public static function get_instance() {
@@ -29,28 +32,46 @@ class RedisAdapter {
 		return self::$instance;
 	}
 
-	public function get($key) {
+	public function get($key, $use_local_cache = true) {
+		$key = REDIS_KEY_PRAEFIX . $key;
 		DLOG(__METHOD__ . '("' . $key . '")');
+		if ($use_local_cache) {
+			if (array_key_exists($key, $this->data)) {
+				return $this->data[$key];
+			}
+		}
 		return $this->redis->get($key);
 	}
 
-	public function set($key, $val) {
+	public function set($key, $val, $use_local_cache = true) {
+		$key = REDIS_KEY_PRAEFIX . $key;
 		DLOG(__METHOD__ . '("' . $key . '", <content>)');
+		if ($use_local_cache) {
+			$this->data[$key] = $val;
+		}
 		return $this->redis->set($key, $val);
 	}
 
 	public function expire($key, $ttl) {
+		$key = REDIS_KEY_PRAEFIX . $key;
 		DLOG(__METHOD__ . '("' . $key . '", ' . $ttl . ')');
 		return $this->redis->expire($key, $ttl);
 	}
 
 	public function keys($key) {
+		$key = REDIS_KEY_PRAEFIX . $key;
 		DLOG(__METHOD__ . '("' . $key . '")');
-		return $this->redis->keys($key);
+		$keys = $this->redis->keys($key);
+		foreach ($keys as $k => $v) {
+			$keys[$k] = substr($v, strlen(REDIS_KEY_PRAEFIX));
+		}
+		return $keys;
 	}
 
 	public function delete($key) {
+		$key = REDIS_KEY_PRAEFIX . $key;
 		DLOG(__METHOD__ . '("' . $key . '")');
+		unset($this->data[$key]);
 		return $this->redis->delete($key);
 	}
 

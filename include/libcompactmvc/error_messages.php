@@ -3,11 +3,11 @@
 /**
  * General error messages.
  *
- * @author		Botho Hohbaum (bhohbaum@googlemail.com)
- * @package	LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 24.01.2012
- * @license	LGPL version 3
- * @link		https://github.com/bhohbaum/libcompactmvc
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @license LGPL version 3
+ * @link https://github.com/bhohbaum
  */
 class ErrorMessages {
 	const NO_CONNECTION = "Verbindung zum SQL-Server nicht m&ouml;glich";

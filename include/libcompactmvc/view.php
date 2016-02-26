@@ -10,10 +10,10 @@ LIBCOMPACTMVC_ENTRY;
  * Template handling
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
- * @package LibpartactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @package LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libpartactmvc
+ * @link https://github.com/bhohbaum
  */
 class View {
 	private $part;

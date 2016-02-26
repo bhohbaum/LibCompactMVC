@@ -7,9 +7,9 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @link https://github.com/bhohbaum
  */
 abstract class InputSanitizer implements JsonSerializable {
 	private $members_populated;
@@ -51,7 +51,7 @@ abstract class InputSanitizer implements JsonSerializable {
 				if (is_array($argv)) {
 					$var = "action";
 					$this->member_variables[$var] = $argv[1];
-					for ($i = 1; $i <=5 ; $i++) {
+					for ($i = 1; $i <= 5; $i++) {
 						if (array_key_exists($i + 1, $argv)) {
 							$var = "param" . ($i - 1);
 							$this->member_variables[$var] = $argv[$i + 1];

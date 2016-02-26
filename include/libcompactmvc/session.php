@@ -7,9 +7,9 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
+ * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @link https://github.com/bhohbaum
  */
 class Session {
 	public $log;
@@ -34,7 +34,7 @@ class Session {
 		}
 		$this->session_id = (session_id() == "") ? (getenv("PHPSESSID") !== false) ? getenv("PHPSESSID") : "" : session_id();
 		DLOG("Session ID = " . $this->session_id);
-		self::$parray = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id));
+		self::$parray = unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id));
 
 		// The following lines change the session id with every click.
 		// This makes it harder for attackers to "steal" our session.
@@ -60,8 +60,8 @@ class Session {
 	// store our data into the $_SESSION variable
 	public function __destruct() {
 		DLOG(__METHOD__ . ": Saving current content: " . var_export(self::$parray, true));
-		RedisAdapter::get_instance()->set(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, serialize(self::$parray));
-		RedisAdapter::get_instance()->expire(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, SESSION_TIMEOUT);
+		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
+		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);
 	}
 
 	/**
@@ -137,11 +137,11 @@ class Session {
 	 */
 	public function force_id($id) {
 		DLOG(__METHOD__ . ": Saving current content: " . var_export(self::$parray, true));
-		RedisAdapter::get_instance()->set(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, serialize(self::$parray));
-		RedisAdapter::get_instance()->expire(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id, SESSION_TIMEOUT);
+		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
+		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);
 		session_id($id);
 		$this->session_id = $id;
 		DLOG(__METHOD__ . ": Session ID = " . $this->session_id);
-		self::$parray = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_PRAEFIX . "SESSION_" . $this->session_id));
+		self::$parray = unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id));
 	}
 }

@@ -1,9 +1,9 @@
 <?php
-@include_once ('../libcompactmvc.php');
+@include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * FIFO Buffer Exception
+ * Map Marker
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
@@ -11,6 +11,13 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
-class FIFOBufferException extends Exception {
+class MapMarker extends DbObject {
+
+	public function __construct($lat, $lng, $isnew = true) {
+		parent::__construct(array(
+				"lat" => $lat,
+				"lng" => $lng
+		), $isnew);
+	}
 
 }
