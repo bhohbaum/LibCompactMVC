@@ -37,11 +37,11 @@ class Socket {
 	 *
 	 * @throws Exception
 	 */
-	public function read() {
+	public function read($maxsize = 8192) {
 		$buf = "";
 		$oldbuf = "";
 		if ($this->fh) {
-			$buf .= fread($this->fh, 8192);
+			$buf .= fread($this->fh, $maxsize);
 			// TODO: read sizes >8192 bytes
 // 			while (!feof($this->fh)) {
 // 				stream_set_blocking($this->fh, true);

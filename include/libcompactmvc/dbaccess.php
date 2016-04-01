@@ -167,7 +167,7 @@ abstract class DbAccess {
 	/**
 	 *
 	 * @param String $tablename
-	 * @param String $constraint
+	 * @param array $constraint
 	 */
 	public function by($tablename, $constraint = null) {
 		$qb = new QueryBuilder();

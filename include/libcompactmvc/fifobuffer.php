@@ -7,14 +7,16 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
 class FIFOBuffer {
-	private $id;
-	private $first;
-	private $last;
+	private $id_bufferid;
+	private $id_first;
+	private $id_last;
+	private $elm_current;
+	private $lockfile;
 
 	/**
 	 * Constructor.
@@ -26,24 +28,20 @@ class FIFOBuffer {
 	 */
 	public function __construct($id = null) {
 		if ($id == null) {
-			$this->id = md5(microtime() . rand(0, 255));
+			$this->id_bufferid = md5(microtime() . rand(0, 255));
 			$this->save_state();
 		} else {
-			$this->id = $id;
-			$state = RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id);
-			RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id, REDIS_KEY_FIFOBUFF_TTL);
-			if ($state === false)
-				throw new FIFOBufferException("Invalid FIFO buffer ID.", 404);
-			$state = json_decode($state, true);
-			$this->first = $state["first"];
-			$this->last = $state["last"];
+			$this->id_bufferid = $id;
+			$this->load_state();
 		}
+		$this->lockfile = "./files/lock/" . $this->id_bufferid . ".lock";
 	}
 
 	/**
 	 * Destructor
 	 */
 	public function __destruct() {
+		$this->unlock();
 		try {
 			$this->check_buffer_status();
 			$this->save_state();
@@ -51,16 +49,26 @@ class FIFOBuffer {
 		}
 	}
 
+	private function load_state() {
+		$state = RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, false);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, REDIS_KEY_FIFOBUFF_TTL);
+		if ($state === false)
+			throw new FIFOBufferException("Invalid FIFO buffer ID.", 404);
+		$state = json_decode($state, true);
+		$this->id_first = $state["first"];
+		$this->id_last = $state["last"];
+	}
+
 	/**
 	 * Save the buffer state to Redis.
 	 */
 	private function save_state() {
 		$state = array(
-				"first" => $this->first,
-				"last" => $this->last
+				"first" => $this->id_first,
+				"last" => $this->id_last
 		);
-		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id, json_encode($state));
-		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id, REDIS_KEY_FIFOBUFF_TTL);
+		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, json_encode($state), false);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, REDIS_KEY_FIFOBUFF_TTL);
 	}
 
 	/**
@@ -73,11 +81,11 @@ class FIFOBuffer {
 	 */
 	private function load_element($id) {
 		$this->check_buffer_status();
-		$obj = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $id));
+		$obj = unserialize(RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $id, false));
 		if ($obj === false) {
 			throw new FIFOBufferException("Unable to load element " . $id);
 		}
-		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $id, REDIS_KEY_FIFOBUFF_TTL);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $id, REDIS_KEY_FIFOBUFF_TTL);
 		return $obj;
 	}
 
@@ -90,8 +98,8 @@ class FIFOBuffer {
 	 */
 	private function save_element(FIFOBufferElement $elem) {
 		$this->check_buffer_status();
-		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $elem->get_id(), serialize($elem));
-		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $elem->get_id(), REDIS_KEY_FIFOBUFF_TTL);
+		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $elem->get_id(), serialize($elem), false);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $elem->get_id(), REDIS_KEY_FIFOBUFF_TTL);
 	}
 
 	/**
@@ -102,7 +110,7 @@ class FIFOBuffer {
 	 */
 	private function delete_element($id) {
 		$this->check_buffer_status();
-		RedisAdapter::get_instance()->delete(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id . "_" . $id);
+		RedisAdapter::get_instance()->delete(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $id);
 	}
 
 	/**
@@ -111,12 +119,12 @@ class FIFOBuffer {
 	 * @throws FIFOBufferException
 	 */
 	private function check_buffer_status() {
-		if ($this->id == null) {
+		if ($this->id_bufferid == null) {
 			throw new FIFOBufferException("Buffer destroyed.", 404);
 		} else {
-			$state = RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id);
+			$state = RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, false);
 			if ($state === false) {
-				$this->id = null;
+				$this->id_bufferid = null;
 				throw new FIFOBufferException("Buffer destroyed.", 404);
 			}
 		}
@@ -130,7 +138,7 @@ class FIFOBuffer {
 	 */
 	public function get_id() {
 		$this->check_buffer_status();
-		return $this->id;
+		return $this->id_bufferid;
 	}
 
 	/**
@@ -141,7 +149,7 @@ class FIFOBuffer {
 	 */
 	public function is_empty() {
 		$this->check_buffer_status();
-		return ($this->first == null && $this->last == null);
+		return !($this->id_first != null || $this->id_last != null);
 	}
 
 	/**
@@ -155,13 +163,8 @@ class FIFOBuffer {
 		if ($this->is_empty()) {
 			return 0;
 		}
-		$elem = $this->load_element($this->first);
-		$count = 1;
-		while ($elem->get_next() != null) {
-			$elem = $this->load_element($elem->get_next());
-			$count ++;
-		}
-		return $count;
+		$keys = RedisAdapter::get_instance()->keys(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_*");
+		return count($keys);
 	}
 
 	/**
@@ -171,24 +174,31 @@ class FIFOBuffer {
 	 *        	Element data.
 	 * @throws FIFOBufferException
 	 */
-	public function write($data) {
+	public function write($data, $ignore_lock = false) {
+		if (!$ignore_lock) {
+			$this->lock();
+		}
 		$this->check_buffer_status();
 		if ($this->is_empty()) {
 			$elem = new FIFOBufferElement();
 			$elem->set_data($data);
 			$elem->set_prev(null);
 			$elem->set_next(null);
-			$this->first = $elem->get_id();
+			$this->id_first = $elem->get_id();
 		} else {
 			$elem = new FIFOBufferElement();
 			$elem->set_data($data);
-			$lastelem = $this->load_element($this->last);
+			$lastelem = $this->load_element($this->id_last);
 			$lastelem->set_next($elem->get_id());
 			$elem->set_prev($lastelem->get_id());
 			$this->save_element($lastelem);
 		}
-		$this->last = $elem->get_id();
+		$this->id_last = $elem->get_id();
 		$this->save_element($elem);
+		$this->save_state();
+		if (!$ignore_lock) {
+			$this->unlock();
+		}
 	}
 
 	/**
@@ -197,22 +207,106 @@ class FIFOBuffer {
 	 * @throws FIFOBufferException
 	 * @return mixed Element data.
 	 */
-	public function read() {
+	public function read($ignore_lock = false) {
+		if (!$ignore_lock) {
+			$this->lock();
+		}
 		$this->check_buffer_status();
-		if ($this->is_empty())
+		if ($this->is_empty()) {
+			if (!$ignore_lock) {
+				$this->unlock();
+// 				$mutex->unlock();
+			}
 			return null;
-		$elem = $this->load_element($this->first);
+		}
+		$elem = $this->load_element($this->id_first);
 		if ($elem->get_next() != null) {
 			$firstelem = $this->load_element($elem->get_next());
 			$firstelem->set_prev(null);
 			$this->save_element($firstelem);
-			$this->first = $firstelem->get_id();
+			$this->id_first = $firstelem->get_id();
 		} else {
-			$this->first = null;
-			$this->last = null;
+			$this->id_first = null;
+			$this->id_last = null;
 		}
+		$this->save_state();
 		$this->delete_element($elem->get_id());
+		if (!$ignore_lock) {
+			$this->unlock();
+		}
 		return $elem->get_data();
+	}
+
+	/**
+	 * Read the first element of the buffer without deleting it. Increments the internal (object-wide, not global) iterator.
+	 *
+	 * @throws FIFOBufferException
+	 * @return mixed Element data
+	 */
+	public function read_first($ignore_lock = false) {
+		if (!$ignore_lock) {
+			$this->lock();
+		}
+		$this->check_buffer_status();
+		$this->load_state();
+		if ($this->is_empty()) {
+			if (!$ignore_lock) {
+				$this->unlock();
+			}
+			return null;
+		}
+		$this->elm_current = $this->load_element($this->id_first);
+		if (!$ignore_lock) {
+			$this->unlock();
+		}
+		return $this->elm_current->get_data();
+	}
+
+	/**
+	 * Read the next element of the buffer without deleting it. Increments the internal (object-wide, not global) iterator.
+	 *
+	 * @throws FIFOBufferException
+	 * @return mixed Element data
+	 */
+	public function read_next($ignore_lock = false) {
+		if (!$ignore_lock) {
+			$this->lock();
+		}
+		$this->check_buffer_status();
+		$this->load_state();
+		if ($this->is_empty()) {
+			if (!$ignore_lock) {
+				$this->unlock();
+			}
+			return null;
+		}
+		if ($this->elm_current == null) {
+			if (!$ignore_lock) {
+				$this->unlock();
+			}
+			return $this->read_first();
+		}
+		if ($this->elm_current->get_next() == null) {
+			$this->elm_current = $this->load_element($this->elm_current->get_id());
+			if ($this->elm_current->get_next() == null) {
+				if (!$ignore_lock) {
+					$this->unlock();
+				}
+				return null;
+			}
+		}
+		try {
+			$this->elm_current = $this->load_element($this->elm_current->get_next());
+		} catch (FIFOBufferException $e) {
+			if (!$ignore_lock) {
+				$this->unlock();
+			}
+			return $this->read_first();
+		}
+		if (!$ignore_lock) {
+			$this->unlock();
+		}
+		return $this->elm_current->get_data();
 	}
 
 	/**
@@ -223,13 +317,23 @@ class FIFOBuffer {
 	 * @throws FIFOBufferException
 	 * @return mixed Element data.
 	 */
-	public function read_at($idx) {
+	public function read_at($idx, $ignore_lock = false) {
+		if (!$ignore_lock) {
+			$this->lock();
+		}
 		$this->check_buffer_status();
-		if ($this->is_empty())
+		if ($this->is_empty()) {
+			if (!$ignore_lock) {
+				$this->unlock();
+			}
 			return null;
-		$elem = $this->load_element($this->first);
-		for($i = 0; $i < $idx; $i ++) {
+		}
+		$elem = $this->load_element($this->id_first);
+		for($i = 0; $i < $idx; $i++) {
 			$elem = $this->load_element($elem->get_next());
+		}
+		if (!$ignore_lock) {
+			$this->unlock();
 		}
 		return $elem->get_data();
 	}
@@ -237,15 +341,23 @@ class FIFOBuffer {
 	/**
 	 * Delete element at the given position.
 	 *
-	 * @param int $idx Element index
+	 * @param int $idx
+	 *        	Element index
 	 * @throws FIFOBufferException
 	 */
-	public function delete_at($idx) {
+	public function delete_at($idx, $ignore_lock = false) {
+		if (!$ignore_lock) {
+			$this->lock();
+		}
 		$this->check_buffer_status();
-		if ($this->is_empty())
+		if ($this->is_empty()) {
+			if (!$ignore_lock) {
+				$this->unlock();
+			}
 			throw new FIFOBufferException("Invalid index, buffer is empty.", 404);
-		$elem = $this->load_element($this->first);
-		for($i = 0; $i < $idx; $i ++) {
+		}
+		$elem = $this->load_element($this->id_first);
+		for($i = 0; $i < $idx; $i++) {
 			$elem = $this->load_element($elem->get_next());
 		}
 		$prev = $this->load_element($elem->get_prev());
@@ -255,6 +367,10 @@ class FIFOBuffer {
 		$next->set_prev($prev->get_id());
 		$this->save_element($prev);
 		$this->save_element($next);
+		$this->save_state();
+		if (!$ignore_lock) {
+			$this->unlock();
+		}
 	}
 
 	/**
@@ -265,10 +381,23 @@ class FIFOBuffer {
 	 */
 	public function destroy() {
 		$this->check_buffer_status();
-		while (! $this->is_empty()) {
+		while (!$this->is_empty()) {
 			$this->read();
 		}
-		RedisAdapter::get_instance()->delete(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id);
-		$this->id = null;
+		RedisAdapter::get_instance()->delete(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid);
+		$this->id_bufferid = null;
+		$this->unlock();
 	}
+
+	public function lock() {
+		while (file_exists($this->lockfile)) {
+			usleep(10);
+		}
+		file_put_contents($this->lockfile, "");
+	}
+
+	public function unlock() {
+		@unlink($this->lockfile);
+	}
+
 }
