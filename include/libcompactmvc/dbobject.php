@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -19,27 +19,16 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param array $members
+	 * @param unknown_type $members: array or DbObject
 	 * @param unknown_type $isnew
 	 */
-	public function __construct(array $members = array(), $isnew = true) {
+	public function __construct($members = array(), $isnew = true) {
 		parent::__construct();
-		$this->__member_variables = $members;
+		if (is_array($members)) $this->__member_variables = $members;
+		else if (is_object($members) && is_subclass_of($members, "DbObject")) $this->__member_variables = $members->to_array();
 		$this->__tablename = null;
 		$this->__isnew = $isnew;
 		$this->__td = new TableDescription();
-	}
-
-	/**
-	 *
-	 * @param unknown_type $name
-	 * @param unknown_type $args
-	 */
-	public function __call($name, $args) {
-		if (is_callable($this->$name)) {
-			array_unshift($args, $this);
-			return call_user_func_array($this->$name, $args);
-		}
 	}
 
 	/**
@@ -115,7 +104,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 */
 	public function by($constraint = array()) {
 		if (!isset($this->__tablename)) {
-			throw new Exception("Unknown table. Cannot create DbObject.");
+			throw new Exception("Unknown table. Query can not be built .");
 		}
 		$constraint = ($constraint == null) ? array() : $constraint;
 		$qb = new QueryBuilder();
@@ -166,7 +155,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 			$this->__member_variables[$pks[0]] = $ret;
 		}
 		$this->__isnew = false;
-		return $ret;
+		return $this;
 	}
 
 	/**
@@ -183,7 +172,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$qb = new QueryBuilder();
 		$q = $qb->delete($this->__tablename, $constraint);
 		$this->__isnew = true;
-		return $this->run_query($q, false, false, null, $this->__tablename, true);
+		$this->__member_variables = array();
+		$this->run_query($q, false, false, null, $this->__tablename, true);
+		return $this;
 	}
 
 	/**

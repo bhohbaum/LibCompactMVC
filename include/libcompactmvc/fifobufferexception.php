@@ -1,9 +1,9 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Mutex Exception
+ * FIFO Buffer Exception
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
@@ -11,6 +11,6 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
-class MutexException extends Exception {
+class FIFOBufferException extends Exception {
 
 }

@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -16,7 +16,6 @@ class RedisAdapter {
 	private static $instance;
 	private $redis;
 	private $data;
-	public $log;
 
 	private function __construct() {
 		DLOG();
@@ -33,8 +32,8 @@ class RedisAdapter {
 	}
 
 	public function get($key, $use_local_cache = true) {
-		$key = REDIS_KEY_PRAEFIX . $key;
-		DLOG(__METHOD__ . '("' . $key . '")');
+		$key = REDIS_KEY_PREFIX . $key;
+		DLOG('("' . $key . '")');
 		if ($use_local_cache) {
 			if (array_key_exists($key, $this->data)) {
 				return $this->data[$key];
@@ -44,8 +43,8 @@ class RedisAdapter {
 	}
 
 	public function set($key, $val, $use_local_cache = true) {
-		$key = REDIS_KEY_PRAEFIX . $key;
-		DLOG(__METHOD__ . '("' . $key . '", <content>)');
+		$key = REDIS_KEY_PREFIX . $key;
+		DLOG('("' . $key . '", <content>)');
 		if ($use_local_cache) {
 			$this->data[$key] = $val;
 		}
@@ -53,24 +52,24 @@ class RedisAdapter {
 	}
 
 	public function expire($key, $ttl) {
-		$key = REDIS_KEY_PRAEFIX . $key;
-		DLOG(__METHOD__ . '("' . $key . '", ' . $ttl . ')');
+		$key = REDIS_KEY_PREFIX . $key;
+		DLOG('("' . $key . '", ' . $ttl . ')');
 		return $this->redis->expire($key, $ttl);
 	}
 
 	public function keys($key) {
-		$key = REDIS_KEY_PRAEFIX . $key;
-		DLOG(__METHOD__ . '("' . $key . '")');
+		$key = REDIS_KEY_PREFIX . $key;
+		DLOG('("' . $key . '")');
 		$keys = $this->redis->keys($key);
 		foreach ($keys as $k => $v) {
-			$keys[$k] = substr($v, strlen(REDIS_KEY_PRAEFIX));
+			$keys[$k] = substr($v, strlen(REDIS_KEY_PREFIX));
 		}
 		return $keys;
 	}
 
 	public function delete($key) {
-		$key = REDIS_KEY_PRAEFIX . $key;
-		DLOG(__METHOD__ . '("' . $key . '")');
+		$key = REDIS_KEY_PREFIX . $key;
+		DLOG('("' . $key . '")');
 		unset($this->data[$key]);
 		return $this->redis->delete($key);
 	}

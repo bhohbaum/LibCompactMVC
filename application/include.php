@@ -1,6 +1,6 @@
 <?php
 
-cmvc_include('dba.php');
+// cmvc_include('dba.php');
 
 cmvc_include("dummycomponent.php");
 

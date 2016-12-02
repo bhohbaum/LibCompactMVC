@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,12 +7,11 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
 class Session {
-	public $log;
 	private $session_id;
 	// REMEMBER!!!
 	// NEVER use the $_SESSION directly when using this class!
@@ -29,26 +28,39 @@ class Session {
 		if (!isset($_SESSION)) {
 			if (php_sapi_name() != "cli") {
 				ini_set('session.cookie_httponly', 1);
+				if (defined('SESSION_INSECURE_COOKIE')) {
+					if (!SESSION_INSECURE_COOKIE)
+						if (is_tls_con())
+							ini_set('session.cookie_secure', 1);
+				} else if (is_tls_con())
+					ini_set('session.cookie_secure', 1);
 				session_start();
 			}
 		}
 		$this->session_id = (session_id() == "") ? (getenv("PHPSESSID") !== false) ? getenv("PHPSESSID") : "" : session_id();
 		DLOG("Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id));
+		DLOG("Loaded current content: " . var_export(unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id)), true));
 
-		// The following lines change the session id with every click.
+		// The following lines change the session id with every request.
 		// This makes it harder for attackers to "steal" our session.
-		// THIS CAN CAUSE TROUBLE WITH AJAX CALLS!!!
-		if (!defined("SESSION_DYNAMIC_ID_DISABLED")) {
+		// THIS WILL CAUSE TROUBLE WITH AJAX CALLS!!!
+		if (!defined("SESSION_DYNAMIC_ID_DISABLED") || !SESSION_DYNAMIC_ID_DISABLED) {
 			if (ini_get("session.use_cookies")) {
 				$sname = session_name();
 				setcookie($sname, '', time() - 42000);
 				unset($_COOKIE[$sname]);
 			}
-// 			session_destroy();
+			session_destroy();
 			ini_set('session.cookie_httponly', 1);
+			if (defined('SESSION_INSECURE_COOKIE')) {
+				if (!SESSION_INSECURE_COOKIE)
+					if (is_tls_con())
+						ini_set('session.cookie_secure', 1);
+			} else if (is_tls_con())
+				ini_set('session.cookie_secure', 1);
+			session_start();
 			session_regenerate_id(true);
-// 			session_start();
 		}
 	}
 
@@ -59,7 +71,11 @@ class Session {
 
 	// store our data into the $_SESSION variable
 	public function __destruct() {
-		DLOG(__METHOD__ . ": Saving current content: " . var_export(self::$parray, true));
+		if (!isset(self::$instance)) {
+			DLOG("Sessions was destroyed. Deleting redis data.");
+			RedisAdapter::get_instance()->delete("SESSION_" . $this->session_id);
+		}
+		DLOG("Saving current content: " . var_export(self::$parray, true));
 		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
 		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);
 	}
@@ -71,12 +87,10 @@ class Session {
 	 * @return Session
 	 */
 	public static function get_instance() {
-		DLOG(__METHOD__ . ": Current content: " . var_export(self::$parray, true));
 		if (!isset(self::$instance)) {
 			$c = __CLASS__;
 			self::$instance = new $c();
 		}
-
 		return self::$instance;
 	}
 
@@ -88,7 +102,7 @@ class Session {
 	 *        	property value. can be a scalar, array or object.
 	 */
 	public function set_property($pname, $value) {
-		DLOG(__METHOD__ . "('" . $pname . "', '" . $value . "')");
+		DLOG("('" . $pname . "', '" . $value . "')");
 		self::$parray[$pname] = $value;
 	}
 
@@ -100,7 +114,7 @@ class Session {
 	 */
 	public function get_property($pname) {
 		$ret = (isset(self::$parray[$pname])) ? self::$parray[$pname] : null;
-		DLOG(__METHOD__ . "('" . $pname . "') return: '" . $ret . "'");
+		DLOG("('" . $pname . "') return: '" . $ret . "'");
 		return $ret;
 	}
 
@@ -110,7 +124,7 @@ class Session {
 	 *        	property name
 	 */
 	public function clear_property($pname) {
-		DLOG();
+		DLOG($pname);
 		unset(self::$parray[$pname]);
 	}
 
@@ -123,10 +137,34 @@ class Session {
 	}
 
 	/**
+	 * destroys the session
+	 */
+	public function destroy() {
+		DLOG();
+		if (ini_get("session.use_cookies")) {
+			$sname = session_name();
+			setcookie($sname, '', time() - 42000);
+			unset($_COOKIE[$sname]);
+		}
+		session_destroy();
+		ini_set('session.cookie_httponly', 1);
+		if (defined('SESSION_INSECURE_COOKIE')) {
+			if (!SESSION_INSECURE_COOKIE)
+				if (is_tls_con())
+					ini_set('session.cookie_secure', 1);
+		} else if (is_tls_con())
+			ini_set('session.cookie_secure', 1);
+		session_start();
+		session_regenerate_id(true);
+		unset(self::$instance);
+	}
+
+	/**
+	 *
 	 * @return Session ID
 	 */
 	public function get_id() {
-		DLOG(__METHOD__ . ": Return: " . $this->session_id);
+		DLOG("Return: " . $this->session_id);
 		return $this->session_id;
 	}
 
@@ -136,12 +174,13 @@ class Session {
 	 * @param unknown_type $id
 	 */
 	public function force_id($id) {
-		DLOG(__METHOD__ . ": Saving current content: " . var_export(self::$parray, true));
+		DLOG("Saving current content: " . var_export(self::$parray, true));
 		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
 		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);
 		session_id($id);
 		$this->session_id = $id;
-		DLOG(__METHOD__ . ": Session ID = " . $this->session_id);
+		DLOG("Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id));
 	}
+
 }

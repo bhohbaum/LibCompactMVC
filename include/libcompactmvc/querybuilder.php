@@ -1,9 +1,9 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Simple PHP implementation of an SMTP client.
+ * SQL query builder.
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
@@ -12,7 +12,6 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum
  */
 class QueryBuilder extends DbAccess {
-	public $log;
 	private $td;
 
 	/**

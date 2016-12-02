@@ -12,7 +12,6 @@ LIBCOMPACTMVC_ENTRY;
  */
 class Main {
 	private $ad;
-	public $log;
 
 	public function __construct() {
 		DLOG(__METHOD__ . ": ########################## A NEW REQUEST IS BEEING PROCESSED. ##########################");
@@ -23,7 +22,7 @@ class Main {
 	}
 
 	public function app() {
-		$this->ad = new ActionDispatcher("action");
+		$this->ad = new ActionDispatcher("action", ApplicationMapper::get_instance());
 		$this->ad->set_handler("", 				"Login");
 		$this->ad->set_handler("control", 		"Control");
 		$this->ad->set_handler("login", 		"Login");
@@ -36,20 +35,20 @@ class Main {
 		$this->ad->set_default("login");
 		$this->ad->set_control("control");
 		$this->ad->run();
+		header("Content-Type: " . $this->ad->get_mime_type());
+// 		header("Content-Security-Policy: default-src * 'unsave-inline 'unsave-eval'; script-src 'self' www.google-analytics.com ajax.googleapis.com;");
+		header("X-Frame-Options: SAMEORIGIN");
+		header("X-XSS-Protection: 1; mode=block");
+		header("X-Content-Type-Options: nosniff");
 		echo($this->ad->get_ob());
-		DLOG(__METHOD__ . ": ####### APPLICATION FINISHED SUCCESSFULLY! SENDING RESPONSE TO CLIENT... #######################");
+		DLOG("####### APPLICATION FINISHED SUCCESSFULLY! SENDING RESPONSE TO CLIENT... #######################");
 	}
 
 
 }
 
 // redirect
-if (php_sapi_name() != "cli") {
-	if (substr($_SERVER["REQUEST_URI"], 0, 4) != "/app") {
-		header("Location: /app");
-		exit();
-	}
-} else {
+if (php_sapi_name() == "cli") {
 	if ($argc <= 1) {
 		die("CLI Mode detected: Please give a valid CLI submodule name as first parameter.\nValid modules are: cli\n");
 	}
@@ -67,6 +66,10 @@ try {
 		echo("<h4>Stacktrace:</h4>");
 		echo("<pre>".$e->getTraceAsString()."</pre>");
 	}
+	$run->log("UNHANDLED EXCEPTION!!!");
+	$run->log(print_r($_REQUEST, true));
+	$run->log($e->getMessage());
 	$run->log($e->getTraceAsString());
 }
+
 

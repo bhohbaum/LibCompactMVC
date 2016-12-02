@@ -17,6 +17,7 @@ class FIFOBuffer {
 	private $id_last;
 	private $elm_current;
 	private $lockfile;
+	private $ttl;
 
 	/**
 	 * Constructor.
@@ -27,6 +28,7 @@ class FIFOBuffer {
 	 * @throws FIFOBufferException
 	 */
 	public function __construct($id = null) {
+		$this->ttl = REDIS_KEY_FIFOBUFF_TTL;
 		if ($id == null) {
 			$this->id_bufferid = md5(microtime() . rand(0, 255));
 			$this->save_state();
@@ -51,7 +53,7 @@ class FIFOBuffer {
 
 	private function load_state() {
 		$state = RedisAdapter::get_instance()->get(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, false);
-		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, REDIS_KEY_FIFOBUFF_TTL);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, $this->ttl);
 		if ($state === false)
 			throw new FIFOBufferException("Invalid FIFO buffer ID.", 404);
 		$state = json_decode($state, true);
@@ -68,7 +70,7 @@ class FIFOBuffer {
 				"last" => $this->id_last
 		);
 		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, json_encode($state), false);
-		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, REDIS_KEY_FIFOBUFF_TTL);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFER_" . $this->id_bufferid, $this->ttl);
 	}
 
 	/**
@@ -85,7 +87,7 @@ class FIFOBuffer {
 		if ($obj === false) {
 			throw new FIFOBufferException("Unable to load element " . $id);
 		}
-		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $id, REDIS_KEY_FIFOBUFF_TTL);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $id, $this->ttl);
 		return $obj;
 	}
 
@@ -99,7 +101,7 @@ class FIFOBuffer {
 	private function save_element(FIFOBufferElement $elem) {
 		$this->check_buffer_status();
 		RedisAdapter::get_instance()->set(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $elem->get_id(), serialize($elem), false);
-		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $elem->get_id(), REDIS_KEY_FIFOBUFF_TTL);
+		RedisAdapter::get_instance()->expire(REDIS_KEY_FIFOBUFF_PFX . "FIFOBUFFERELEMENT_" . $this->id_bufferid . "_" . $elem->get_id(), $this->ttl);
 	}
 
 	/**
@@ -389,6 +391,9 @@ class FIFOBuffer {
 		$this->unlock();
 	}
 
+	/**
+	 * Set an explicit lock on the buffer.
+	 */
 	public function lock() {
 		while (file_exists($this->lockfile)) {
 			usleep(10);
@@ -396,8 +401,20 @@ class FIFOBuffer {
 		file_put_contents($this->lockfile, "");
 	}
 
+	/**
+	 * Remove an explicit lock from the buffer.
+	 */
 	public function unlock() {
 		@unlink($this->lockfile);
+	}
+
+	/**
+	 * Set a deviating TTL for this buffer instance.
+	 *
+	 * @param int $ttl The TTL to use for this buffer instance
+	 */
+	public function set_ttl($ttl) {
+		$this->ttl = $ttl;
 	}
 
 }

@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -12,18 +12,17 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum
  */
 class ActionDispatcher extends InputSanitizer {
-	private $actionname;
 	private $handlers;
 	private $handlersobj;
 	private $action;
 	private $action_default;
 	private $control_action;
 
-	public function __construct($postgetvar) {
-		parent::__construct();
-		$this->actionname = $postgetvar;
+	public function __construct($postgetvar, $mapper) {
+		self::$actionname = $postgetvar;
 		$this->handlers = array();
 		$this->handlersobj = array();
+		parent::__construct($mapper);
 	}
 
 	public function set_handler($pgvvalue, $classname) {
@@ -41,14 +40,15 @@ class ActionDispatcher extends InputSanitizer {
 	}
 
 	public function run() {
-		$this->action = ($this->request($this->actionname) == null) ? $this->action_default : $this->request($this->actionname);
+		$this->action = ($this->request(self::$actionname) == null) ? $this->action_default : $this->request(self::$actionname);
 		if ($this->control_action != "") {
 			if (!isset($this->handlers[$this->control_action])) {
 				throw new Exception("ActionDispatcher error: No handler registered for action " . $this->control_action);
 			} else {
 				try {
 					$this->get_handlersobj($this->control_action)->view->clear();
-					$this->get_handlersobj($this->control_action)->view->set_value($this->actionname, $this->action);
+					$this->get_handlersobj($this->control_action)->view->set_action_mapper(self::$action_mapper);
+					$this->get_handlersobj($this->control_action)->view->set_value(self::$actionname, $this->action);
 					$this->get_handlersobj($this->control_action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
@@ -69,7 +69,8 @@ class ActionDispatcher extends InputSanitizer {
 			} else {
 				try {
 					$this->get_handlersobj($this->action)->view->clear();
-					$this->get_handlersobj($this->action)->view->set_value($this->actionname, $this->action);
+					$this->get_handlersobj($this->action)->view->set_action_mapper(self::$action_mapper);
+					$this->get_handlersobj($this->action)->view->set_value(self::$actionname, $this->action);
 					$this->get_handlersobj($this->action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
@@ -82,6 +83,15 @@ class ActionDispatcher extends InputSanitizer {
 
 	public function get_ob() {
 		return $this->get_handlersobj($this->action)->get_ob();
+	}
+
+	public function get_mime_type() {
+		return $this->get_handlersobj($this->action)->get_mime_type();
+	}
+
+	public static function get_action_mapper() {
+		DLOG();
+		return self::$action_mapper;
 	}
 
 	private function get_handlersobj($action) {

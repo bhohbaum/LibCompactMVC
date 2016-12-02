@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -14,7 +14,7 @@ LIBCOMPACTMVC_ENTRY;
 class InvalidMemberException extends Exception {
 
 	public function __construct($message = "Invalid member", $code = null, $previous = null) {
-		DLOG();
+		DLOG($message);
 		$this->message = $message;
 		$this->code = $code;
 	}

@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -19,7 +19,7 @@ function rrmdir($path, $ignore = array()) {
 	DLOG();
 	foreach ($ignore as $i) {
 		if (pathinfo($path, PATHINFO_BASENAME) == $i) {
-			DLOG(__METHOD__ . " " . $path . " is on ignore list, leaving it undeleted...\n");
+			DLOG(" " . $path . " is on ignore list, leaving it undeleted...\n");
 			return;
 		}
 	}
@@ -127,4 +127,137 @@ function strip_tags_and_attributes($html, $tags, $attributes = array()) {
 
 	return substr($html, $start + 5, $end - $start - 5);
 }
+
+function exec_bg($cmd) {
+	$cmd .= " 2>&1 >/dev/null &";
+	DLOG("COMMAND: " . $cmd);
+	proc_close(proc_open($cmd, array(), $pipes));
+}
+
+function echo_flush($str) {
+	echo ($str);
+	@ob_flush();
+	flush();
+}
+
+function file_extension($fname) {
+	$arr = explode(".", basename($fname));
+	$ext = $arr[count($arr) - 1];
+	if ($ext == basename($fname))
+		$ext = "";
+	DLOG("Filename: " . $fname . " Extension: " . $ext);
+	return $ext;
+}
+
+function cmvc_include($fname) {
+	$basepath = dirname(dirname(__FILE__) . "../");
+
+	$dirs_up = array(
+			"./",
+			"../",
+			"../../",
+			"../../../",
+			"../../../../",
+			"../../../../../"
+	);
+
+	// Put all directories into this array, where source files shall be included.
+	// This function is intended to work from everywhere.
+	$dirs_down = array(
+			"application/",
+			"application/component/",
+			"application/controller/",
+			"application/dba/",
+			"application/framework/",
+			"include/",
+			"include/libcompactmvc/"
+	);
+
+	foreach ($dirs_up as $u) {
+		foreach ($dirs_down as $d) {
+			// if directory of index.php or below
+			$f = dirname($u . $d . $fname) . "/" . basename($u . $d . $fname);
+			// and file exists
+			if (file_exists($f)) {
+				// include it once
+				include_once ($f);
+				return;
+			}
+		}
+	}
+}
+
+function cmvc_include_dir($path, $ignore = array()) {
+	// DLOG($path);
+	if (is_dir($path)) {
+		$path = rtrim($path, '/') . '/';
+		$items = glob($path . '*');
+		foreach ($items as $item) {
+			foreach ($ignore as $i) {
+				if (pathinfo($item, PATHINFO_BASENAME) == $i) {
+					DLOG(" " . $item . " is on ignore list.");
+					return;
+				}
+			}
+			if (is_dir($item)) {
+				cmvc_include_dir($item, $ignore);
+			}
+			if (strtolower(file_extension($item)) == "php") {
+				require_once ($item);
+			}
+		}
+	} else {
+		throw new Exception("A directory must be given as first parameter.");
+	}
+}
+
+function base_url() {
+	$ret = ".";
+	if (php_sapi_name() != "cli") {
+		$ret = sprintf("%s://%s", isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME']);
+	}
+	return $ret;
+}
+
+function is_tls_con() {
+	$ret = null;
+	if (php_sapi_name() != "cli") {
+		$ret = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] != 'off') ? true : false;
+	}
+	return $ret;
+}
+
+function lnk($action = null, $subaction = null, $urltail = "") {
+	return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $action, $subaction, $urltail);
+}
+
+function uppercase($str) {
+	$str = strtoupper($str);
+	$str = str_replace("ä", "Ä", $str);
+	$str = str_replace("ö", "Ö", $str);
+	$str = str_replace("ü", "Ü", $str);
+	return $str;
+}
+
+$GLOBALS["SITEMAP"] = array();
+
+/**
+ * Callback function that builds the sitemap array.
+ *
+ * @param LinkProperty $lp
+ */
+function add_to_sitemap(LinkProperty $lp) {
+	if ($lp->is_in_sitemap())
+		$GLOBALS["SITEMAP"][] = $lp->get_path();
+}
+
+// This list may be completed with required entries
+define('MIME_TYPE_HTML', 'text/html; charset=utf-8');
+define('MIME_TYPE_JSON', 'application/json; charset=utf-8');
+define('MIME_TYPE_JPG', 'image/jpeg');
+define('MIME_TYPE_PNG', 'image/png');
+define('MIME_TYPE_GIF', 'image/gif');
+define('MIME_TYPE_PDF', 'application/pdf');
+define('MIME_TYPE_BINARY', 'application/binary');
+define('MIME_TYPE_OCTET_STREAM', 'application/octet-stream');
 

@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -14,11 +14,12 @@ LIBCOMPACTMVC_ENTRY;
 class RedirectException extends Exception {
 	private $is_internal;
 
-	public function __construct($message = null, $code = null, $internal = true) {
-		DLOG();
-		$this->message = $message;
+	public function __construct($location = null, $code = null, $internal = false) {
+		DLOG($location);
+		$this->message = $location;
 		$this->code = $code;
 		$this->is_internal = $internal;
+		DLOG($this->getTraceAsString());
 	}
 
 	public function is_internal() {

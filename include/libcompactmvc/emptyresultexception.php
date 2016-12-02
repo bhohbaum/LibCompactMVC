@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -14,6 +14,7 @@ LIBCOMPACTMVC_ENTRY;
 class EmptyResultException extends Exception {
 
 	public function __construct($message = "Empty result", $code = 404, $previous = null) {
+		DLOG("Empty result. Reason: $code: $message");
 		$this->message = $message;
 		$this->code = $code;
 	}

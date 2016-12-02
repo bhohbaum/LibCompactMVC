@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -39,6 +39,7 @@ class MySQLHost extends mysqli {
 	private function lazy_init() {
 		if (!$this->constructor_called) {
 			parent::__construct($this->host, $this->user, $this->pass, $this->db);
+			if (!$this->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->error, $this->errno);
 			$this->constructor_called = true;
 		}
 	}

@@ -10,63 +10,27 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
  * @link		http://www.github.com/bhohbaum
  */
 
-function cmvc_include($fname) {
-	$basepath = dirname(dirname(__FILE__)."../");
-
-	$dirs_up = array(
-					"./",
-					"../",
-					"../../",
-					"../../../",
-					"../../../../",
-					"../../../../../"
-				);
-
-	// Put all directories into this array, where source files shall be included.
-	// This function is intended to work from everywhere.
-	$dirs_down = array(
-					"application/",
-					"application/component/",
-					"application/controller/",
-					"application/dba/",
-					"application/framework/",
-					"include/",
-					"include/libcompactmvc/"
-				);
-
-	foreach ($dirs_up as $u) {
-		foreach ($dirs_down as $d) {
-			// if directory of index.php or below
-			$f = dirname($u.$d.$fname)."/".basename($u.$d.$fname);
-			// and file exists
-			if (file_exists($f)) {
-				// include it once
-				include_once($f);
-				return;
-			}
-		}
-	}
-}
-
-function base_url() {
-	$ret = ".";
-	if (php_sapi_name() != "cli") {
-		$ret = sprintf("%s://%s", isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http', $_SERVER['SERVER_NAME']);
-	}
-	return $ret;
-}
-
-function is_tls_con() {
-	$ret = null;
-	if (php_sapi_name() != "cli") {
-		$ret = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] != 'off') ? true : false;
-	}
-	return $ret;
-}
+require_once('./include/libcompactmvc/functions.php');
 
 cmvc_include('mysqlhost.php');
 cmvc_include('config.php');
+cmvc_include('singleton.php');
 cmvc_include('log.php');
+
+register_shutdown_function("fatal_handler");
+$GLOBALS["FATAL_ERR_MSG"] = "";
+
+function fatal_handler() {
+	$error = error_get_last();
+	if ($error == null) return;
+	try {
+		throw new Exception();
+	} catch (Exception $e) {
+		$trace = $e->getTraceAsString();
+	}
+	$msg = "Fatal PHP error: " . print_r($error, true) . (array_key_exists("FATAL_ERR_MSG", $GLOBALS) ? $GLOBALS["FATAL_ERR_MSG"] : "") . "\nStack trace:\n" . $trace;
+	ELOG($msg);
+}
 
 // first include the configuration
 
@@ -75,7 +39,7 @@ if (!defined("LOG_FILE")) {
 }
 @touch(LOG_FILE);
 if (!file_exists(LOG_FILE)) {
-	die(LOG_FILE." does not exist, exiting.\n");
+	die(LOG_FILE." cannot be created, exiting.\n");
 }
 if (!is_writable(LOG_FILE)) {
 	die(LOG_FILE." is not writable by the current process, exiting.\n");
@@ -85,49 +49,19 @@ if (defined('DEBUG') && (DEBUG == 0)) {
 	ob_start();
 }
 
-// framework
+// include files with content that is required elsewhere
 cmvc_include('inputsanitizer.php');
-cmvc_include('singleton.php');
-
-cmvc_include('actiondispatcher.php');
 cmvc_include('actionmapperinterface.php');
-cmvc_include('actionmapper.php');
-cmvc_include('applepushnotification.php');
-cmvc_include('ApnsPHP/Autoload.php');
-cmvc_include('captcha.php');
-cmvc_include('centermap.php');
 cmvc_include('cmvccontroller.php');
-cmvc_include('dbaccess.php');
-cmvc_include('dbobject.php');
-cmvc_include('dtotool.php');
-cmvc_include('emptyresultexception.php');
-cmvc_include('error_messages.php');
-cmvc_include('fifobuffer.php');
-cmvc_include('fifobufferelement.php');
-cmvc_include('fifobufferexception.php');
-cmvc_include('functions.php');
-cmvc_include('googlemaps.php');
-cmvc_include('htmlmail.php');
-cmvc_include('invalidmemberexception.php');
-cmvc_include('linkbuilder.php');
-cmvc_include('linkproperty.php');
-cmvc_include('map_radius.php');
-cmvc_include('multiextender.php');
-cmvc_include('mysqladapter.php');
-cmvc_include('network.php');
-cmvc_include('querybuilder.php');
-cmvc_include('rbrc.php');
-cmvc_include('rbrcexception.php');
-cmvc_include('redisadapter.php');
-cmvc_include('session.php');
-cmvc_include('smtp.php');
-cmvc_include('socket.php');
-cmvc_include('tabledescription.php');
-cmvc_include('upload.php');
-cmvc_include('utf8.php');
-cmvc_include('validator.php');
-cmvc_include('view.php');
-cmvc_include('wsadapter.php');
+cmvc_include('cmvccomponent.php');
 
+// application-specific early loading
 cmvc_include('include.php');
 
+// load the rest
+cmvc_include_dir("./include/libcompactmvc/");
+cmvc_include_dir("./application/", array(
+		"CWebDriverTestCase.php"
+));
+
+// let's begin the execution...

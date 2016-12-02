@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -29,17 +29,21 @@ class MySQLAdapter extends Singleton {
 				$this->hosts_w[] = $host;
 			}
 			$this->hosts[] = $host;
+			$this->host_idx_r = rand(0, count($this->hosts_r) - 1);
+			$this->host_idx_w = rand(0, count($this->hosts_w) - 1);
 		}
-		$this->host_idx_r = rand(0, count($this->hosts_r) - 1);
-		$this->host_idx_w = rand(0, count($this->hosts_w) - 1);
 	}
 
+	/*
 	public function connect() {
-		$this->hosts_r[$this->host_idx_r]->connect();
+		if (!$this->hosts_r[$this->host_idx_r]->connect()) throw new Exception("Error connecting to database: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
+		if (!$this->hosts_r[$this->host_idx_r]->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
 		$this->last_host = $this->hosts_r[$this->host_idx_r];
-		$this->hosts_w[$this->host_idx_w]->connect();
+		if (!$this->hosts_w[$this->host_idx_w]->connect()) throw new Exception("Error connecting to database: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
+		if (!$this->hosts_w[$this->host_idx_r]->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
 		$this->last_host = $this->hosts_w[$this->host_idx_w];
 	}
+	*/
 
 	public function close() {
 		$this->hosts_r[$this->host_idx_r]->close();
@@ -50,6 +54,8 @@ class MySQLAdapter extends Singleton {
 
 	public function query($query, $is_write_access, $table) {
 		$ret = null;
+		$this->host_idx_r = rand(0, count($this->hosts_r) - 1);
+		$this->host_idx_w = rand(0, count($this->hosts_w) - 1);
 		$key = REDIS_KEY_TBLCACHE_PFX . $table . "_" . md5($query);
 		if ($is_write_access) {
 			$ret = $this->hosts_w[$this->host_idx_w]->query($query, $is_write_access);

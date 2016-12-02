@@ -1,5 +1,8 @@
 RewriteEngine on
 
+# Startseite
+RewriteRule ^$ /de/s/home [L]
+
 RewriteRule ^app$ /index.php?&action=&%{QUERY_STRING} [L]
 
 RewriteRule ^app/([^/]*)$ /index.php?&action=$1&%{QUERY_STRING} [L]
@@ -7,19 +10,25 @@ RewriteRule ^app/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&%{QUERY_STRING
 RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&%{QUERY_STRING} [L]
 RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&%{QUERY_STRING} [L]
 RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&%{QUERY_STRING} [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&param4=$6&%{QUERY_STRING} [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&param4=$6&param5=$7&%{QUERY_STRING} [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&param4=$6&param5=$7&param6=$8&%{QUERY_STRING} [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&param4=$6&param5=$7&param6=$8&param7=$9&%{QUERY_STRING} [L]
+RewriteRule ^app/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&param4=$6&param5=$7&param6=$8&param7=$9&param8=$10&%{QUERY_STRING} [L]
 
-RewriteRule ^restapi/([^/]*)$ /api.php?&action=$1&%{QUERY_STRING} [L]
-RewriteRule ^restapi/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&%{QUERY_STRING} [L]
-RewriteRule ^restapi/([^/]*)/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&param1=$3&%{QUERY_STRING} [L]
-RewriteRule ^restapi/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&param1=$3&param2=$4&%{QUERY_STRING} [L]
-RewriteRule ^restapi/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /api.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&%{QUERY_STRING} [L]
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d [OR]
+RewriteCond %{REQUEST_FILENAME} -l
+RewriteRule ^.*$ - [NC,L]
 
-RewriteRule ^backend$ /backend.php?&action=test&%{QUERY_STRING} [L]
- 
-RewriteRule ^backend/([^/]*)$ /backend.php?&action=$1&%{QUERY_STRING} [L]
-RewriteRule ^backend/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2&%{QUERY_STRING} [L]
-RewriteRule ^backend/([^/]*)/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2&param1=$3&%{QUERY_STRING} [L]
-RewriteRule ^backend/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2&param1=$3&param2=$4&%{QUERY_STRING} [L]
-RewriteRule ^backend/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /backend.php?&action=$1&param0=$2&param1=$3&param2=$4&param3=$5&%{QUERY_STRING} [L]
-
+RewriteRule ^([^/]*)$ /index.php?&lang=$1&action=&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&param1=$4&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&param1=$4&param2=$5&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&param1=$4&param2=$5&param3=$6&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&param1=$4&param2=$5&param3=$6&param4=$7&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&param1=$4&param2=$5&param3=$6&param4=$7&param5=$8&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&param1=$4&param2=$5&param3=$6&param4=$7&param5=$8&param6=$9&%{QUERY_STRING} [L]
+RewriteRule ^([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)$ /index.php?&lang=$1&action=$2&param0=$3&param1=$4&param2=$5&param3=$6&param4=$7&param5=$8&param6=$9&param7=$10&%{QUERY_STRING} [L]
 

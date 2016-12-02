@@ -1,4 +1,6 @@
 <?php
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+LIBCOMPACTMVC_ENTRY;
 
 /**
  * Captcha class
@@ -499,14 +501,14 @@ class Captcha {
 		$ret = null;
 		$img = tempnam(TEMP_DIR, "img_");
 		if ($this->imageFormat == 'png' && function_exists('imagepng')) {
-			DLOG(__METHOD__ . ": Sending image in PNG format.");
+			DLOG("Sending image in PNG format.");
 			header("Content-type: image/png");
 			$res = imagepng($this->im, $img);
 			if ($res === false) {
 				throw new Exception(__METHOD__ . ": Error in line " . __LINE__);
 			}
 		} else {
-			DLOG(__METHOD__ . ": Sending image in JPG format.");
+			DLOG("Sending image in JPG format.");
 			header("Content-type: image/jpeg");
 			$res = imagejpeg($this->im, $img, 80);
 			if ($res === false) {

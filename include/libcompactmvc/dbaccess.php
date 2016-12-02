@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -15,12 +15,9 @@ abstract class DbAccess {
 	// keeps instance of the class
 	private static $instance;
 	protected static $mysqli;
-	public $log;
 
 	protected function __construct() {
 		$this->open_db();
-		$this->log = new Log(LOG_TARGET, LOG_TYPE);
-		$this->log->set_log_file(LOG_FILE);
 	}
 
 	public function __destruct() {
@@ -84,8 +81,9 @@ abstract class DbAccess {
 	 * @return Ambigous <multitype:, NULL>
 	 */
 	protected function run_query($query, $has_multi_result = false, $object = false, $field = null, $table = null, $is_write_access = true) {
-		DLOG(__METHOD__ . ": " . $query);
+		DLOG($query);
 		$ret = null;
+		$typed_object = $table != null && class_exists($table) && is_subclass_of(new $table, "DbObject");
 		$key = REDIS_KEY_TBLCACHE_PFX . $table . "_" . $is_write_access . "_" . $field . "_" . $object . "_" . $has_multi_result . "_" . md5($query);
 		$object = ($field == null) ? $object : false;
 		if (array_search($table, $GLOBALS['MYSQL_NO_CACHING']) === false) {
@@ -106,15 +104,19 @@ abstract class DbAccess {
 			}
 		}
 		if (!($result = self::$mysqli->query($query, $is_write_access, $table))) {
-			throw new Exception(ErrorMessages::DB_QUERY_ERROR . '"' . self::$mysqli->get_errno() . '"' . "\nQuery: " . $query);
+			throw new DBException("Query \"$query\" caused an error: " . self::$mysqli->get_error(), self::$mysqli->get_errno());
 		} else {
 			if (is_object($result)) {
 				if ($has_multi_result) {
 					if ($object) {
 						while ($row = $result->fetch_assoc()) {
-							$tmp = new DbObject($row, false);
-							if ($table != null) {
-								$tmp->table($table);
+							if ($typed_object) {
+								$tmp = new $table($row, false);
+							} else {
+								$tmp = new DbObject($row, false);
+								if ($table != null) {
+									$tmp->table($table);
+								}
 							}
 							$ret[] = $tmp;
 						}
@@ -130,9 +132,13 @@ abstract class DbAccess {
 				} else {
 					if ($object) {
 						while ($row = $result->fetch_assoc()) {
-							$tmp = new DbObject($row, false);
-							if ($table != null) {
-								$tmp->table($table);
+							if ($typed_object) {
+								$tmp = new $table($row, false);
+							} else {
+								$tmp = new DbObject($row, false);
+								if ($table != null) {
+									$tmp->table($table);
+								}
 							}
 							$ret = $tmp;
 						}
@@ -154,7 +160,7 @@ abstract class DbAccess {
 		if (($ret == null) && ($has_multi_result == true)) {
 			$ret = array();
 		}
-		if (!array_key_exists($table, $GLOBALS['MYSQL_NO_CACHING'])) {
+		if (array_search($table, $GLOBALS['MYSQL_NO_CACHING']) === false) {
 			if (!$is_write_access) {
 				RedisAdapter::get_instance()->set($key, serialize($ret));
 				RedisAdapter::get_instance()->expire($key, REDIS_KEY_TBLCACHE_TTL);

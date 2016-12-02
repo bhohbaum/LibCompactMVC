@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -14,7 +14,6 @@ LIBCOMPACTMVC_ENTRY;
 class RBRC {
 	private static $instance;
 	private $rhash;
-	public $log;
 
 	/**
 	 *

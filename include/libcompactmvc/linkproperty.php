@@ -1,5 +1,5 @@
 <?php
-@include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -22,6 +22,14 @@ class LinkProperty {
 
 	public function get_path() {
 		return $this->path;
+	}
+
+	public function get_action() {
+		return explode("/", $this->path)[2];
+	}
+
+	public function get_param($num) {
+		return explode("/", $this->path)[3 + $num];
 	}
 
 	public function is_in_sitemap() {

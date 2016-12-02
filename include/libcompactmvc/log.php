@@ -1,5 +1,5 @@
 <?php
-@include_once ('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -11,7 +11,7 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
-class Log {
+class Log extends Singleton {
 	private $db;
 	private $fname;
 	private $logtarget;
@@ -26,7 +26,7 @@ class Log {
 	const LOG_LVL_NOTICE = 2;
 	const LOG_LVL_DEBUG = 3;
 
-	public function __construct($logtarget, $logtype = Log::LOG_TYPE_MULTILINE) {
+	protected function __construct($logtarget, $logtype = Log::LOG_TYPE_MULTILINE) {
 		$this->logtarget = $logtarget;
 		date_default_timezone_set(DEFAULT_TIMEZONE);
 		$this->logtype = $logtype;
@@ -88,43 +88,35 @@ class Log {
 }
 
 /*
- * The XLOG() functions can be used in all controller classes. PHP doesn't know c-like macros.
-* hence we use the debug_backtrace() trick to get the callers object.
-*/
+ * PHP doesn't know c-like macros.
+ * hence we use the debug_backtrace() trick to get the callers object.
+ */
 function ELOG($msg = "") {
+	if (Log::LOG_LVL_ERROR > LOG_LEVEL) return;
 	$stack = debug_backtrace();
-	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
-		$stack[1]["object"]->log->set_log_file(LOG_FILE);
-	}
-	$stack[1]["object"]->log->error(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
+	Log::get_instance(LOG_TARGET, LOG_TYPE)->error($class . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function WLOG($msg = "") {
+	if (Log::LOG_LVL_WARNING > LOG_LEVEL) return;
 	$stack = debug_backtrace();
-	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
-		$stack[1]["object"]->log->set_log_file(LOG_FILE);
-	}
-	$stack[1]["object"]->log->warning(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
+	Log::get_instance(LOG_TARGET, LOG_TYPE)->warning($class . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function NLOG($msg = "") {
+	if (Log::LOG_LVL_NOTICE > LOG_LEVEL) return;
 	$stack = debug_backtrace();
-	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
-		$stack[1]["object"]->log->set_log_file(LOG_FILE);
-	}
-	$stack[1]["object"]->log->notice(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
+	Log::get_instance(LOG_TARGET, LOG_TYPE)->notice($class . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function DLOG($msg = "") {
+	if (Log::LOG_LVL_DEBUG > LOG_LEVEL) return;
 	$stack = debug_backtrace();
-	if (@$stack[1]["object"]->log == null) {
-		@$stack[1]["object"]->log = new Log(LOG_TARGET, LOG_TYPE);
-		$stack[1]["object"]->log->set_log_file(LOG_FILE);
-	}
-	$stack[1]["object"]->log->debug(@$stack[1]["class"] . "::" . $stack[1]["function"] . " " . $msg);
+	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
+	Log::get_instance(LOG_TARGET, LOG_TYPE)->debug($class . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 /**
@@ -135,6 +127,17 @@ function printStackTrace() {
 		throw new Exception("", 0);
 	} catch (Exception $e) {
 		echo ("<pre>" . $e->getTraceAsString() . "</pre>");
+	}
+}
+
+/**
+ * returns the current stack trace
+ */
+function getStackTrace() {
+	try {
+		throw new Exception("", 0);
+	} catch (Exception $e) {
+		return $e->getTraceAsString();
 	}
 }
 
