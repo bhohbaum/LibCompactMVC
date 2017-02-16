@@ -13,6 +13,7 @@ LIBCOMPACTMVC_ENTRY;
  */
 abstract class CMVCComponent extends CMVCController {
 	private $instance_id;
+	private $base_param;
 
 	/**
 	 * Has to be implemented by every subclass. The output of the component (in the view) is identified by this string.
@@ -21,12 +22,40 @@ abstract class CMVCComponent extends CMVCController {
 	 */
 	abstract protected function get_component_id();
 
-	public function __construct() {
+	/**
+	 *
+	 * @param int $base_param
+	 */
+	public function __construct($base_param = 0) {
 		DLOG();
 		parent::__construct();
+		if (!is_int($base_param)) throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
+		$this->base_param = (!isset($this->base_param)) ? $base_param : $this->base_param;
 		$this->instance_id = uniqid();
 		$this->view->set_value("CMP_INST_ID", $this->instance_id);
 		$this->view->set_value("CMP_ID", $this->get_component_id());
+	}
+
+	/**
+	 *
+	 * @param int $pnum
+	 */
+	public function set_base_param($pnum) {
+		DLOG($pnum);
+		if (!is_int($pnum)) throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
+		$this->base_param = $pnum;
+	}
+
+	/**
+	 *
+	 * @param int $pnum
+	 */
+	protected function param($pnum) {
+		if (!is_int($pnum)) throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
+		$varname = 'param' . ($this->base_param + $pnum);
+		$val = self::$member_variables[$varname];
+		DLOG($varname . " = " . $val);
+		return $val;
 	}
 
 }

@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+# ./compile-to-one-file outputfolder inputfolder appname
+use strict;use warnings;use Cwd;my $cwd = cwd();chdir($ARGV[1]);
+system("tar -cvzf /tmp/compressed.app.$ARGV[2].tgz ./bin ./application ./files ./include ./index.php ./templates");
+my $appfile = $ARGV[0] . "/" . $ARGV[2] . ".app";open(my $out, ">", $appfile) or die("Unable to create output file: " . $ARGV[0] . "\n");
+print($out "#!/usr/bin/perl\n\nuse strict;\nuse warnings;\n\nmy \$pid = `pidof compressed.app.$ARGV[2]`;\n");
+print($out "\$0 = \"compressed.app.$ARGV[2]\";\nsystem(\"kill -9 \$pid\");\n");
+print($out "if ( ! -d \"/tmp/compressed.app.$ARGV[2]\") {\nopen(my \$out, '>', \"/tmp/compressed.app.$ARGV[2].tgz\");\n");
+print($out "while (<DATA>) { print(\$out \$_); }\nclose(\$out);\nmkdir(\"/tmp/compressed.app.$ARGV[2]\");\n");
+print($out "system(\"cd /tmp/compressed.app.$ARGV[2]/ ; tar -xzf /tmp/compressed.app.$ARGV[2].tgz >/dev/null\");\n");
+print($out "unlink(\"/tmp/compressed.app.$ARGV[2].tgz\");}\nsystem(\"cd /tmp/compressed.app.$ARGV[2]/ ; php index.php \" . join(\" \", \@ARGV));\n");
+print($out "fork and exit;\nsleep(60);\nEND {\n");print($out "my \$cmd = 'ps -ef | grep [c]ompressed.app.$ARGV[2] | awk \\'{print \$2}\\' | grep -v ' . \$\$;\n");
+print($out "my \$procs = `\$cmd`;\nif (\$procs ne \"\") {exit;};\n");print($out "system(\"rm -Rf /tmp/compressed.app.$ARGV[2]* >/dev/null\");\n}\n\n__DATA__\n");
+open(my $in, "<", "/tmp/compressed.app.$ARGV[2].tgz");while(<$in>) { print($out $_); }close($in);close($out);system("chmod +x " . $appfile);
+unlink("/tmp/compressed.app.$ARGV[2].tgz");chdir($cwd);

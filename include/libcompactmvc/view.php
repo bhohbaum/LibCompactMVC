@@ -14,26 +14,27 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
-class View {
-	private $part;
-	private $vals;
-	private $tpls;
-	private $comp;
-	private static $mapper;
+class View extends InputSanitizer {
+	private $__part;
+	private $__vals;
+	private $__tpls;
+	private $__comp;
+	private static $__mapper;
 	/**
 	 *
 	 * @var LinkBuilder
 	 */
-	private $lb;
+	private $__lb;
 
 	/**
 	 */
 	public function __construct() {
-		$this->part = array();
-		$this->vals = array();
-		$this->tpls = array();
-		$this->comp = array();
-		$this->lb = LinkBuilder::get_instance();
+		parent::__construct();
+		$this->__part = array();
+		$this->__vals = array();
+		$this->__tpls = array();
+		$this->__comp = array();
+		$this->__lb = LinkBuilder::get_instance();
 	}
 
 	/**
@@ -41,7 +42,7 @@ class View {
 	 * @param String $part_name
 	 */
 	public function activate($part_name) {
-		$this->part[$part_name] = true;
+		$this->__part[$part_name] = true;
 		return $this;
 	}
 
@@ -51,7 +52,7 @@ class View {
 	 * @return View
 	 */
 	public function deactivate($part_name) {
-		$this->part[$part_name] = false;
+		$this->__part[$part_name] = false;
 		return $this;
 	}
 
@@ -60,8 +61,8 @@ class View {
 	 * @param String $part_name
 	 */
 	private function is_active($part_name) {
-		if (isset($this->part[$part_name])) {
-			return $this->part[$part_name];
+		if (isset($this->__part[$part_name])) {
+			return $this->__part[$part_name];
 		} else {
 			return false;
 		}
@@ -73,7 +74,7 @@ class View {
 	 * @param unknown $value
 	 */
 	public function set_value($key, $value) {
-		$this->vals[$key] = $value;
+		$this->__vals[$key] = $value;
 		return $this;
 	}
 
@@ -82,8 +83,8 @@ class View {
 	 * @param String $key
 	 */
 	private function get_value($key) {
-		if (isset($this->vals[$key])) {
-			return $this->vals[$key];
+		if (isset($this->__vals[$key])) {
+			return $this->__vals[$key];
 		} else {
 			return "";
 		}
@@ -95,7 +96,7 @@ class View {
 	 * @param CMVCController $component
 	 */
 	public function set_component($key, CMVCController $component) {
-		$this->comp[$key] = $component;
+		$this->__comp[$key] = $component;
 		return $this;
 	}
 
@@ -104,7 +105,7 @@ class View {
 	 * @param String $key
 	 */
 	public function get_component($key) {
-		return (array_key_exists($key, $this->comp)) ? $this->comp[$key] : null;
+		return (array_key_exists($key, $this->__comp)) ? $this->__comp[$key] : null;
 	}
 
 	/**
@@ -112,8 +113,8 @@ class View {
 	 * @param ActionMapper $mapper
 	 */
 	public function set_action_mapper(ActionMapper $mapper) {
-		if (!isset(self::$mapper) && $mapper != null)
-			self::$mapper = $mapper;
+		if (!isset(self::$__mapper) && $mapper != null)
+			self::$__mapper = $mapper;
 	}
 
 	/**
@@ -121,7 +122,7 @@ class View {
 	 * @param String $key
 	 */
 	private function component($key) {
-		return (array_key_exists($key, $this->comp)) ? $this->comp[$key]->get_ob() : "";
+		return (array_key_exists($key, $this->__comp)) ? $this->__comp[$key]->get_ob() : "";
 	}
 
 	/**
@@ -139,8 +140,8 @@ class View {
 	 * @param String $subaction
 	 * @param String $urltail
 	 */
-	private function link(ActionMapperInterface $mapper, $action = null, $subaction = null, $urltail = null) {
-		return $this->lb->get_link($mapper, $action, $subaction, $urltail);
+	private function link(ActionMapperInterface $mapper, $action = null, $subaction = null, $urltail = null, $lang = null) {
+		return $this->__lb->get_link($mapper, $action, $subaction, $urltail, $lang);
 	}
 
 	/**
@@ -149,8 +150,8 @@ class View {
 	 * @param String $subaction
 	 * @param String $urltail
 	 */
-	private function lnk($action = null, $subaction = null, $urltail = null) {
-		return $this->lb->get_link(self::$mapper, $action, $subaction, $urltail);
+	private function lnk($action = null, $subaction = null, $urltail = null, $lang = null) {
+		return $this->__lb->get_link(self::$__mapper, $action, $subaction, $urltail, $lang);
 	}
 
 	/**
@@ -159,7 +160,7 @@ class View {
 	 * @param String $name
 	 */
 	public function set_template(int $index, $name) {
-		$this->tpls[$index] = $name;
+		$this->__tpls[$index] = $name;
 		return $this;
 	}
 
@@ -168,21 +169,21 @@ class View {
 	 * @param String $name
 	 */
 	public function add_template($name) {
-		$this->tpls[] = $name;
+		$this->__tpls[] = $name;
 		return $this;
 	}
 
 	/**
 	 */
 	public function get_templates() {
-		return $this->tpls;
+		return $this->__tpls;
 	}
 
 	public function clear() {
-		$this->part = array();
-		$this->vals = array();
-		$this->tpls = array();
-		$this->comp = array();
+		$this->__part = array();
+		$this->__vals = array();
+		$this->__tpls = array();
+		$this->__comp = array();
 		return $this;
 	}
 
@@ -202,7 +203,7 @@ class View {
 		if (DEBUG == 0) {
 			@ob_end_clean();
 		}
-		foreach ($this->comp as $c) {
+		foreach ($this->__comp as $c) {
 			$c->run();
 		}
 		ob_start();
@@ -222,8 +223,8 @@ class View {
 			DLOG($msg);
 			$out = "";
 		}
-		if (count($this->tpls) > 0) {
-			foreach ($this->tpls as $t) {
+		if (count($this->__tpls) > 0) {
+			foreach ($this->__tpls as $t) {
 				if ((!defined("DEBUG")) || (DEBUG == 0)) {
 					@$this->include_template($t);
 				} else {

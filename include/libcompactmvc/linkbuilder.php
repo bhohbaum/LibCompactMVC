@@ -18,8 +18,11 @@ class LinkBuilder extends Singleton {
 		$this->session = Session::get_instance();
 	}
 
-	public function get_link(ActionMapperInterface $mapper, $action = null, $subaction = null, $urltail = "") {
-		return $mapper->get_base_url() . $mapper->get_path($this->session->get_property(ST_LANGUAGE), $action, $subaction, $urltail);
+	public function get_link(ActionMapperInterface $mapper, $action = null, $subaction = null, $urltail = "", $lang = null) {
+		if ($lang == null && defined("ST_LANGUAGE")) {
+			$lang = $this->session->get_property(ST_LANGUAGE);
+		}
+		return $mapper->get_base_url() . $mapper->get_path($lang, $action, $subaction, $urltail);
 	}
 
 }

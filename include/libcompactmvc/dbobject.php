@@ -111,7 +111,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$q = $qb->select($this->__tablename, $constraint);
 		$res = $this->run_query($q, false, false, null, $this->__tablename, false);
 		if (!$res) {
-			throw new EmptyResultException();
+			throw new EmptyResultException("Query: " . $q);
 		}
 		if (is_array($res)) {
 			foreach ($res as $key => $val) {

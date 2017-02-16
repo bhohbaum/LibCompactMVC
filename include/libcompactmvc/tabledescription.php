@@ -25,7 +25,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
+	 * @param string $tablename
 	 */
 	public function columninfo($tablename) {
 		if (array_key_exists($tablename, self::$colinfoarr)) {
@@ -75,7 +75,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
+	 * @param string $tablename
 	 */
 	public function primary_keys($tablename) {
 		$desc = $this->columninfo($tablename);
@@ -90,7 +90,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
+	 * @param string $tablename
 	 */
 	public function columns($tablename) {
 		$desc = $this->columninfo($tablename);
@@ -99,6 +99,19 @@ class TableDescription extends DbAccess {
 			$ret[] = $val->Field;
 		}
 		return $ret;
+	}
+
+	/**
+	 *
+	 * @param string $tablename
+	 */
+	public function table_exists($tablename) {
+		try {
+			$this->columninfo($tablename);
+			return true;
+		} catch (DBException $e) {
+			return false;
+		}
 	}
 
 }

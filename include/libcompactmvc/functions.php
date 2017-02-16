@@ -227,8 +227,8 @@ function is_tls_con() {
 	return $ret;
 }
 
-function lnk($action = null, $subaction = null, $urltail = "") {
-	return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $action, $subaction, $urltail);
+function lnk($action = null, $subaction = null, $urltail = "", $lang = null) {
+	return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $action, $subaction, $urltail, $lang);
 }
 
 function uppercase($str) {
@@ -237,6 +237,24 @@ function uppercase($str) {
 	$str = str_replace("ö", "Ö", $str);
 	$str = str_replace("ü", "Ü", $str);
 	return $str;
+}
+
+function translate($id, $language) {
+	$chr = new CachedHttpRequest(REDIS_KEY_CACHEDHTTP_TTL);
+	$url = BASE_URL . "/couchdb/" . TRANSLATION_DATABASE . "/" . $id;
+	$res = $chr->get($url);
+	if ($res === false || $res == null) {
+		ELOG("TRANSLATION NOT FOUND: id='$id', language='$language'\n" . getStackTrace());
+		return "";
+	}
+	$dec = json_decode($res);
+	if (!is_object($dec)) {
+		ELOG("ERRONEOUS CONTENT IN LANGUAGE CACHE: id='$id', language='$language', content='$res'\n" . getStackTrace());
+		// we delete the erroneous entry here to fix the language cache content
+		$chr->flush($url);
+		return "";
+	}
+	return $dec->$language;
 }
 
 $GLOBALS["SITEMAP"] = array();

@@ -57,6 +57,7 @@ class CachedHttpRequest {
 			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, SSL_VERIFYHOST);
 		}
 		$data = curl_exec($curl);
+		if ($data === false) DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
@@ -102,6 +103,7 @@ class CachedHttpRequest {
 		curl_setopt($curl, CURLOPT_POST, count($vars));
 		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($vars));
 		$data = curl_exec($curl);
+		if ($data === false) DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
@@ -144,6 +146,7 @@ class CachedHttpRequest {
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($vars));
 		$data = curl_exec($curl);
+		if ($data === false) DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
@@ -185,6 +188,7 @@ class CachedHttpRequest {
 		}
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 		$data = curl_exec($curl);
+		if ($data === false) DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
