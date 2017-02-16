@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -90,7 +91,7 @@ abstract class InputSanitizer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name
+	 * @param unknown_type $var_name        	
 	 * @throws InvalidMemberException
 	 */
 	public function __get($var_name) {
@@ -113,8 +114,8 @@ abstract class InputSanitizer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name
-	 * @param unknown_type $value
+	 * @param unknown_type $var_name        	
+	 * @param unknown_type $value        	
 	 */
 	public function __set($var_name, $value) {
 		self::$member_variables[$var_name] = $value;

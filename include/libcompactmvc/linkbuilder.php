@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -22,6 +23,7 @@ class LinkBuilder extends Singleton {
 		if ($lang == null && defined("ST_LANGUAGE")) {
 			$lang = $this->session->get_property(ST_LANGUAGE);
 		}
+		$lang = ($lang == null) ? "app" : $lang;
 		return $mapper->get_base_url() . $mapper->get_path($lang, $action, $subaction, $urltail);
 	}
 

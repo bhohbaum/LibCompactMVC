@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -17,7 +18,7 @@ class CachedHttpRequest {
 
 	/**
 	 *
-	 * @param string $ttl
+	 * @param string $ttl        	
 	 */
 	public function __construct($ttl = REDIS_KEY_CACHEDHTTP_TTL) {
 		DLOG();
@@ -27,7 +28,7 @@ class CachedHttpRequest {
 
 	/**
 	 *
-	 * @param String $url
+	 * @param String $url        	
 	 * @param Boolean $caching
 	 *        	Cache this request or not.
 	 */
@@ -57,7 +58,8 @@ class CachedHttpRequest {
 			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, SSL_VERIFYHOST);
 		}
 		$data = curl_exec($curl);
-		if ($data === false) DLOG(curl_error($curl));
+		if ($data === false)
+			DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
@@ -67,8 +69,8 @@ class CachedHttpRequest {
 
 	/**
 	 *
-	 * @param unknown $url
-	 * @param unknown $vars
+	 * @param unknown $url        	
+	 * @param unknown $vars        	
 	 * @param Boolean $caching
 	 *        	Cache this request or not.
 	 */
@@ -103,7 +105,8 @@ class CachedHttpRequest {
 		curl_setopt($curl, CURLOPT_POST, count($vars));
 		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($vars));
 		$data = curl_exec($curl);
-		if ($data === false) DLOG(curl_error($curl));
+		if ($data === false)
+			DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
@@ -113,8 +116,8 @@ class CachedHttpRequest {
 
 	/**
 	 *
-	 * @param unknown $url
-	 * @param unknown $vars
+	 * @param unknown $url        	
+	 * @param unknown $vars        	
 	 * @param Boolean $caching
 	 *        	Cache this request or not.
 	 */
@@ -146,7 +149,8 @@ class CachedHttpRequest {
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($vars));
 		$data = curl_exec($curl);
-		if ($data === false) DLOG(curl_error($curl));
+		if ($data === false)
+			DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
@@ -188,7 +192,8 @@ class CachedHttpRequest {
 		}
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 		$data = curl_exec($curl);
-		if ($data === false) DLOG(curl_error($curl));
+		if ($data === false)
+			DLOG(curl_error($curl));
 		if ($caching && ($data !== false)) {
 			RedisAdapter::get_instance()->set($key, $data);
 			RedisAdapter::get_instance()->expire($key, $this->ttl);
@@ -220,8 +225,8 @@ class CachedHttpRequest {
 	 * @param boolean $caching
 	 *        	Set the caching mode. Give null here to just retrieve the current status.
 	 */
-	public function default_caching_enabled($caching = null) {
-		if ($caching != null) {
+	public function caching_enabled($caching = null) {
+		if ($caching !== null) {
 			$this->caching_enabled = $caching;
 		}
 		return $this->caching_enabled;

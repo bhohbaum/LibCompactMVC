@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -33,6 +34,21 @@ function rrmdir($path, $ignore = array()) {
 	} else {
 		unlink($path);
 	}
+}
+
+function rcopy($src, $dst) {
+	$dir = opendir($src);
+	@mkdir($dst);
+	while (false !== ($file = readdir($dir))) {
+		if (($file != '.') && ($file != '..')) {
+			if (is_dir($src . '/' . $file)) {
+				rcopy($src . '/' . $file, $dst . '/' . $file);
+			} else {
+				copy($src . '/' . $file, $dst . '/' . $file);
+			}
+		}
+	}
+	closedir($dir);
 }
 
 function is_windows() {
@@ -81,29 +97,29 @@ function strip_tags_and_attributes($html, $tags, $attributes = array()) {
 	// Parse the HTML into a document object:
 	$dom = new DOMDocument();
 	$dom->loadHTML('<div>' . $html . '</div>');
-
+	
 	// Loop through all of the nodes:
 	$stack = new SplStack();
 	$stack->push($dom->documentElement);
-
+	
 	while ($stack->count() > 0) {
 		// Get the next element for processing:
 		$element = $stack->pop();
-
+		
 		// Add all the element's child nodes to the stack:
 		foreach ($element->childNodes as $child) {
 			if ($child instanceof DOMElement) {
 				$stack->push($child);
 			}
 		}
-
+		
 		// And now, we do the filtering:
 		if (in_array(strtolower($element->nodeName), $tags)) {
 			// It's an unwanted tag; unwrap it:
 			while ($element->hasChildNodes()) {
 				$element->parentNode->insertBefore($element->firstChild, $element);
 			}
-
+			
 			// Finally, delete the offending element:
 			$element->parentNode->removeChild($element);
 		} else {
@@ -111,7 +127,7 @@ function strip_tags_and_attributes($html, $tags, $attributes = array()) {
 			for($i = 0; $i < $element->attributes->length; $i++) {
 				$attribute = $element->attributes->item($i);
 				$name = strtolower($attribute->name);
-
+				
 				if (in_array($name, $attributes)) {
 					// Found an unsafe attribute; remove it:
 					$element->removeAttribute($attribute->name);
@@ -120,11 +136,11 @@ function strip_tags_and_attributes($html, $tags, $attributes = array()) {
 			}
 		}
 	}
-
+	
 	$html = $dom->saveHTML();
 	$start = strpos($html, '<div>');
 	$end = strrpos($html, '</div>');
-
+	
 	return substr($html, $start + 5, $end - $start - 5);
 }
 
@@ -151,7 +167,7 @@ function file_extension($fname) {
 
 function cmvc_include($fname) {
 	$basepath = dirname(dirname(__FILE__) . "../");
-
+	
 	$dirs_up = array(
 			"./",
 			"../",
@@ -160,7 +176,7 @@ function cmvc_include($fname) {
 			"../../../../",
 			"../../../../../"
 	);
-
+	
 	// Put all directories into this array, where source files shall be included.
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
@@ -172,7 +188,7 @@ function cmvc_include($fname) {
 			"include/",
 			"include/libcompactmvc/"
 	);
-
+	
 	foreach ($dirs_up as $u) {
 		foreach ($dirs_down as $d) {
 			// if directory of index.php or below
@@ -262,7 +278,7 @@ $GLOBALS["SITEMAP"] = array();
 /**
  * Callback function that builds the sitemap array.
  *
- * @param LinkProperty $lp
+ * @param LinkProperty $lp        	
  */
 function add_to_sitemap(LinkProperty $lp) {
 	if ($lp->is_in_sitemap())

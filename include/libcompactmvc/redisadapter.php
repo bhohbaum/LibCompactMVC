@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -12,6 +13,71 @@ LIBCOMPACTMVC_ENTRY;
  * @license LGPL version 3
  * @link https://github.com/bhohbaum/libcompactmvc
  */
+if (!extension_loaded("redis")) {
+	class Redis {
+		private $redisdir;
+		private $content;
+
+		public function __construct() {
+			DLOG("WARNING! Redis running in fallback (file) mode!");
+			$this->redisdir = TEMP_DIR . "/redis.dat/";
+			if (!is_dir($this->redisdir))
+				mkdir($this->redisdir);
+		}
+
+		public function __destruct() {
+		}
+
+		public function connect($host, $port) {
+		}
+
+		public function get($key) {
+			$fname = $this->redisdir . md5($key);
+			if (!file_exists($fname))
+				return false;
+			$ttl = filemtime($fname);
+			if ($ttl < time()) {
+				unlink($fname);
+				return false;
+			}
+			$val = file_get_contents($this->redisdir . md5($key));
+			touch($fname, $ttl);
+			return $val;
+		}
+
+		public function set($key, $val) {
+			$fname = $this->redisdir . md5($key);
+			file_put_contents($fname, $val);
+			touch($fname, time() + 3600 * 24 * 356 * 10);
+		}
+
+		public function expire($key, $ttl) {
+			touch($this->redisdir . md5($key), time() + $ttl);
+		}
+
+		public function delete($key) {
+			@unlink($this->redisdir . md5($key));
+		}
+
+		public function keys($filter) {
+			$regex = "/" . str_replace("*", ".*", $filter) . "/";
+			$resarr = array();
+			if ($handle = opendir($this->redisdir)) {
+				while (false !== ($entry = readdir($handle))) {
+					if ($entry != "." && $entry != "..") {
+						echo "$entry\n";
+						preg_match($regex, $entry, $outarray);
+						if ($outarray[0] == $entry)
+							$resarr[] = $entry;
+					}
+				}
+				closedir($handle);
+			}
+			return $resarr;
+		}
+
+	}
+}
 class RedisAdapter {
 	private static $instance;
 	private $redis;
@@ -48,7 +114,7 @@ class RedisAdapter {
 		if ($use_local_cache) {
 			$this->data[$key] = $val;
 		}
-		return $this->redis->set($key, $val);
+		return @$this->redis->set($key, $val);
 	}
 
 	public function expire($key, $ttl) {

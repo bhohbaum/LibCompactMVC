@@ -10,6 +10,10 @@ LIBCOMPACTMVC_ENTRY;
  * @copyright   Copyright (c) Botho Hohbaum 19.02.2014
  * @link		http://www.adrodev.de
  */
-class DummyComponent extends CMVCController {
+class DummyComponent extends CMVCComponent {
+
+	protected function get_component_id() {
+		return "dummy";
+	}
 
 }

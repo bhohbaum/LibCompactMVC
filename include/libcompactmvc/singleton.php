@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -23,7 +24,7 @@ abstract class Singleton {
 
 	public function __destruct() {
 	}
-
+	
 	// prevent cloning
 	private function __clone() {
 	}
@@ -37,7 +38,7 @@ abstract class Singleton {
 		if ((!isset(self::$instance)) || (!array_key_exists($name, self::$instance))) {
 			self::$instance[$name] = new $name($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p);
 		}
-
+		
 		return self::$instance[$name];
 	}
 

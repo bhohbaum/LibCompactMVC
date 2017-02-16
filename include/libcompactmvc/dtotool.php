@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -16,8 +17,10 @@ class DTOTool {
 	/**
 	 * Copy DTO members from one object to another
 	 *
-	 * @param DTO $src in / out
-	 * @param DTO $dst in / out
+	 * @param DTO $src
+	 *        	in / out
+	 * @param DTO $dst
+	 *        	in / out
 	 */
 	public static function copy(&$src, &$dst) {
 		DLOG();

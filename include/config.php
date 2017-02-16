@@ -96,21 +96,6 @@ define('REDIS_KEY_HTMLCACHE_TTL', 10000);
 define('REDIS_KEY_CACHEDHTTP_PFX', 'HTTPCACHE_');
 define('REDIS_KEY_CACHEDHTTP_TTL', 10000);
 
-// allowed users (login)
-// to get the hash on a terminal, type:
-// php -r 'echo(md5("your-password-goes-here")."\n");'
-define('LOGIN_USERS', '{"kmundp": 	"25e31c17258e73c6ca3d090b21656762",
-						"admin": 	"64ab07516f3e7adb0a79cc5ec9ca529d"}');
-
-// special DB content
-define('MPT_TEXT_ONLY', 		"text_only");
-define('MPT_TEXT_WITH_IMAGE', 	"text_with_image");
-define('MPT_TYPE_IMAGE_ONLY', 	"image_only");
-
-define('TRACKING_MAIL_SENT', 	"mail_sent");
-define('TRACKING_MAIL_OPENED', 	"mail_opened");
-define('TRACKING_LINK_CLICKED',	"link_clicked");
-
 define('TBL_APP_PFX', 'cmvc_');
 define('TBL_EVENT_TYPES', 'event_types');
 define('TBL_IMAGES', 'images');

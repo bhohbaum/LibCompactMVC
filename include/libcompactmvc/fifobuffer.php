@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -47,7 +48,7 @@ class FIFOBuffer {
 		try {
 			$this->check_buffer_status();
 			$this->save_state();
-		} catch ( FIFOBufferException $e ) {
+		} catch (FIFOBufferException $e) {
 		}
 	}
 
@@ -217,7 +218,7 @@ class FIFOBuffer {
 		if ($this->is_empty()) {
 			if (!$ignore_lock) {
 				$this->unlock();
-// 				$mutex->unlock();
+				// $mutex->unlock();
 			}
 			return null;
 		}
@@ -240,7 +241,8 @@ class FIFOBuffer {
 	}
 
 	/**
-	 * Read the first element of the buffer without deleting it. Increments the internal (object-wide, not global) iterator.
+	 * Read the first element of the buffer without deleting it.
+	 * Increments the internal (object-wide, not global) iterator.
 	 *
 	 * @throws FIFOBufferException
 	 * @return mixed Element data
@@ -265,7 +267,8 @@ class FIFOBuffer {
 	}
 
 	/**
-	 * Read the next element of the buffer without deleting it. Increments the internal (object-wide, not global) iterator.
+	 * Read the next element of the buffer without deleting it.
+	 * Increments the internal (object-wide, not global) iterator.
 	 *
 	 * @throws FIFOBufferException
 	 * @return mixed Element data
@@ -411,7 +414,8 @@ class FIFOBuffer {
 	/**
 	 * Set a deviating TTL for this buffer instance.
 	 *
-	 * @param int $ttl The TTL to use for this buffer instance
+	 * @param int $ttl
+	 *        	The TTL to use for this buffer instance
 	 */
 	public function set_ttl($ttl) {
 		$this->ttl = $ttl;

@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -17,18 +18,28 @@ class DbObject extends DbAccess implements JsonSerializable {
 	private $__isnew;
 	private $__td;
 
+	protected function init() {
+		DLOG();
+	}
+
 	/**
 	 *
-	 * @param unknown_type $members: array or DbObject
+	 * @param unknown_type $members:
+	 *        	array or DbObject
 	 * @param unknown_type $isnew
 	 */
 	public function __construct($members = array(), $isnew = true) {
 		parent::__construct();
-		if (is_array($members)) $this->__member_variables = $members;
-		else if (is_object($members) && is_subclass_of($members, "DbObject")) $this->__member_variables = $members->to_array();
+		if (is_array($members))
+			$this->__member_variables = $members;
+		else if (is_object($members) && is_subclass_of($members, "DbObject"))
+			$this->__member_variables = $members->to_array();
 		$this->__tablename = null;
 		$this->__isnew = $isnew;
 		$this->__td = new TableDescription();
+		$this->init();
+		if (!$isnew)
+			$this->on_after_load();
 	}
 
 	/**
@@ -50,7 +61,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 			$refcol = $tmp[1];
 			if ($column == $var_name) {
 				$qb = new QueryBuilder();
-				$q = $qb->select($reftab, array($refcol => $this->__member_variables[$var_name]));
+				$q = $qb->select($reftab, array(
+						$refcol => $this->__member_variables[$var_name]
+				));
 				$ret = DbAccess::get_instance(DBA_DEFAULT_CLASS)->run_query($q, true, true, null, $reftab, false);
 			}
 		}
@@ -74,7 +87,6 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
-	 *
 	 */
 	public function jsonSerialize() {
 		$ret = array();
@@ -100,6 +112,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 * (non-PHPdoc)
+	 *
 	 * @see DbAccess::by()
 	 */
 	public function by($constraint = array()) {
@@ -119,6 +132,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 			}
 		}
 		$this->__isnew = false;
+		$this->on_after_load();
 		return $this;
 	}
 
@@ -127,6 +141,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 * @throws Exception
 	 */
 	public function save() {
+		$this->on_before_save();
 		if (!isset($this->__tablename)) {
 			throw new Exception("Tablename must be set to be able to save new DbObjects to database.");
 		}
@@ -159,7 +174,6 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
-	 *
 	 */
 	public function delete() {
 		$pks = $this->__td->primary_keys($this->__tablename);
@@ -178,10 +192,23 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
-	 *
 	 */
 	public function to_array() {
 		return $this->__member_variables;
+	}
+
+	/**
+	 * This method is called before a save operation.
+	 */
+	protected function on_before_save() {
+		DLOG();
+	}
+
+	/**
+	 * This method is called after a load operation.
+	 */
+	protected function on_after_load() {
+		DLOG();
 	}
 
 }

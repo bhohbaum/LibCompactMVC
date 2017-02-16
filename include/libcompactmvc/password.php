@@ -1,4 +1,5 @@
 <?php
+
 /**
  * A Compatibility library with PHP 5.5's simplified password hashing API.
  *
@@ -19,7 +20,7 @@ namespace {
 		define('PASSWORD_DEFAULT', PASSWORD_BCRYPT);
 		define('PASSWORD_BCRYPT_DEFAULT_COST', 10);
 	}
-
+	
 	if (!function_exists('password_hash')) {
 
 		/**
@@ -31,7 +32,7 @@ namespace {
 		 *        	The algorithm to use (Defined by PASSWORD_* constants)
 		 * @param array $options
 		 *        	The options for the algorithm to use
-		 *
+		 *        	
 		 * @return string|false The hashed password, or false on error.
 		 */
 		function password_hash($password, $algo, array $options = array()) {
@@ -52,7 +53,7 @@ namespace {
 			}
 			$resultLength = 0;
 			switch ($algo) {
-				case PASSWORD_BCRYPT :
+				case PASSWORD_BCRYPT:
 					$cost = PASSWORD_BCRYPT_DEFAULT_COST;
 					if (isset($options['cost'])) {
 						$cost = ( int ) $options['cost'];
@@ -78,20 +79,20 @@ namespace {
 			$salt_req_encoding = false;
 			if (isset($options['salt'])) {
 				switch (gettype($options['salt'])) {
-					case 'NULL' :
-					case 'boolean' :
-					case 'integer' :
-					case 'double' :
-					case 'string' :
+					case 'NULL':
+					case 'boolean':
+					case 'integer':
+					case 'double':
+					case 'string':
 						$salt = ( string ) $options['salt'];
 						break;
-					case 'object' :
+					case 'object':
 						if (method_exists($options['salt'], '__tostring')) {
 							$salt = ( string ) $options['salt'];
 							break;
 						}
-					case 'array' :
-					case 'resource' :
+					case 'array':
+					case 'resource':
 					default :
 						trigger_error('password_hash(): Non-string salt parameter supplied', E_USER_WARNING);
 						throw new Exception('password_hash(): Non-string salt parameter supplied', 500);
@@ -151,20 +152,20 @@ namespace {
 				// encode string with the Base64 variant used by crypt
 				$base64_digits = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 				$bcrypt64_digits = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
+				
 				$base64_string = base64_encode($salt);
 				$salt = strtr(rtrim($base64_string, '='), $base64_digits, $bcrypt64_digits);
 			}
 			$salt = PasswordCompat\binary\_substr($salt, 0, $required_salt_len);
-
+			
 			$hash = $hash_format . $salt;
-
+			
 			$ret = crypt($password, $hash);
-
+			
 			if (!is_string($ret) || PasswordCompat\binary\_strlen($ret) != $resultLength) {
 				return false;
 			}
-
+			
 			return $ret;
 		}
 
@@ -183,7 +184,7 @@ namespace {
 		 *
 		 * @param string $hash
 		 *        	The password hash to extract info from
-		 *
+		 *        	
 		 * @return array The array of information about the hash.
 		 */
 		function password_get_info($hash) {
@@ -212,7 +213,7 @@ namespace {
 		 *        	The algorithm used for new password hashes
 		 * @param array $options
 		 *        	The options array passed to password_hash
-		 *
+		 *        	
 		 * @return boolean True if the password needs to be rehashed.
 		 */
 		function password_needs_rehash($hash, $algo, array $options = array()) {
@@ -221,7 +222,7 @@ namespace {
 				return true;
 			}
 			switch ($algo) {
-				case PASSWORD_BCRYPT :
+				case PASSWORD_BCRYPT:
 					$cost = isset($options['cost']) ? ( int ) $options['cost'] : PASSWORD_BCRYPT_DEFAULT_COST;
 					if ($cost !== $info['options']['cost']) {
 						return true;
@@ -238,7 +239,7 @@ namespace {
 		 *        	The password to verify
 		 * @param string $hash
 		 *        	The hash to verify against
-		 *
+		 *        	
 		 * @return boolean If the password matches the hash
 		 */
 		function password_verify($password, $hash) {
@@ -251,12 +252,12 @@ namespace {
 			if (!is_string($ret) || PasswordCompat\binary\_strlen($ret) != PasswordCompat\binary\_strlen($hash) || PasswordCompat\binary\_strlen($ret) <= 13) {
 				return false;
 			}
-
+			
 			$status = 0;
 			for($i = 0; $i < PasswordCompat\binary\_strlen($ret); $i++) {
 				$status |= (ord($ret[$i]) ^ ord($hash[$i]));
 			}
-
+			
 			return $status === 0;
 		}
 	}
@@ -276,7 +277,7 @@ namespace PasswordCompat\binary {
 		 *
 		 * @param string $binary_string
 		 *        	The input string
-		 *
+		 *        	
 		 * @internal
 		 *
 		 * @return int The number of bytes
@@ -295,8 +296,8 @@ namespace PasswordCompat\binary {
 		 *
 		 * @param string $binary_string
 		 *        	The input string
-		 * @param int $start
-		 * @param int $length
+		 * @param int $start        	
+		 * @param int $length        	
 		 *
 		 * @internal
 		 *
@@ -316,7 +317,7 @@ namespace PasswordCompat\binary {
 		 */
 		function check() {
 			static $pass = NULL;
-
+			
 			if (is_null($pass)) {
 				if (function_exists('crypt')) {
 					$hash = '$2y$04$usesomesillystringfore7hnbRJHxXVLeakoG8K30oukPsA.ztMG';

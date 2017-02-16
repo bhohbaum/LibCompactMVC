@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -15,7 +16,6 @@ class QueryBuilder extends DbAccess {
 	private $td;
 
 	/**
-	 *
 	 */
 	public function __construct() {
 		parent::__construct();
@@ -24,17 +24,17 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
-	 * @param unknown_type $constraint
+	 * @param unknown_type $tablename        	
+	 * @param unknown_type $constraint        	
 	 */
 	public function select($tablename, $constraint = array()) {
-		$q = "SELECT * FROM " . $tablename;
+		$q = "SELECT * FROM `" . $tablename . "`";
 		if (count($constraint) > 0) {
 			$q .= " WHERE";
 			$desc = $this->td->columninfo($tablename);
 			foreach ($desc as $key => $val) {
 				if (array_key_exists($val->Field, $constraint)) {
-					$q .= " " . $val->Field . " = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+					$q .= " `" . $val->Field . "` = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 				}
 			}
 			$q = substr($q, 0, strlen($q) - 5);
@@ -45,16 +45,16 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
-	 * @param unknown_type $fields
+	 * @param unknown_type $tablename        	
+	 * @param unknown_type $fields        	
 	 */
 	public function insert($tablename, $fields) {
 		$nofields = true;
 		$desc = $this->td->columninfo($tablename);
-		$q = "INSERT INTO " . $tablename . " (";
+		$q = "INSERT INTO `" . $tablename . "` (";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {
-				$q .= $val->Field . ", ";
+				$q .= "`" . $val->Field . "`, ";
 				$nofields = false;
 			}
 		}
@@ -76,16 +76,16 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
-	 * @param unknown_type $fields
-	 * @param unknown_type $constraint
+	 * @param unknown_type $tablename        	
+	 * @param unknown_type $fields        	
+	 * @param unknown_type $constraint        	
 	 */
 	public function update($tablename, $fields, $constraint) {
 		$desc = $this->td->columninfo($tablename);
-		$q = "UPDATE " . $tablename . " SET ";
+		$q = "UPDATE `" . $tablename . "` SET ";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {
-				$q .= $val->Field . " = " . $this->sqlnull($this->escape($fields[$val->Field])) . ", ";
+				$q .= "`" . $val->Field . "` = " . $this->sqlnull($this->escape($fields[$val->Field])) . ", ";
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 2);
@@ -94,7 +94,7 @@ class QueryBuilder extends DbAccess {
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $constraint)) {
 				$noconstraint = false;
-				$q .= $val->Field . " = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+				$q .= "`" . $val->Field . "` = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 			}
 		}
 		if ($noconstraint) {
@@ -107,15 +107,15 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
-	 * @param unknown_type $constraint
+	 * @param unknown_type $tablename        	
+	 * @param unknown_type $constraint        	
 	 */
 	public function delete($tablename, $constraint) {
 		$desc = $this->td->columninfo($tablename);
-		$q = "DELETE FROM " . $tablename . " WHERE ";
+		$q = "DELETE FROM `" . $tablename . "` WHERE ";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $constraint)) {
-				$q .= $val->Field . " = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+				$q .= "`" . $val->Field . "` = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 5);

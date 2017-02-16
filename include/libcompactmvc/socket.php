@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -43,15 +44,15 @@ class Socket {
 		if ($this->fh) {
 			$buf .= fread($this->fh, $maxsize);
 			// TODO: read sizes >8192 bytes
-// 			while (!feof($this->fh)) {
-// 				stream_set_blocking($this->fh, true);
-// 				$buf .= fread($this->fh, 8192);
-// 				stream_set_blocking($this->fh, true);
-// 				if ($oldbuf == $buf) {
-// 					break;
-// 				}
-// 				$oldbuf = $buf;
-// 			}
+			// while (!feof($this->fh)) {
+			// stream_set_blocking($this->fh, true);
+			// $buf .= fread($this->fh, 8192);
+			// stream_set_blocking($this->fh, true);
+			// if ($oldbuf == $buf) {
+			// break;
+			// }
+			// $oldbuf = $buf;
+			// }
 		} else {
 			throw new Exception("Unable to read from socket. No connection established.");
 		}
@@ -86,6 +87,5 @@ class Socket {
 		}
 		return $n;
 	}
-
 
 }

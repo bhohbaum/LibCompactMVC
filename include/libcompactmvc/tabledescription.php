@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -25,7 +26,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param string $tablename
+	 * @param string $tablename        	
 	 */
 	public function columninfo($tablename) {
 		if (array_key_exists($tablename, self::$colinfoarr)) {
@@ -46,7 +47,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
+	 * @param unknown_type $tablename        	
 	 */
 	public function fkinfo($tablename) {
 		if (array_key_exists($tablename, self::$fkinfoarr)) {
@@ -75,7 +76,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param string $tablename
+	 * @param string $tablename        	
 	 */
 	public function primary_keys($tablename) {
 		$desc = $this->columninfo($tablename);
@@ -90,7 +91,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param string $tablename
+	 * @param string $tablename        	
 	 */
 	public function columns($tablename) {
 		$desc = $this->columninfo($tablename);
@@ -103,7 +104,7 @@ class TableDescription extends DbAccess {
 
 	/**
 	 *
-	 * @param string $tablename
+	 * @param string $tablename        	
 	 */
 	public function table_exists($tablename) {
 		try {

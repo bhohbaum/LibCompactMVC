@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 // TODO Property ebenfalls behandeln
@@ -12,14 +13,14 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
- *
- * verwendung:
- * im konstruktor der abgeleiteten klasse die parent classes mit
- * parent::addExtendedClass($param1, ..., $paramn);
- * hinzufügen.
+ *      
+ *       verwendung:
+ *       im konstruktor der abgeleiteten klasse die parent classes mit
+ *       parent::addExtendedClass($param1, ..., $paramn);
+ *       hinzufügen.
  */
 abstract class MultiExtender {
 	private $methods = array();
@@ -31,8 +32,8 @@ abstract class MultiExtender {
 	/**
 	 * ein weitere Extended Class hinzufügen
 	 *
-	 * @param String $name
-	 * @param Array $params
+	 * @param String $name        	
+	 * @param Array $params        	
 	 */
 	protected function addExtendedClass($className, $params = array()) {
 		// Eine Wrapperklasse erstellen, damit die Protected-Methodes Public werden
@@ -71,8 +72,8 @@ abstract class MultiExtender {
 	 * Aufruf einer Methode.
 	 * Der Aufruf wird an das entsprechende Parentobjekt weitergeleitet
 	 *
-	 * @param String $name
-	 * @param Array $params
+	 * @param String $name        	
+	 * @param Array $params        	
 	 * @return Variant
 	 */
 	public function __call($name, $params) {
@@ -90,7 +91,7 @@ abstract class MultiExtender {
 	 * Aufruf eines Property.
 	 * Der Aufruf wird an das entsprechende Parentobjekt weitergeleitet
 	 *
-	 * @param String $name
+	 * @param String $name        	
 	 * @return Variant
 	 */
 	public function __get($name) {
@@ -103,7 +104,7 @@ abstract class MultiExtender {
 	/**
 	 * Erstellen einer Wrapperlasse um die ParentClass
 	 *
-	 * @param String $className
+	 * @param String $className        	
 	 * @return String Name der Wrapperklasse
 	 */
 	final private static function createWrapperClass($className) {
@@ -160,7 +161,7 @@ abstract class MultiExtender {
 	/**
 	 * erstellt ein Object einer Klasse mit dem einer freien Anzahl Paramtern
 	 *
-	 * @param String $className
+	 * @param String $className        	
 	 * @param
 	 *        	Variant
 	 * @return Object
@@ -176,8 +177,8 @@ abstract class MultiExtender {
 	/**
 	 * erstellt ein Object einer Klasse mit dem Array $params als Argumente
 	 *
-	 * @param String $className
-	 * @param Array $params
+	 * @param String $className        	
+	 * @param Array $params        	
 	 * @return Object
 	 *
 	 * @example $obj = create_user_obj('myClass', array($paramter1, $paramter2));
@@ -188,6 +189,5 @@ abstract class MultiExtender {
 		$php = 'return new $className(' . implode(',', $pStrings) . ');';
 		return eval($php);
 	}
-
 
 }

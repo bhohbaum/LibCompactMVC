@@ -3,7 +3,7 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Test page
+ * Logout page
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
  * @package     LibCompactMVC
@@ -12,10 +12,11 @@ LIBCOMPACTMVC_ENTRY;
  */
 class Logout extends CMVCController {
 
-	protected function run_page_logic() {
-		DLOG(__METHOD__);
+	protected function main_run() {
+		DLOG();
+		parent::main_run();
 		Session::get_instance()->clear();
-		$this->redirect = "login";
+		throw new RedirectException(lnk("login"));
 	}
 
 }

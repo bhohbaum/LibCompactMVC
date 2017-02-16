@@ -195,14 +195,14 @@ var $ws = function() {
 			this.socket = new WebSocket(this.url, "event-dispatch-protocol");
 			console.log('WebSocket - status ' + this.socket.readyState);
 			this.socket.onopen = function(msg) {
-				console.log("Welcome - status " + this.readyState);
+				console.log("Connected. Status: " + this.readyState);
 			};
 			this.socket.onmessage = function(msg) {
 				console.log("Received: " + msg.data);
 				ws._run_handlers(msg.data);
 			};
 			this.socket.onclose = function(msg) {
-				console.log("Disconnected - status " + this.readyState);
+				console.log("Disconnected. Status: " + this.readyState);
 			};
 		} catch (ex) {
 			console.log(ex);

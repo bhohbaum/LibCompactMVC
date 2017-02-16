@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -12,7 +13,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -52,7 +53,7 @@ class HTMLMail {
 	 * HTMLMail::MAIL_TYPE_TEXT
 	 * HTMLMail::MAIL_TYPE_HTML
 	 *
-	 * @param Integer $type
+	 * @param Integer $type        	
 	 */
 	public function __construct($type = self::MAIL_TYPE_HTML) {
 		DLOG();
@@ -75,7 +76,7 @@ class HTMLMail {
 	 * HTMLMail::MAIL_TYPE_TEXT
 	 * HTMLMail::MAIL_TYPE_HTML
 	 *
-	 * @param Integer $type
+	 * @param Integer $type        	
 	 */
 	public function set_mail_type($type) {
 		DLOG();
@@ -89,7 +90,7 @@ class HTMLMail {
 	 * HTMLMail::TRANS_TYPE_MAIL
 	 * HTMLMail::TRANS_TYPE_SMTP
 	 *
-	 * @param unknown_type $type
+	 * @param unknown_type $type        	
 	 */
 	public function set_transfer_type($type) {
 		DLOG();
@@ -322,7 +323,7 @@ class HTMLMail {
 		$this->mailheader .= 'MIME-Version: 1.0' . "\n";
 		$this->mailheader .= 'X-Mailer: LibCompactMVC Mail Module (c) 2012 by Botho Hohbaum.' . "\n";
 		$this->mailheader .= "\n\n";
-
+		
 		$this->mailbody = "--" . $this->boundary_m . "\n";
 		$this->mailbody .= 'Content-Type: multipart/related; type="multipart/alternative"; boundary="' . $this->boundary_r . '"' . "\n";
 		$this->mailbody .= "\n\n";
@@ -538,6 +539,5 @@ class HTMLMail {
 		);
 		return (!isset($mimes[strtolower($ext)])) ? 'application/octet-stream' : $mimes[strtolower($ext)];
 	}
-
 
 }

@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -12,31 +13,36 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 abstract class CMVCController extends InputSanitizer {
-	private $ob;
-	private static $rbrc;
-	private $cmp_disp_base;
-	private $mime_type;
-	public $view;
-
+	private $__ob;
+	private static $__rbrc;
+	private $__cmp_disp_base;
+	private $__mime_type;
+	private $__redirect;
+	
+	/**
+	 *
+	 * @var View $__view
+	 */
+	private $__view;
+	
 	/**
 	 *
 	 * @var DbAccess db
 	 */
-	public $db;
-
-	public $redirect;
+	private $__db;
 
 	/**
 	 */
 	public function __construct() {
 		DLOG();
 		parent::__construct();
-		$this->view = new View();
-		$this->mime_type = MIME_TYPE_HTML;
+		$this->__view = new View();
+		$this->__mime_type = MIME_TYPE_HTML;
 	}
 
 	/**
 	 * Has to return the name of the DBA class.
+	 * Overwrite this method if your controller requires a different DbAccess object from get_db().
 	 *
 	 * @return String
 	 */
@@ -45,117 +51,6 @@ abstract class CMVCController extends InputSanitizer {
 		return (defined("DBA_DEFAULT_CLASS")) ? DBA_DEFAULT_CLASS : "DbAccess";
 	}
 
-	// Legacy API
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function retrieve_data() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function run_page_logic() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function retrieve_data_get() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function retrieve_data_post() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function retrieve_data_put() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function retrieve_data_delete() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function retrieve_data_exec() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function run_page_logic_get() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function run_page_logic_post() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function run_page_logic_put() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function run_page_logic_delete() {
-		DLOG();
-	}
-
-	/**
-	 *
-	 * @deprecated
-	 *
-	 */
-	protected function run_page_logic_exec() {
-		DLOG();
-	}
-
-	// New API
 	protected function pre_run() {
 		DLOG();
 	}
@@ -231,10 +126,10 @@ abstract class CMVCController extends InputSanitizer {
 	/**
 	 * Exception handler
 	 *
-	 * @param Exception $e
+	 * @param Exception $e        	
 	 */
 	protected function exception_handler($e) {
-		DLOG();
+		DLOG(get_class($e));
 		throw $e;
 	}
 
@@ -246,7 +141,7 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 */
-	protected function method() {
+	protected function get_method() {
 		if (php_sapi_name() == "cli") {
 			$method = (getenv("METHOD") !== false) ? getenv("METHOD") : "exec";
 		} else {
@@ -259,32 +154,46 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 *
-	 * @param unknown_type $obj
+	 * @param Object $obj        	
 	 */
 	protected function json_response($obj) {
 		DLOG(UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
-		$this->mime_type = MIME_TYPE_JSON;
-		$this->view->clear();
-		$this->view->add_template("out.tpl");
-		$this->view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
+		$this->__mime_type = MIME_TYPE_JSON;
+		$this->__view->clear();
+		$this->__view->add_template("out.tpl");
+		$this->__view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
 	}
 
 	/**
 	 *
-	 * @param unknown_type $obj
+	 * @param unknown_type $obj        	
 	 */
 	protected function binary_response($obj, $mime = MIME_TYPE_OCTET_STREAM) {
 		DLOG();
-		$this->mime_type = $mime;
-		$this->content_type_isset = true;
-		$this->view->clear();
-		$this->view->add_template("out.tpl");
-		$this->view->set_value("out", $obj);
+		$this->__mime_type = $mime;
+		$this->__view->clear();
+		$this->__view->add_template("out.tpl");
+		$this->__view->set_value("out", $obj);
+	}
+
+	/**
+	 * Shorthand method to return the dispatched components output.
+	 *
+	 * @return : Boolean true if a matching component was found, false otherwise.
+	 */
+	protected function component_response() {
+		DLOG();
+		if ($this->get_dispatched_component() != null) {
+			$this->binary_response($this->get_dispatched_component()->get_ob(), $this->get_dispatched_component()->get_mime_type());
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
 	 *
-	 * @param unknown_type $code
+	 * @param unknown_type $code        	
 	 * @throws Exception
 	 */
 	protected function response_code($code = null) {
@@ -421,53 +330,53 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 *
-	 * @param unknown_type $observe_headers
+	 * @param unknown_type $observe_headers        	
 	 * @throws RBRCException
 	 */
 	protected function rbrc($observe_headers = true) {
 		DLOG();
-		self::$rbrc = RBRC::get_instance($this->request(), $observe_headers);
-		if (self::$rbrc->get()) {
-			$this->view->clear();
-			$this->view->add_template("out.tpl");
-			$this->view->set_value("out", self::$rbrc->get());
-			$this->ob = $this->view->render();
+		self::$__rbrc = RBRC::get_instance($this->request(), $observe_headers);
+		if (self::$__rbrc->get()) {
+			$this->__view->clear();
+			$this->__view->add_template("out.tpl");
+			$this->__view->set_value("out", self::$__rbrc->get());
+			$this->__ob = $this->__view->render();
 			throw new RBRCException();
 		}
 	}
 
 	/**
-	 * Proxy method to $this->view->set_component($key, CMVCController $component).
+	 * Proxy method to $this->get_view()->set_component($key, CMVCController $component).
 	 * Required to use one component multiple times.
 	 *
-	 * @param String $key
-	 * @param CMVCController $component
+	 * @param String $key        	
+	 * @param CMVCController $component        	
 	 */
 	protected function set_component($key, CMVCComponent $component) {
 		DLOG("(" . $key . ", " . get_class($component) . ")");
-		$this->view->set_component($key, $component);
+		$this->__view->set_component($key, $component);
 	}
 
 	/**
-	 * Proxy method to $this->view->set_component($key, CMVCController $component).
+	 * Proxy method to $this->get_view()->set_component($key, CMVCController $component).
 	 * Associates the component with its own ID.
 	 *
-	 * @param String $key
-	 * @param CMVCController $component
+	 * @param String $key        	
+	 * @param CMVCController $component        	
 	 */
 	protected function add_component(CMVCComponent $component) {
 		DLOG(get_class($component));
-		$this->view->set_component($component->get_component_id(), $component);
+		$this->__view->set_component($component->get_component_id(), $component);
 	}
 
 	/**
 	 * Sets string for component selection.
 	 *
-	 * @param String $base
+	 * @param String $base        	
 	 */
 	protected function set_component_dispatch_base($base) {
 		DLOG($base);
-		$this->cmp_disp_base = $base;
+		$this->__cmp_disp_base = $base;
 	}
 
 	/**
@@ -478,90 +387,59 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	protected function dispatch_component(CMVCComponent $component) {
 		DLOG(get_class($component));
-		if ($this->cmp_disp_base == $component->get_component_id())
+		if ($this->__cmp_disp_base == $component->get_component_id())
 			$this->add_component($component);
 	}
 
 	/**
-	 * Input-controlled component dispatcher.
+	 * Get the component object that was selected / will be selected based on the component dispatch base.
 	 *
 	 * @return CMVCComponent the dispatched component object
 	 */
 	protected function get_dispatched_component() {
 		DLOG();
-		return $this->view->get_component($this->cmp_disp_base);
+		return $this->__view->get_component($this->__cmp_disp_base);
 	}
 
 	/**
-	 * Calls the corresponding functions.
+	 * Call methods based on the input that is provided.
 	 *
-	 * @param String $var
+	 * @param String $var        	
+	 * @return Boolean true if a matching method was found, false otherwise.
 	 */
-	protected function dispatch($var) {
+	protected function dispatch_method($var) {
 		DLOG($var);
-		$method = strtolower($this->method());
+		$method = strtolower($this->get_method());
 		$func = $method . "_" . $var;
 		if (is_callable(array(
 				$this,
 				$func
-		)))
+		))) {
 			$this->$func();
+			return true;
+		}
 		if (is_callable(array(
 				$this,
 				$var
-		)))
+		))) {
 			$this->$var();
+			return true;
+		}
+		return false;
 	}
 
 	/**
+	 * Executes controller methods depending on request type.
 	 */
 	public function run() {
 		DLOG();
 		DLOG(var_export($_REQUEST, true));
-		$this->redirect = "";
-		$this->db = DbAccess::get_instance($this->dba());
-		if (!isset($this->view)) {
-			$this->view = new View();
+		$this->__redirect = "";
+		$this->__db = DbAccess::get_instance($this->dba());
+		if (!isset($this->__view)) {
+			$this->__view = new View();
 		}
-		// Legacy API
-		switch ($this->method()) {
-			case 'GET':
-				$this->retrieve_data_get();
-				break;
-			case 'POST':
-				$this->retrieve_data_post();
-				break;
-			case 'PUT':
-				$this->retrieve_data_put();
-				break;
-			case 'DELETE':
-				$this->retrieve_data_delete();
-				break;
-			case 'EXEC':
-				$this->retrieve_data_exec();
-				break;
-		}
-		$this->retrieve_data();
-		switch ($this->method()) {
-			case 'GET':
-				$this->run_page_logic_get();
-				break;
-			case 'POST':
-				$this->run_page_logic_post();
-				break;
-			case 'PUT':
-				$this->run_page_logic_put();
-				break;
-			case 'DELETE':
-				$this->run_page_logic_delete();
-				break;
-			case 'EXEC':
-				$this->run_page_logic_exec();
-				break;
-		}
-		$this->run_page_logic();
-		// New API
-		switch ($this->method()) {
+		switch ($this->get_method()) {
 			case 'GET':
 				$this->pre_run_get();
 				break;
@@ -579,7 +457,7 @@ abstract class CMVCController extends InputSanitizer {
 				break;
 		}
 		$this->pre_run();
-		switch ($this->method()) {
+		switch ($this->get_method()) {
 			case 'GET':
 				$this->main_run_get();
 				break;
@@ -597,7 +475,7 @@ abstract class CMVCController extends InputSanitizer {
 				break;
 		}
 		$this->main_run();
-		switch ($this->method()) {
+		switch ($this->get_method()) {
 			case 'GET':
 				$this->post_run_get();
 				break;
@@ -615,12 +493,12 @@ abstract class CMVCController extends InputSanitizer {
 				break;
 		}
 		$this->post_run();
-
+		
 		// If we have a redirect, we don't want the current template(s) to be generated.
-		if ($this->redirect == "") {
-			$this->ob = $this->view->render();
-			if (isset(self::$rbrc)) {
-				self::$rbrc->put($this->ob);
+		if ($this->__redirect == "") {
+			$this->__ob = $this->__view->render();
+			if (isset(self::$__rbrc)) {
+				self::$__rbrc->put($this->__ob);
 			}
 		}
 	}
@@ -636,7 +514,7 @@ abstract class CMVCController extends InputSanitizer {
 		if ($e instanceof RedirectException) {
 			$this->response_code($e->getCode());
 			if ($e->is_internal()) {
-				$this->redirect = $e->getMessage();
+				$this->__redirect = $e->getMessage();
 			} else {
 				header("Location: " . $e->getMessage());
 			}
@@ -645,17 +523,17 @@ abstract class CMVCController extends InputSanitizer {
 				$this->exception_handler($e);
 			} catch (RedirectException $e0) {
 				if ($e0->is_internal()) {
-					$this->redirect = $e0->getMessage();
+					$this->__redirect = $e0->getMessage();
 				} else {
 					header("Location: " . $e0->getMessage());
 				}
 				return;
 			} catch (Exception $e1) {
-				$this->ob = $this->view->render();
+				$this->__ob = $this->__view->render();
 				$this->response_code($e->getCode());
 				throw $e1;
 			}
-			$this->ob = $this->view->render();
+			$this->__ob = $this->__view->render();
 			$this->response_code($e->getCode());
 		}
 	}
@@ -667,7 +545,7 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	public function get_ob() {
 		DLOG();
-		return $this->ob;
+		return $this->__ob;
 	}
 
 	/**
@@ -677,14 +555,29 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	protected function set_mime_type($mime_type) {
 		DLOG($mime_type);
-		$this->mime_type = $mime_type;
+		$this->__mime_type = $mime_type;
+	}
+
+	protected function get_db() {
+		DLOG();
+		return $this->__db;
 	}
 
 	/**
 	 */
 	public function get_mime_type() {
-		DLOG("Return: " . $this->mime_type);
-		return $this->mime_type;
+		DLOG("Return: " . $this->__mime_type);
+		return $this->__mime_type;
+	}
+
+	public function get_view() {
+		DLOG();
+		return $this->__view;
+	}
+
+	public function get_redirect() {
+		DLOG();
+		return $this->__redirect;
 	}
 
 }

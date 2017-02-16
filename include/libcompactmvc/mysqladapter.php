@@ -1,13 +1,14 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
- *s<
+ * s<
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -18,7 +19,7 @@ class MySQLAdapter extends Singleton {
 	private $host_idx_w;
 	private $last_host;
 
-	protected  function __construct($hosts) {
+	protected function __construct($hosts) {
 		DLOG();
 		parent::__construct();
 		foreach ($hosts as $host) {
@@ -35,16 +36,15 @@ class MySQLAdapter extends Singleton {
 	}
 
 	/*
-	public function connect() {
-		if (!$this->hosts_r[$this->host_idx_r]->connect()) throw new Exception("Error connecting to database: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
-		if (!$this->hosts_r[$this->host_idx_r]->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
-		$this->last_host = $this->hosts_r[$this->host_idx_r];
-		if (!$this->hosts_w[$this->host_idx_w]->connect()) throw new Exception("Error connecting to database: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
-		if (!$this->hosts_w[$this->host_idx_r]->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
-		$this->last_host = $this->hosts_w[$this->host_idx_w];
-	}
-	*/
-
+	 * public function connect() {
+	 * if (!$this->hosts_r[$this->host_idx_r]->connect()) throw new Exception("Error connecting to database: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
+	 * if (!$this->hosts_r[$this->host_idx_r]->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
+	 * $this->last_host = $this->hosts_r[$this->host_idx_r];
+	 * if (!$this->hosts_w[$this->host_idx_w]->connect()) throw new Exception("Error connecting to database: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
+	 * if (!$this->hosts_w[$this->host_idx_r]->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
+	 * $this->last_host = $this->hosts_w[$this->host_idx_w];
+	 * }
+	 */
 	public function close() {
 		$this->hosts_r[$this->host_idx_r]->close();
 		$this->last_host = $this->hosts_r[$this->host_idx_r];
@@ -90,39 +90,39 @@ class MySQLAdapter extends Singleton {
 
 	public function autocommit($mode) {
 		if (!$this->hosts_r[$this->host_idx_r]->autocommit($mode)) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
 		}
 		if (!$this->hosts_w[$this->host_idx_w]->autocommit($mode)) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
 		}
 	}
 
 	public function begin_transaction() {
 		if (!$this->hosts_r[$this->host_idx_r]->begin_transaction()) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
 		}
 		if (!$this->hosts_w[$this->host_idx_w]->begin_transaction()) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
 		}
 		$this->autocommit(false);
 	}
 
 	public function commit() {
 		if (!$this->hosts_r[$this->host_idx_r]->commit()) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
 		}
 		if (!$this->hosts_w[$this->host_idx_w]->commit()) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
 		}
 		$this->autocommit(true);
 	}
 
 	public function rollback() {
 		if (!$this->hosts_r[$this->host_idx_r]->rollback()) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_r[$this->host_idx_r]->error, $this->hosts_r[$this->host_idx_r]->errno);
 		}
 		if (!$this->hosts_w[$this->host_idx_w]->rollback()) {
-			throw new Exception(__METHOD__." MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
+			throw new Exception(__METHOD__ . " MySQLi error: " . $this->hosts_w[$this->host_idx_w]->error, $this->hosts_w[$this->host_idx_w]->errno);
 		}
 	}
 

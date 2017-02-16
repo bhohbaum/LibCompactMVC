@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -17,8 +18,8 @@ class RBRC {
 
 	/**
 	 *
-	 * @param unknown_type $rdata
-	 * @param unknown_type $observe_headers
+	 * @param unknown_type $rdata        	
+	 * @param unknown_type $observe_headers        	
 	 */
 	private function __construct($rdata, $observe_headers) {
 		DLOG();
@@ -43,7 +44,7 @@ class RBRC {
 
 	/**
 	 *
-	 * @param unknown_type $data
+	 * @param unknown_type $data        	
 	 */
 	public function put($data) {
 		RedisAdapter::get_instance()->set($this->rhash, $data);
@@ -51,7 +52,6 @@ class RBRC {
 	}
 
 	/**
-	 *
 	 */
 	public function get() {
 		$data = RedisAdapter::get_instance()->get($this->rhash);

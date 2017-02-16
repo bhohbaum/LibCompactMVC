@@ -55,13 +55,14 @@ cmvc_include('actionmapperinterface.php');
 cmvc_include('cmvccontroller.php');
 cmvc_include('cmvccomponent.php');
 
-// application-specific early loading
-cmvc_include('include.php');
-
-// load the rest
+// load the framework
 cmvc_include_dir("./include/libcompactmvc/");
+
+// and the rest
+cmvc_include('include.php');
 cmvc_include_dir("./application/", array(
 		"CWebDriverTestCase.php"
 ));
+
 
 // let's begin the execution...

@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -29,13 +30,13 @@ class Mutex {
 	}
 
 	public function lock($maxwait = 60) {
-		echo("Lock\n");
+		echo ("Lock\n");
 		$start = time();
 		$this->maxwait = $maxwait;
 		while (time() < $start + $maxwait) {
 			if (count($this->get_requests()) == 0) {
 				$this->set_request();
-// 				usleep($this->delay * 5000);
+				// usleep($this->delay * 5000);
 				if (count($this->get_requests()) == 1) {
 					if (count($this->get_acks()) + 1 == count($this->get_registrations())) {
 						return;
@@ -48,7 +49,7 @@ class Mutex {
 				}
 			}
 			if (count($this->get_requests()) > 1) {
-				echo("Increasing delay: " . $this->delay . "\n");
+				echo ("Increasing delay: " . $this->delay . "\n");
 				$this->delay += 1;
 			}
 			$this->unlock();
@@ -58,25 +59,25 @@ class Mutex {
 	}
 
 	public function unlock() {
-		echo("UnLock\n");
+		echo ("UnLock\n");
 		foreach ($this->get_acks() as $ack) {
-			echo("Deleting " . $ack . "\n");
+			echo ("Deleting " . $ack . "\n");
 			RedisAdapter::get_instance()->delete($ack, false);
 		}
 		foreach ($this->get_requests() as $request) {
-			echo("Deleting " . $request . "\n");
+			echo ("Deleting " . $request . "\n");
 			RedisAdapter::get_instance()->delete($request, false);
 		}
 	}
 
 	private function register() {
-		echo("Registering " . REDIS_KEY_MUTEX_PFX . "REGISTRATION_" . $this->key . "_" . $this->token . "\n");
+		echo ("Registering " . REDIS_KEY_MUTEX_PFX . "REGISTRATION_" . $this->key . "_" . $this->token . "\n");
 		RedisAdapter::get_instance()->set(REDIS_KEY_MUTEX_PFX . "REGISTRATION_" . $this->key . "_" . $this->token, 1, false);
 		RedisAdapter::get_instance()->expire(REDIS_KEY_MUTEX_PFX . "REGISTRATION_" . $this->key . "_" . $elem->token, $this->maxwait);
 	}
 
 	private function unregister() {
-		echo("Unregistering " . REDIS_KEY_MUTEX_PFX . "REGISTRATION_" . $this->key . "_" . $this->token . "\n");
+		echo ("Unregistering " . REDIS_KEY_MUTEX_PFX . "REGISTRATION_" . $this->key . "_" . $this->token . "\n");
 		RedisAdapter::get_instance()->delete(REDIS_KEY_MUTEX_PFX . "REGISTRATION_" . $this->key . "_" . $this->token, false);
 	}
 
@@ -85,12 +86,12 @@ class Mutex {
 	}
 
 	private function set_request() {
-		echo("Setting request " . REDIS_KEY_MUTEX_PFX . "REQ_" . $this->key . "_" . $this->token . "\n");
+		echo ("Setting request " . REDIS_KEY_MUTEX_PFX . "REQ_" . $this->key . "_" . $this->token . "\n");
 		RedisAdapter::get_instance()->set(REDIS_KEY_MUTEX_PFX . "REQ_" . $this->key . "_" . $this->token, false);
 	}
 
 	private function del_request() {
-		echo("Deleting request " . REDIS_KEY_MUTEX_PFX . "REQ_" . $this->key . "_" . $this->token . "\n");
+		echo ("Deleting request " . REDIS_KEY_MUTEX_PFX . "REQ_" . $this->key . "_" . $this->token . "\n");
 		RedisAdapter::get_instance()->delete(REDIS_KEY_MUTEX_PFX . "REQ_" . $this->key . "_" . $this->token, false);
 	}
 
@@ -103,12 +104,12 @@ class Mutex {
 	}
 
 	private function set_ack() {
-		echo("Set ACK " . REDIS_KEY_MUTEX_PFX . "ACK_" . $this->key . "_" . $this->token . "\n");
+		echo ("Set ACK " . REDIS_KEY_MUTEX_PFX . "ACK_" . $this->key . "_" . $this->token . "\n");
 		RedisAdapter::get_instance()->set(REDIS_KEY_MUTEX_PFX . "ACK_" . $this->key . "_" . $this->token, false);
 	}
 
 	private function del_ack() {
-		echo("Del ACK " . REDIS_KEY_MUTEX_PFX . "ACK_" . $this->key . "_" . $this->token . "\n");
+		echo ("Del ACK " . REDIS_KEY_MUTEX_PFX . "ACK_" . $this->key . "_" . $this->token . "\n");
 		RedisAdapter::get_instance()->delete(REDIS_KEY_MUTEX_PFX . "ACK_" . $this->key . "_" . $this->token, false);
 	}
 

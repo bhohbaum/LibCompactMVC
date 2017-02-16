@@ -1,13 +1,13 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
  *
- *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -39,7 +39,8 @@ class MySQLHost extends mysqli {
 	private function lazy_init() {
 		if (!$this->constructor_called) {
 			parent::__construct($this->host, $this->user, $this->pass, $this->db);
-			if (!$this->set_charset("utf8")) throw new Exception("Error setting charset: " . $this->error, $this->errno);
+			if (!$this->set_charset("utf8"))
+				throw new Exception("Error setting charset: " . $this->error, $this->errno);
 			$this->constructor_called = true;
 		}
 	}
@@ -89,6 +90,5 @@ class MySQLHost extends mysqli {
 		$this->lazy_init();
 		return parent::real_escape_string($str);
 	}
-
 
 }

@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -9,7 +10,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -25,7 +26,7 @@ class GoogleMaps {
 	/**
 	 * Make Google give me the location of the given address.
 	 *
-	 * @param String $address
+	 * @param String $address        	
 	 * @return The whole dataset received from Google.
 	 */
 	public static function encode($address) {
@@ -37,7 +38,7 @@ class GoogleMaps {
 		curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 		$ret = curl_exec($curl_session);
 		curl_close($curl_session);
-
+		
 		return json_decode($ret, true);
 	}
 
@@ -62,9 +63,8 @@ class GoogleMaps {
 		curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 		$ret = curl_exec($curl_session);
 		curl_close($curl_session);
-
+		
 		return json_decode($ret, true);
 	}
-
 
 }

@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -51,7 +52,7 @@ class Log extends Singleton {
 		$this->db = $db;
 		return $this;
 	}
-
+	
 	// general logging method
 	public function log($loglevel, $text) {
 		$text = ($this->logtype == Log::LOG_TYPE_SINGLELINE) ? str_replace("\n", " ", $text) : $text;
@@ -66,7 +67,7 @@ class Log extends Singleton {
 			}
 		}
 	}
-
+	
 	// short methods
 	public function error($text) {
 		$this->log(Log::LOG_LVL_ERROR, $text);
@@ -84,7 +85,6 @@ class Log extends Singleton {
 		$this->log(Log::LOG_LVL_DEBUG, $text);
 	}
 
-
 }
 
 /*
@@ -92,28 +92,32 @@ class Log extends Singleton {
  * hence we use the debug_backtrace() trick to get the callers object.
  */
 function ELOG($msg = "") {
-	if (Log::LOG_LVL_ERROR > LOG_LEVEL) return;
+	if (Log::LOG_LVL_ERROR > LOG_LEVEL)
+		return;
 	$stack = debug_backtrace();
 	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
 	Log::get_instance(LOG_TARGET, LOG_TYPE)->error($class . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function WLOG($msg = "") {
-	if (Log::LOG_LVL_WARNING > LOG_LEVEL) return;
+	if (Log::LOG_LVL_WARNING > LOG_LEVEL)
+		return;
 	$stack = debug_backtrace();
 	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
 	Log::get_instance(LOG_TARGET, LOG_TYPE)->warning($class . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function NLOG($msg = "") {
-	if (Log::LOG_LVL_NOTICE > LOG_LEVEL) return;
+	if (Log::LOG_LVL_NOTICE > LOG_LEVEL)
+		return;
 	$stack = debug_backtrace();
 	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
 	Log::get_instance(LOG_TARGET, LOG_TYPE)->notice($class . "::" . $stack[1]["function"] . " " . $msg);
 }
 
 function DLOG($msg = "") {
-	if (Log::LOG_LVL_DEBUG > LOG_LEVEL) return;
+	if (Log::LOG_LVL_DEBUG > LOG_LEVEL)
+		return;
 	$stack = debug_backtrace();
 	$class = (array_key_exists("class", $stack[1])) ? $stack[1]["class"] : "";
 	Log::get_instance(LOG_TARGET, LOG_TYPE)->debug($class . "::" . $stack[1]["function"] . " " . $msg);

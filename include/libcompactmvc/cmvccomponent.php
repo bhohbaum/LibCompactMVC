@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -12,11 +13,13 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/libcompactmvc
  */
 abstract class CMVCComponent extends CMVCController {
-	private $instance_id;
-	private $base_param;
+	private $__instance_id;
+	private $__base_param;
+	private $__run_executed = false;
 
 	/**
-	 * Has to be implemented by every subclass. The output of the component (in the view) is identified by this string.
+	 * Has to be implemented by every subclass.
+	 * The output of the component (in the view) is identified by this string.
 	 *
 	 * @return String Component identification string
 	 */
@@ -24,35 +27,51 @@ abstract class CMVCComponent extends CMVCController {
 
 	/**
 	 *
-	 * @param int $base_param
+	 * @param int $base_param        	
 	 */
 	public function __construct($base_param = 0) {
 		DLOG();
 		parent::__construct();
-		if (!is_int($base_param)) throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
-		$this->base_param = (!isset($this->base_param)) ? $base_param : $this->base_param;
-		$this->instance_id = uniqid();
-		$this->view->set_value("CMP_INST_ID", $this->instance_id);
-		$this->view->set_value("CMP_ID", $this->get_component_id());
+		if (!is_int($base_param))
+			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
+		$this->__base_param = (!isset($this->__base_param)) ? $base_param : $this->__base_param;
+		$this->__instance_id = uniqid();
+		$this->get_view()->set_value("CMP_INST_ID", $this->__instance_id);
+		$this->get_view()->set_value("CMP_ID", $this->get_component_id());
 	}
 
 	/**
 	 *
-	 * @param int $pnum
+	 * @param int $pnum        	
 	 */
 	public function set_base_param($pnum) {
 		DLOG($pnum);
-		if (!is_int($pnum)) throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
-		$this->base_param = $pnum;
+		if (!is_int($pnum))
+			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
+		$this->__base_param = $pnum;
+	}
+
+	public function run() {
+		DLOG();
+		$this->__run_executed = true;
+		parent::run();
+	}
+
+	public function get_ob() {
+		DLOG();
+		if (!$this->__run_executed)
+			$this->run();
+		return parent::get_ob();
 	}
 
 	/**
 	 *
-	 * @param int $pnum
+	 * @param int $pnum        	
 	 */
 	protected function param($pnum) {
-		if (!is_int($pnum)) throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
-		$varname = 'param' . ($this->base_param + $pnum);
+		if (!is_int($pnum))
+			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
+		$varname = 'param' . ($this->__base_param + $pnum);
 		$val = self::$member_variables[$varname];
 		DLOG($varname . " = " . $val);
 		return $val;

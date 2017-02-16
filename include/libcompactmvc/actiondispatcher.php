@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -46,31 +47,35 @@ class ActionDispatcher extends InputSanitizer {
 				throw new Exception("ActionDispatcher error: No handler registered for action " . $this->control_action);
 			} else {
 				try {
-					$this->get_handlersobj($this->control_action)->view->clear();
-					$this->get_handlersobj($this->control_action)->view->set_action_mapper(self::$action_mapper);
-					$this->get_handlersobj($this->control_action)->view->set_value(self::$actionname, $this->action);
+					$this->get_handlersobj($this->control_action)->get_view()->clear();
+					$this->get_handlersobj($this->control_action)->get_view()->set_action_mapper(self::$action_mapper);
+					$this->get_handlersobj($this->control_action)->get_view()->set_value(self::$actionname, $this->action);
 					$this->get_handlersobj($this->control_action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
+				} catch (RedirectException $re) {
+					$this->get_handlersobj($this->control_action)->run_exception_handler($re);
+					if (!$re->is_internal())
+						return;
 				} catch (Exception $e) {
 					$this->get_handlersobj($this->control_action)->run_exception_handler($e);
 				}
-				if ($this->get_handlersobj($this->control_action)->redirect != "") {
-					$this->action = $this->get_handlersobj($this->control_action)->redirect;
+				if ($this->get_handlersobj($this->control_action)->get_redirect() != "") {
+					$this->action = $this->get_handlersobj($this->control_action)->get_redirect();
 				}
 			}
 		}
 		do {
-			if (isset($this->handlers[$this->action]) && $this->get_handlersobj($this->action)->redirect != "") {
-				$this->action = $this->get_handlersobj($this->action)->redirect;
+			if (isset($this->handlers[$this->action]) && $this->get_handlersobj($this->action)->get_redirect() != "") {
+				$this->action = $this->get_handlersobj($this->action)->get_redirect();
 			}
 			if (!isset($this->handlers[$this->action])) {
 				throw new Exception("Redirect error: No handler registered for action '" . $this->action . "'");
 			} else {
 				try {
-					$this->get_handlersobj($this->action)->view->clear();
-					$this->get_handlersobj($this->action)->view->set_action_mapper(self::$action_mapper);
-					$this->get_handlersobj($this->action)->view->set_value(self::$actionname, $this->action);
+					$this->get_handlersobj($this->action)->get_view()->clear();
+					$this->get_handlersobj($this->action)->get_view()->set_action_mapper(self::$action_mapper);
+					$this->get_handlersobj($this->action)->get_view()->set_value(self::$actionname, $this->action);
 					$this->get_handlersobj($this->action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
@@ -78,7 +83,7 @@ class ActionDispatcher extends InputSanitizer {
 					$this->get_handlersobj($this->action)->run_exception_handler($e);
 				}
 			}
-		} while ($this->get_handlersobj($this->action)->redirect != "");
+		} while ($this->get_handlersobj($this->action)->get_redirect() != "");
 	}
 
 	public function get_ob() {

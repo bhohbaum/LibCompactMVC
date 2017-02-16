@@ -1,13 +1,13 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
  *
- *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -36,7 +36,7 @@ class WSAdapter {
 
 	public function notify($msg) {
 		DLOG("Message: " . $msg);
-		$cmd = "/bin/bash -c 'echo " . md5(Session::get_instance()->get_id()) . " " . $msg . " | bin/libwebsockets-digimap-client " . $GLOBALS['WS_SRV_ADDR'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . " --port " . $GLOBALS['WS_SRV_PORT'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . "'";
+		$cmd = "/bin/bash -c 'echo " . md5(Session::get_instance()->get_id()) . " " . $msg . " | bin/libwebsockets-client " . $GLOBALS['WS_SRV_ADDR'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . " --port " . $GLOBALS['WS_SRV_PORT'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . "'";
 		exec_bg($cmd);
 	}
 

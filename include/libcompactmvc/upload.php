@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -7,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
- * @copyright	Copyright (c) Botho Hohbaum 01.01.2016
+ * @copyright Copyright (c) Botho Hohbaum 01.01.2016
  * @license LGPL version 3
  * @link https://github.com/bhohbaum
  */
@@ -25,7 +26,7 @@ class Upload {
 	/**
 	 * Saves one ore more files in the upload directory.
 	 *
-	 * @return array	file names
+	 * @return array file names
 	 * @throws Exception
 	 */
 	public function save() {
@@ -48,7 +49,7 @@ class Upload {
 	/**
 	 * Saves one or more files in corresponding subdirectories of the upload directory.
 	 *
-	 * @return array	file names
+	 * @return array file names
 	 * @throws Exception
 	 */
 	public function save_sub() {
@@ -73,6 +74,5 @@ class Upload {
 		}
 		return $this->names_arr[$index];
 	}
-
 
 }

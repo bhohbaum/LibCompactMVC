@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../libcompactmvc.php')) include_once('../libcompactmvc.php');
+if (file_exists('../libcompactmvc.php'))
+	include_once ('../libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -24,7 +25,7 @@ abstract class DbAccess {
 		// Do not close the DB, as other objects might still need a connection.
 		// $this->close_db();
 	}
-
+	
 	// prevent cloning
 	private function __clone() {
 		DLOG();
@@ -42,7 +43,7 @@ abstract class DbAccess {
 			}
 			self::$instance[$name] = new $name();
 		}
-
+		
 		return self::$instance[$name];
 	}
 
@@ -58,7 +59,6 @@ abstract class DbAccess {
 	}
 
 	/**
-	 *
 	 */
 	protected function close_db() {
 		DLOG();
@@ -71,19 +71,25 @@ abstract class DbAccess {
 	/**
 	 * Execute a DB query.
 	 *
-	 * @param String $query The query to execute.
-	 * @param Boolean $has_multi_result Is one object expected as result, or a list?
-	 * @param Boolean $object Return as array or as object
-	 * @param String $field Columnname if a single value shall be returned.
-	 * @param String $table Name of the table that is operated on.
-	 * @param Boolean $is_write_access Set to true when issuing a write query.
+	 * @param String $query
+	 *        	The query to execute.
+	 * @param Boolean $has_multi_result
+	 *        	Is one object expected as result, or a list?
+	 * @param Boolean $object
+	 *        	Return as array or as object
+	 * @param String $field
+	 *        	Columnname if a single value shall be returned.
+	 * @param String $table
+	 *        	Name of the table that is operated on.
+	 * @param Boolean $is_write_access
+	 *        	Set to true when issuing a write query.
 	 * @throws Exception
 	 * @return Ambigous <multitype:, NULL>
 	 */
 	protected function run_query($query, $has_multi_result = false, $object = false, $field = null, $table = null, $is_write_access = true) {
 		DLOG($query);
 		$ret = null;
-		$typed_object = $table != null && class_exists($table) && is_subclass_of(new $table, "DbObject");
+		$typed_object = $table != null && class_exists($table) && is_subclass_of(new $table(), "DbObject");
 		$key = REDIS_KEY_TBLCACHE_PFX . $table . "_" . $is_write_access . "_" . $field . "_" . $object . "_" . $has_multi_result . "_" . md5($query);
 		$object = ($field == null) ? $object : false;
 		if (array_search($table, $GLOBALS['MYSQL_NO_CACHING']) === false) {
@@ -172,8 +178,8 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @param String $tablename
-	 * @param array $constraint
+	 * @param String $tablename        	
+	 * @param array $constraint        	
 	 */
 	public function by($tablename, $constraint = null) {
 		$qb = new QueryBuilder();
@@ -185,7 +191,7 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $mode
+	 * @param unknown_type $mode        	
 	 * @throws Exception
 	 */
 	public function autocommit($mode) {
@@ -222,7 +228,7 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $str
+	 * @param unknown_type $str        	
 	 * @throws Exception
 	 */
 	protected function escape($str) {
@@ -237,7 +243,7 @@ abstract class DbAccess {
 	/**
 	 * Converts arrays to DbObject, if required.
 	 *
-	 * @param Array_or_Object $var
+	 * @param Array_or_Object $var        	
 	 * @return DbObject instance
 	 */
 	protected function mkobj($var) {
@@ -249,7 +255,8 @@ abstract class DbAccess {
 	 * Use this method for values that can be null, when building the SQL query.
 	 * Refrain from surrounding this return value with "'", as they are automatically added to string values!
 	 *
-	 * @param String_or_Number input value that has to be transformed
+	 * @param
+	 *        	String_or_Number input value that has to be transformed
 	 * @return String value to concatenate with the rest of the sql query
 	 */
 	protected function sqlnull($var) {
@@ -265,4 +272,5 @@ abstract class DbAccess {
 		}
 		return $var;
 	}
+
 }
