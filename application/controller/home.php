@@ -3,7 +3,7 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Logout page
+ * Home page
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
  * @package     LibCompactMVC
@@ -11,15 +11,8 @@ LIBCOMPACTMVC_ENTRY;
  * @license		BSD License (see LICENSE file in root directory)
  * @link		https://github.com/bhohbaum/LibCompactMVC
  */
-class Logout extends CMVCController {
+class Home extends CMVCController {
 
-	protected function main_run() {
-		DLOG();
-		parent::main_run();
-		Session::get_instance()->clear();
-		throw new RedirectException(lnk("login"));
-	}
 
 }
 
-?>

@@ -7,11 +7,11 @@ LIBCOMPACTMVC_ENTRY;
  * UTF-8 helper class.
  * These methods check the encoding of the input and convert it if required.
  *
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author Botho Hohbaum <bhohbaum@googlemail.com>
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 01.01.2016
- * @license LGPL version 3
- * @link https://github.com/bhohbaum
+ * @copyright Copyright (c) Botho Hohbaum
+ * @license BSD License (see LICENSE file in root directory)
+ * @link https://github.com/bhohbaum/LibCompactMVC
  */
 class UTF8 {
 

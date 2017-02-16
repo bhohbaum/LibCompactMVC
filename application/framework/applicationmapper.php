@@ -6,9 +6,10 @@ LIBCOMPACTMVC_ENTRY;
  * applicationmapper.php
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
- * @package     digimap
- * @copyright   Copyright (c) Media Impression Unit 08
- * @link		http://www.miu08.de
+ * @package     LibCompactMVC
+ * @copyright	Copyright (c) Botho Hohbaum
+ * @license		BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class ApplicationMapper extends ActionMapper {
 	private $mapping2;

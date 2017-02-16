@@ -7,11 +7,11 @@ LIBCOMPACTMVC_ENTRY;
  * Redis Adapter
  * With additional variable cache.
  *
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author Botho Hohbaum <bhohbaum@googlemail.com>
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
- * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @copyright Copyright (c) Botho Hohbaum
+ * @license BSD License (see LICENSE file in root directory)
+ * @link https://github.com/bhohbaum/LibCompactMVC
  */
 if (!extension_loaded("redis")) {
 	class Redis {
@@ -19,7 +19,7 @@ if (!extension_loaded("redis")) {
 		private $content;
 
 		public function __construct() {
-			DLOG("WARNING! Redis running in fallback (file) mode!");
+			DLOG("WARNING! Redis is running in fallback (file) mode!");
 			$this->redisdir = TEMP_DIR . "/redis.dat/";
 			if (!is_dir($this->redisdir))
 				mkdir($this->redisdir);
@@ -75,7 +75,7 @@ if (!extension_loaded("redis")) {
 			}
 			return $resarr;
 		}
-
+	
 	}
 }
 class RedisAdapter {

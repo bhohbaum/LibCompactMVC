@@ -6,11 +6,11 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Generic database object.
  *
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author Botho Hohbaum <bhohbaum@googlemail.com>
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 01.01.2016
- * @license LGPL version 3
- * @link https://github.com/bhohbaum
+ * @copyright Copyright (c) Botho Hohbaum
+ * @license BSD License (see LICENSE file in root directory)
+ * @link https://github.com/bhohbaum/LibCompactMVC
  */
 class DbObject extends DbAccess implements JsonSerializable {
 	private $__member_variables;
@@ -26,7 +26,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 *
 	 * @param unknown_type $members:
 	 *        	array or DbObject
-	 * @param unknown_type $isnew
+	 * @param unknown_type $isnew        	
 	 */
 	public function __construct($members = array(), $isnew = true) {
 		parent::__construct();
@@ -44,7 +44,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name
+	 * @param unknown_type $var_name        	
 	 */
 	public function __get($var_name) {
 		if (!isset($this->__tablename) || $this->__tablename == "") {
@@ -78,8 +78,8 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name
-	 * @param unknown_type $value
+	 * @param unknown_type $var_name        	
+	 * @param unknown_type $value        	
 	 */
 	public function __set($var_name, $value) {
 		$this->__member_variables[$var_name] = $value;
@@ -99,7 +99,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
+	 * @param unknown_type $tablename        	
 	 * @throws InvalidArgumentException
 	 */
 	public function table($tablename) {

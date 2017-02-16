@@ -7,9 +7,10 @@ LIBCOMPACTMVC_ENTRY;
  * cephadapter.php
  *
  * @author Botho Hohbaum <bhohbaum@googlemail.com>
- * @package digimap
- * @copyright Copyright (c) MIU08 GmbH
- * @link http://www.miu08.de
+ * @package LibCompactMVC
+ * @copyright Copyright (c) Botho Hohbaum
+ * @license BSD License (see LICENSE file in root directory)
+ * @link https://github.com/bhohbaum/LibCompactMVC
  */
 if (extension_loaded("rados")) {
 	class CephAdapter extends Singleton {

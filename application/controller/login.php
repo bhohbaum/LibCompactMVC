@@ -3,12 +3,13 @@
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Test page
+ * Login page
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
  * @package     LibCompactMVC
- * @copyright   Copyright (c) Botho Hohbaum 19.02.2014
- * @link		http://www.adrodev.de
+ * @copyright	Copyright (c) Botho Hohbaum
+ * @license		BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class Login extends CMVCController {
 

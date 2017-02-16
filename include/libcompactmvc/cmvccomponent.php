@@ -6,11 +6,11 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Controller super class
  *
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author Botho Hohbaum <bhohbaum@googlemail.com>
  * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 24.01.2012
- * @license LGPL version 3
- * @link https://github.com/bhohbaum/libcompactmvc
+ * @copyright Copyright (c) Botho Hohbaum
+ * @license BSD License (see LICENSE file in root directory)
+ * @link https://github.com/bhohbaum/LibCompactMVC
  */
 abstract class CMVCComponent extends CMVCController {
 	private $__instance_id;
