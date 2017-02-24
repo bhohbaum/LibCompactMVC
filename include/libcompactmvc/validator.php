@@ -41,5 +41,9 @@ class Validator {
 	public static function url($string) {
 		return filter_var($string, FILTER_VALIDATE_URL) ? true : false;
 	}
+	
+	public static function uuid($string) {
+		return UUID::is_valid($string);
+	}
 
 }
