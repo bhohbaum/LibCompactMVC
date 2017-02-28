@@ -18,15 +18,24 @@ class DbObject extends DbAccess implements JsonSerializable {
 	private $__isnew;
 	private $__td;
 
-	protected function on_after_load() {
+	/**
+	 * This method is called from the constructor when an object is created.
+	 */
+	protected function init() {
 		DLOG();
 	}
 
+	/**
+	 * This method is called before a save operation.
+	 */
 	protected function on_before_save() {
 		DLOG();
 	}
 
-	protected function init() {
+	/**
+	 * This method is called after a load operation.
+	 */
+	protected function on_after_load() {
 		DLOG();
 	}
 
@@ -203,20 +212,6 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 */
 	public function to_array() {
 		return $this->__member_variables;
-	}
-
-	/**
-	 * This method is called before a save operation.
-	 */
-	protected function on_before_save() {
-		DLOG();
-	}
-
-	/**
-	 * This method is called after a load operation.
-	 */
-	protected function on_after_load() {
-		DLOG();
 	}
 
 }
