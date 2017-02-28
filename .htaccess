@@ -1,7 +1,7 @@
 RewriteEngine on
 
 # Startseite
-RewriteRule ^$ /de/s/home [L]
+RewriteRule ^$ /de/home [L]
 
 RewriteRule ^app$ /index.php?&action=&%{QUERY_STRING} [L]
 

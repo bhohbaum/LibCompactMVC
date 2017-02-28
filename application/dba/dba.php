@@ -1,4 +1,7 @@
 <?php
+if (file_exists('../../include/libcompactmvc.php'))
+	include_once ('../../include/libcompactmvc.php');
+LIBCOMPACTMVC_ENTRY;
 
 /**
  * Database functions
@@ -10,10 +13,6 @@
  * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class DBA extends DbAccess {
-
-
-
-
 
 }
 

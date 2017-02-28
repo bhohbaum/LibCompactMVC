@@ -4,13 +4,13 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
 /**
  * LibCompactMVC application loader
  *
- * @author      Botho Hohbaum <bhohbaum@googlemail.com>
- * @package     LibCompactMVC
- * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
- * @link		http://www.github.com/bhohbaum
+ * @author Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package LibCompactMVC
+ * @copyright Copyright (c) Botho Hohbaum 11.02.2014
+ * @link http://www.github.com/bhohbaum
  */
 
-require_once('./include/libcompactmvc/functions.php');
+require_once ('./include/libcompactmvc/functions.php');
 
 cmvc_include('mysqlhost.php');
 cmvc_include('config.php');
@@ -22,13 +22,14 @@ $GLOBALS["FATAL_ERR_MSG"] = "";
 
 function fatal_handler() {
 	$error = error_get_last();
-	if ($error == null) return;
+	if ($error == null)
+		return;
 	try {
 		throw new Exception();
 	} catch (Exception $e) {
 		$trace = $e->getTraceAsString();
 	}
-	$msg = "Fatal PHP error: " . print_r($error, true) . (array_key_exists("FATAL_ERR_MSG", $GLOBALS) ? $GLOBALS["FATAL_ERR_MSG"] : "") . "\nStack trace:\n" . $trace;
+	$msg = "Last PHP error: " . print_r($error, true) . (array_key_exists("FATAL_ERR_MSG", $GLOBALS) ? $GLOBALS["FATAL_ERR_MSG"] : "") . "\nStack trace:\n" . $trace;
 	ELOG($msg);
 }
 
@@ -39,10 +40,10 @@ if (!defined("LOG_FILE")) {
 }
 @touch(LOG_FILE);
 if (!file_exists(LOG_FILE)) {
-	die(LOG_FILE." cannot be created, exiting.\n");
+	die(LOG_FILE . " cannot be created, exiting.\n");
 }
 if (!is_writable(LOG_FILE)) {
-	die(LOG_FILE." is not writable by the current process, exiting.\n");
+	die(LOG_FILE . " is not writable by the current process, exiting.\n");
 }
 
 if (defined('DEBUG') && (DEBUG == 0)) {

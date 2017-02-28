@@ -4,7 +4,7 @@ if (file_exists('../libcompactmvc.php'))
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Empty Result Exception
+ * Multiple Results Exception
  *
  * @author Botho Hohbaum <bhohbaum@googlemail.com>
  * @package LibCompactMVC
@@ -12,10 +12,10 @@ LIBCOMPACTMVC_ENTRY;
  * @license BSD License (see LICENSE file in root directory)
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
-class EmptyResultException extends DBException {
+class MultipleResultsException extends DBException {
 
-	public function __construct($message = "Empty result", $code = 404, $previous = null) {
-		DLOG("Empty result. Reason: $code: $message");
+	public function __construct($message = "Multiple results", $code = 404, $previous = null) {
+		DLOG("Multiple results. Reason: $code: $message");
 		$this->message = $message;
 		$this->code = $code;
 	}

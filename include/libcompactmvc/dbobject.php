@@ -18,6 +18,14 @@ class DbObject extends DbAccess implements JsonSerializable {
 	private $__isnew;
 	private $__td;
 
+	protected function on_after_load() {
+		DLOG();
+	}
+
+	protected function on_before_save() {
+		DLOG();
+	}
+
 	protected function init() {
 		DLOG();
 	}
@@ -26,7 +34,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 *
 	 * @param unknown_type $members:
 	 *        	array or DbObject
-	 * @param unknown_type $isnew        	
+	 * @param unknown_type $isnew
 	 */
 	public function __construct($members = array(), $isnew = true) {
 		parent::__construct();
@@ -44,7 +52,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name        	
+	 * @param unknown_type $var_name
 	 */
 	public function __get($var_name) {
 		if (!isset($this->__tablename) || $this->__tablename == "") {
@@ -78,8 +86,8 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name        	
-	 * @param unknown_type $value        	
+	 * @param unknown_type $var_name
+	 * @param unknown_type $value
 	 */
 	public function __set($var_name, $value) {
 		$this->__member_variables[$var_name] = $value;
@@ -99,7 +107,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $tablename        	
+	 * @param unknown_type $tablename
 	 * @throws InvalidArgumentException
 	 */
 	public function table($tablename) {

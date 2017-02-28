@@ -25,7 +25,7 @@ abstract class DbAccess {
 		// Do not close the DB, as other objects might still need a connection.
 		// $this->close_db();
 	}
-	
+
 	// prevent cloning
 	private function __clone() {
 		DLOG();
@@ -43,7 +43,7 @@ abstract class DbAccess {
 			}
 			self::$instance[$name] = new $name();
 		}
-		
+
 		return self::$instance[$name];
 	}
 
@@ -136,8 +136,10 @@ abstract class DbAccess {
 						}
 					}
 				} else {
+					$num_loaded = 0;
 					if ($object) {
 						while ($row = $result->fetch_assoc()) {
+							if ($num_loaded >= 1) throw new MultipleResultsException("Query has multiple results, but only one result was requested.", 500);
 							if ($typed_object) {
 								$tmp = new $table($row, false);
 							} else {
@@ -146,15 +148,18 @@ abstract class DbAccess {
 									$tmp->table($table);
 								}
 							}
+							$num_loaded++;
 							$ret = $tmp;
 						}
 					} else {
 						while ($row = $result->fetch_assoc()) {
+							if ($num_loaded >= 1) throw new MultipleResultsException("Query has multiple results, but only one result was requested.", 500);
 							if ($field != null) {
 								$ret = $row[$field];
 							} else {
 								$ret = $row;
 							}
+							$num_loaded++;
 						}
 					}
 				}
@@ -178,8 +183,8 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @param String $tablename        	
-	 * @param array $constraint        	
+	 * @param String $tablename
+	 * @param array $constraint
 	 */
 	public function by($tablename, $constraint = null) {
 		$qb = new QueryBuilder();
@@ -191,7 +196,7 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $mode        	
+	 * @param unknown_type $mode
 	 * @throws Exception
 	 */
 	public function autocommit($mode) {
@@ -228,7 +233,7 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $str        	
+	 * @param unknown_type $str
 	 * @throws Exception
 	 */
 	protected function escape($str) {
@@ -243,7 +248,7 @@ abstract class DbAccess {
 	/**
 	 * Converts arrays to DbObject, if required.
 	 *
-	 * @param Array_or_Object $var        	
+	 * @param Array_or_Object $var
 	 * @return DbObject instance
 	 */
 	protected function mkobj($var) {

@@ -55,6 +55,9 @@ abstract class InputSanitizer implements JsonSerializable {
 		global $argv;
 		if (REGISTER_HTTP_VARS) {
 			if (php_sapi_name() == "cli") {
+				foreach ($_ENV as $var => $val) {
+					self::$member_variables[$var] = self::get_remapped($var, $val);
+				}
 				if (is_array($argv)) {
 					$var = "action";
 					self::$member_variables[$var] = self::get_remapped($var, $argv[1]);
@@ -91,7 +94,7 @@ abstract class InputSanitizer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name        	
+	 * @param unknown_type $var_name
 	 * @throws InvalidMemberException
 	 */
 	public function __get($var_name) {
@@ -114,8 +117,8 @@ abstract class InputSanitizer implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name        	
-	 * @param unknown_type $value        	
+	 * @param unknown_type $var_name
+	 * @param unknown_type $value
 	 */
 	public function __set($var_name, $value) {
 		self::$member_variables[$var_name] = $value;

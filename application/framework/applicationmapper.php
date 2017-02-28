@@ -16,9 +16,9 @@ class ApplicationMapper extends ActionMapper {
 	private $mapping3;
 
 	protected function __construct() {
-		$this->mapping2["de"]["logout"] = new LinkProperty("/de/logout", true);
+		$this->mapping2["de"]["home"] = new LinkProperty("/de/home", true);
 
-		$this->mapping3["de"]["staticcontent"]["aboutus"] = new LinkProperty("/de/s/ueber-uns", true);
+		$this->mapping3["de"]["ajaxep"]["user"] = new LinkProperty("/de/ajaxep/user", false);
 
 		parent::__construct();
 	}

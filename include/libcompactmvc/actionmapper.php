@@ -92,7 +92,9 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 
 	public function get_sitemap() {
 		DLOG();
-		return $GLOBALS["SITEMAP"];
+		$urls = "";
+		foreach ($GLOBALS["SITEMAP"] as $url) $urls .= BASE_URL . $url . "\n";
+		return $urls;
 	}
 
 	public function reverse_action($action) {

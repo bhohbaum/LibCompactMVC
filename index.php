@@ -26,8 +26,9 @@ class Main {
 		$this->ad = new ActionDispatcher("action", ApplicationMapper::get_instance());
 		$this->ad->set_handler("", 				"Login");
 		$this->ad->set_handler("control", 		"Control");
-		$this->ad->set_handler("login", 		"Login");
-		$this->ad->set_handler("logout", 		"Logout");
+		$this->ad->set_handler("home",			"Home");
+		$this->ad->set_handler("login",			"Login");
+		$this->ad->set_handler("logout",		"Logout");
 		$this->ad->set_default("login");
 		$this->ad->set_control("control");
 		$this->ad->run();

@@ -1,5 +1,6 @@
 <?php
-@include_once('../libcompactmvc.php');
+if (file_exists('../../include/libcompactmvc.php'))
+	include_once ('../../include/libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -21,5 +22,3 @@ class Logout extends CMVCController {
 	}
 
 }
-
-?>

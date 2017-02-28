@@ -106,6 +106,7 @@ define('TBL_MAILPART_TYPES', 'mailpart_types');
 define('TBL_RECEIVERS', 'receivers');
 define('TBL_TEXTS', 'texts');
 define('TBL_TRACKING_EVENTS', 'tracking_events');
+define('TBL_USER', 'user');
 
 define('TBLV_NEXT_RECEIVER', 'next_receiver');
 define('TBLV_SEND_LIST', 'send_list');
