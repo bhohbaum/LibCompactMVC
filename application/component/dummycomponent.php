@@ -18,4 +18,11 @@ class DummyComponent extends CMVCComponent {
 		return "dummy";
 	}
 
+	protected function main_run() {
+		DLOG();
+		parent::main_run();
+		$test = $this->param(1);
+		$this->set_base_param($test);
+	}
+
 }

@@ -24,8 +24,29 @@ class Home extends CMVCController {
 		$user->type_id->name;
 		$user->type_id = 19;  // neue id
 		$users = $this->get_db()->by(TBL_USER, array());
-		DbAccess::get_instance(DBA_DEFAULT_CLASS);
+		$this->get_view()->add_template("home.tpl");
+		$this->get_view()->set_template(10, "home.tpl");
+		$this->get_view()->set_value("users", $users);
+		$this->get_view()->activate("admin_pane");
+		$this->dispatch_method($this->param0);
+		$this->json_response($obj);
+		$this->get_view()->clear();
+		$this->binary_response($obj);
+		$this->set_mime_type(MIME_TYPE_JSON);
+
+		$this->set_component_dispatch_base($this->param0);
+		$this->dispatch_component(new DummyComponent());
+		$this->component_response();
+
+		$this->add_component(new DummyComponent());
+
 	}
+
+	protected function exception_handler($e) {
+		DLOG();
+		throw $e;
+	}
+
 
 }
 

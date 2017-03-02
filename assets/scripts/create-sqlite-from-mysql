@@ -1,24 +1,20 @@
 #!/bin/bash
-#################################
-## adroit-developers-stuttgart ##
-##                             ##
-#################################
 
 CMDF=`basename $0`
 while getopts u:p:d:o: option
 do
-        case "${option}"
-        in
-                u) USER=${OPTARG};;
-                p) PASS=${OPTARG};;
-                d) DB=${OPTARG};;
-                o) OUT=${OPTARG};;
+		case "${option}"
+		in
+				u) USER=${OPTARG};;
+				p) PASS=${OPTARG};;
+				d) DB=${OPTARG};;
+				o) OUT=${OPTARG};;
 	esac
 done
 
 if [ "x$1" == "x" ]; then
-  echo "Usage: $CMDF -u <USER> -p <PASS> -d <DATABASE> -o <OUTFILE>"
-  exit
+echo "Usage: $CMDF -u <USER> -p <PASS> -d <DATABASE> -o <OUTFILE>"
+exit
 fi
 
 echo "Starting MySQL dump..."
@@ -45,10 +41,10 @@ sed 's/DELIMITER ;//gI' |
 perl -e 'local $/;$_=<>;s/,\n\)/\n\)/gs;print "begin;\n";print;print "commit;\n"' |
 perl -pe '
 if (/^(INSERT.+?)\(/) {
-  $a=export;
-  s/\\'\''/'\'\''/g;
-  s/\\n/\n/g;
-  s/\),\(/\);\n$a\(/g;
+$a=export;
+s/\\'\''/'\'\''/g;
+s/\\n/\n/g;
+s/\),\(/\);\n$a\(/g;
 }
 ' > $OUT.fix.sql
 
@@ -58,13 +54,13 @@ cat $OUT.fix.sql | sqlite3 $OUT > $OUT.export.out 2> $OUT.export.err
 
 ERRORS=`cat $OUT.export.err | wc -l`
 if [ $ERRORS == 0 ]; then
-  cat $OUT.export.err
-  echo "Conversion completed without error. Output file: $OUT"
-  rm $OUT.sql
-  rm $OUT.fix.sql
-  rm $OUT.export.out
-  rm $OUT.export.err
+cat $OUT.export.err
+echo "Conversion completed without error. Output file: $OUT"
+rm $OUT.sql
+rm $OUT.fix.sql
+rm $OUT.export.out
+rm $OUT.export.err
 else
-  echo "There were errors during conversion.  Please review $OUT.export.out, $OUT.export.err, $OUT.sql and $OUT.fix.sql for details."
+echo "There were errors during conversion.  Please review $OUT.export.out, $OUT.export.err, $OUT.sql and $OUT.fix.sql for details."
 fi
 
