@@ -243,8 +243,8 @@ function is_tls_con() {
 	return $ret;
 }
 
-function lnk($action = null, $subaction = null, $urltail = "", $lang = null) {
-	return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $action, $subaction, $urltail, $lang);
+function lnk($action = null, $param0 = null, $urltail = "", $lang = null) {
+	return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $action, $param0, $urltail, $lang);
 }
 
 function uppercase($str) {

@@ -138,21 +138,21 @@ class View extends InputSanitizer {
 	 *
 	 * @param ActionMapperInterface $mapper        	
 	 * @param String $action        	
-	 * @param String $subaction        	
+	 * @param String $param0        	
 	 * @param String $urltail        	
 	 */
-	private function link(ActionMapperInterface $mapper, $action = null, $subaction = null, $urltail = null, $lang = null) {
-		return $this->__lb->get_link($mapper, $action, $subaction, $urltail, $lang);
+	private function link(ActionMapperInterface $mapper, $action = null, $param0 = null, $urltail = null, $lang = null) {
+		return $this->__lb->get_link($mapper, $action, $param0, $urltail, $lang);
 	}
 
 	/**
 	 *
 	 * @param String $action        	
-	 * @param String $subaction        	
+	 * @param String $param0        	
 	 * @param String $urltail        	
 	 */
-	private function lnk($action = null, $subaction = null, $urltail = null, $lang = null) {
-		return $this->__lb->get_link(self::$__mapper, $action, $subaction, $urltail, $lang);
+	private function lnk($action = null, $param0 = null, $urltail = null, $lang = null) {
+		return $this->__lb->get_link(self::$__mapper, $action, $param0, $urltail, $lang);
 	}
 
 	/**

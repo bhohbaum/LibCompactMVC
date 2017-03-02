@@ -15,6 +15,12 @@ LIBCOMPACTMVC_ENTRY;
 class RedirectException extends Exception {
 	private $is_internal;
 
+	/**
+	 *
+	 * @param String $location For external redirects the target URL, for internal redirects the target action.
+	 * @param int $code	The HTTP status code to use for external redirects.
+	 * @param Boolean $internal Set to true for internal redirects, false for external redirects.
+	 */
 	public function __construct($location = null, $code = 302, $internal = false) {
 		DLOG($location);
 		$this->message = $location;
@@ -23,6 +29,9 @@ class RedirectException extends Exception {
 		DLOG($this->getTraceAsString());
 	}
 
+	/**
+	 * @return Boolean Is this an internal redirection?
+	 */
 	public function is_internal() {
 		DLOG(print_r($this->is_internal, true));
 		return $this->is_internal;
