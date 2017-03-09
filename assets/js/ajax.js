@@ -1,14 +1,22 @@
 /**
  * ajax.js
  *
- * @author      Botho Hohbaum <bhohbaum@googlemail.com>
- * @package     libcompactmvc
- * @copyright   Copyright (c) Botho Hohbaum
- * @link		https://github.com/bhohbaum
+ * @author Botho Hohbaum <bhohbaum@googlemail.com>
+ * @package LibCompactMVC
+ * @copyright Copyright (c) Botho Hohbaum
+ * @license BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  * @classDescription example:
- * 		<input type='hidden' id='tags' class="ajax form-control full-width"
- * 			data-placeholder="Titel eintragen"
- * 			data-path="ajax/survey/bonus/<?= $this->get_value("surveyId") ?>#name"
+ * 		<input id="description_<?= $epod->id ?>" type="text"
+ * 			class="ajax"
+ * 			data-path="<?= $this->lnk("ajaxep", "epod_lang_group", "/" . $epod->id . "/description") ?>"
+ * 			data-content="$this.val(JSON.parse(result).description)"
+ * 			data-change="$this.val()" />
+ * 		<input id="is_global_<?= $epod->id ?>" type="checkbox"
+ * 			class="ajax"
+ * 			data-path="<?= $this->lnk("ajaxep", "epod_lang_group", "/" . $epod->id . "/is_global") ?>"
+ * 			data-content="$this.prop('checked', JSON.parse(result).is_global == 1)"
+ * 			data-change="($this.prop('checked') == true) ? 1 : 0" />
  */
 
 var $_ajax = [];
@@ -100,8 +108,7 @@ var $ajax = function() {
 			for (var i = 0; i < events.length; i++) {
 				if ($this.attr("data-" + events[i]) != null) {
 					$this.on(events[i], function(event) {
-						var addThis = ($this.attr("data-" + event.type).substring(0, 6) == "$this.") ? "" : "$this.";
-						var cmd = 'var data = ' + addThis + $this.attr("data-" + event.type);
+						var cmd = 'var data = ' + $this.attr("data-" + event.type);
 						try {
 							eval(cmd);
 							new $ajax().data("&data=" + encodeURIComponent(data)).ok(function(result) {
@@ -119,7 +126,7 @@ var $ajax = function() {
 				}
 			}
 			new $ajax().ok(function(result) {
-				var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
+				var cmd = content;
 				try {
 					eval(cmd);
 				} catch (e) {

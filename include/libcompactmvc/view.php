@@ -40,7 +40,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $part_name        	
+	 * @param String $part_name
 	 */
 	public function activate($part_name) {
 		$this->__part[$part_name] = true;
@@ -49,7 +49,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $part_name        	
+	 * @param String $part_name
 	 * @return View
 	 */
 	public function deactivate($part_name) {
@@ -59,7 +59,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $part_name        	
+	 * @param String $part_name
 	 */
 	private function is_active($part_name) {
 		if (array_key_exists($part_name, $this->__part)) {
@@ -71,8 +71,8 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $key        	
-	 * @param unknown $value        	
+	 * @param String $key
+	 * @param unknown $value
 	 */
 	public function set_value($key, $value) {
 		$this->__vals[$key] = $value;
@@ -81,7 +81,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $key        	
+	 * @param String $key
 	 */
 	private function get_value($key) {
 		if (isset($this->__vals[$key])) {
@@ -93,17 +93,19 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $key        	
-	 * @param CMVCController $component        	
+	 * @param String $key
+	 * @param CMVCController $component
 	 */
 	public function set_component($key, CMVCController $component) {
+		if (array_key_exists($key, $this->__comp))
+			throw new Exception("Component id is already in use.");
 		$this->__comp[$key] = $component;
 		return $this;
 	}
 
 	/**
 	 *
-	 * @param String $key        	
+	 * @param String $key
 	 */
 	public function get_component($key) {
 		return (array_key_exists($key, $this->__comp)) ? $this->__comp[$key] : null;
@@ -111,7 +113,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param ActionMapper $mapper        	
+	 * @param ActionMapper $mapper
 	 */
 	public function set_action_mapper(ActionMapper $mapper) {
 		if (!isset(self::$__mapper) && $mapper != null)
@@ -120,7 +122,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $key        	
+	 * @param String $key
 	 */
 	private function component($key) {
 		return (array_key_exists($key, $this->__comp)) ? $this->__comp[$key]->get_ob() : "";
@@ -128,7 +130,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $val        	
+	 * @param String $val
 	 */
 	private function encode($val) {
 		return htmlentities(UTF8::encode($val), ENT_QUOTES | ENT_HTML401, 'UTF-8');
@@ -136,10 +138,10 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param ActionMapperInterface $mapper        	
-	 * @param String $action        	
-	 * @param String $param0        	
-	 * @param String $urltail        	
+	 * @param ActionMapperInterface $mapper
+	 * @param String $action
+	 * @param String $param0
+	 * @param String $urltail
 	 */
 	private function link(ActionMapperInterface $mapper, $action = null, $param0 = null, $urltail = null, $lang = null) {
 		return $this->__lb->get_link($mapper, $action, $param0, $urltail, $lang);
@@ -147,9 +149,9 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $action        	
-	 * @param String $param0        	
-	 * @param String $urltail        	
+	 * @param String $action
+	 * @param String $param0
+	 * @param String $urltail
 	 */
 	private function lnk($action = null, $param0 = null, $urltail = null, $lang = null) {
 		return $this->__lb->get_link(self::$__mapper, $action, $param0, $urltail, $lang);
@@ -157,8 +159,8 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param int $index        	
-	 * @param String $name        	
+	 * @param int $index
+	 * @param String $name
 	 */
 	public function set_template(int $index, $name) {
 		$this->__tpls[$index] = $name;
@@ -167,7 +169,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $name        	
+	 * @param String $name
 	 */
 	public function add_template($name) {
 		$this->__tpls[] = $name;
@@ -198,7 +200,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param bool $caching        	
+	 * @param bool $caching
 	 */
 	public function render($caching = CACHING_ENABLED) {
 		if (DEBUG == 0) {
@@ -250,7 +252,7 @@ class View extends InputSanitizer {
 
 	/**
 	 *
-	 * @param String $tpl_name        	
+	 * @param String $tpl_name
 	 * @throws Exception
 	 */
 	private function include_template($tpl_name) {

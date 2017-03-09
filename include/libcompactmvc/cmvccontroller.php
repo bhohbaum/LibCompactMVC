@@ -18,13 +18,13 @@ abstract class CMVCController extends InputSanitizer {
 	private $__cmp_disp_base;
 	private $__mime_type;
 	private $__redirect;
-	
+
 	/**
 	 *
 	 * @var View $__view
 	 */
 	private $__view;
-	
+
 	/**
 	 *
 	 * @var DbAccess db
@@ -126,7 +126,7 @@ abstract class CMVCController extends InputSanitizer {
 	/**
 	 * Exception handler
 	 *
-	 * @param Exception $e        	
+	 * @param Exception $e
 	 */
 	protected function exception_handler($e) {
 		DLOG(get_class($e));
@@ -154,7 +154,7 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 *
-	 * @param Object $obj        	
+	 * @param Object $obj
 	 */
 	protected function json_response($obj) {
 		DLOG(UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
@@ -166,7 +166,7 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 *
-	 * @param unknown_type $obj        	
+	 * @param unknown_type $obj
 	 */
 	protected function binary_response($obj, $mime = MIME_TYPE_OCTET_STREAM) {
 		DLOG();
@@ -179,7 +179,7 @@ abstract class CMVCController extends InputSanitizer {
 	/**
 	 * Shorthand method to return the dispatched components output.
 	 *
-	 * @return : Boolean true if a matching component was found, false otherwise.
+	 * @return Boolean true if a matching component was found, false otherwise.
 	 */
 	protected function component_response() {
 		DLOG();
@@ -193,7 +193,7 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 *
-	 * @param unknown_type $code        	
+	 * @param unknown_type $code
 	 * @throws Exception
 	 */
 	protected function response_code($code = null) {
@@ -330,7 +330,7 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 *
-	 * @param unknown_type $observe_headers        	
+	 * @param unknown_type $observe_headers
 	 * @throws RBRCException
 	 */
 	protected function rbrc($observe_headers = true) {
@@ -349,8 +349,8 @@ abstract class CMVCController extends InputSanitizer {
 	 * Proxy method to $this->get_view()->set_component($key, CMVCController $component).
 	 * Required to use one component multiple times.
 	 *
-	 * @param String $key        	
-	 * @param CMVCController $component        	
+	 * @param String $key
+	 * @param CMVCController $component
 	 */
 	protected function set_component($key, CMVCComponent $component) {
 		DLOG("(" . $key . ", " . get_class($component) . ")");
@@ -361,8 +361,8 @@ abstract class CMVCController extends InputSanitizer {
 	 * Proxy method to $this->get_view()->set_component($key, CMVCController $component).
 	 * Associates the component with its own ID.
 	 *
-	 * @param String $key        	
-	 * @param CMVCController $component        	
+	 * @param String $key
+	 * @param CMVCController $component
 	 */
 	protected function add_component(CMVCComponent $component) {
 		DLOG(get_class($component));
@@ -372,7 +372,7 @@ abstract class CMVCController extends InputSanitizer {
 	/**
 	 * Sets string for component selection.
 	 *
-	 * @param String $base        	
+	 * @param String $base
 	 */
 	protected function set_component_dispatch_base($base) {
 		DLOG($base);
@@ -404,7 +404,7 @@ abstract class CMVCController extends InputSanitizer {
 	/**
 	 * Call methods based on the input that is provided.
 	 *
-	 * @param String $var        	
+	 * @param String $var
 	 * @return Boolean true if a matching method was found, false otherwise.
 	 */
 	protected function dispatch_method($var) {
@@ -493,7 +493,7 @@ abstract class CMVCController extends InputSanitizer {
 				break;
 		}
 		$this->post_run();
-		
+
 		// If we have a redirect, we don't want the current template(s) to be generated.
 		if ($this->__redirect == "") {
 			$this->__ob = $this->__view->render();
