@@ -109,7 +109,8 @@ abstract class DbAccess {
 				}
 			}
 		}
-		if (!($result = self::$mysqli->query($query, $is_write_access, $table))) {
+		$result = self::$mysqli->query($query, $is_write_access, $table);
+		if ($result === false) {
 			throw new DBException("Query \"$query\" caused an error: " . self::$mysqli->get_error(), self::$mysqli->get_errno());
 		} else {
 			if (is_object($result)) {
@@ -186,7 +187,7 @@ abstract class DbAccess {
 	 * @param String $tablename
 	 * @param array $constraint
 	 */
-	public function by($tablename, $constraint = null) {
+	public function by_table($tablename, $constraint = null) {
 		$qb = new QueryBuilder();
 		$constraint = ($constraint == null) ? array() : $constraint;
 		$q = $qb->select($tablename, $constraint);

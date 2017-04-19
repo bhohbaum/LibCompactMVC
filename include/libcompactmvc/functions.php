@@ -97,29 +97,29 @@ function strip_tags_and_attributes($html, $tags, $attributes = array()) {
 	// Parse the HTML into a document object:
 	$dom = new DOMDocument();
 	$dom->loadHTML('<div>' . $html . '</div>');
-	
+
 	// Loop through all of the nodes:
 	$stack = new SplStack();
 	$stack->push($dom->documentElement);
-	
+
 	while ($stack->count() > 0) {
 		// Get the next element for processing:
 		$element = $stack->pop();
-		
+
 		// Add all the element's child nodes to the stack:
 		foreach ($element->childNodes as $child) {
 			if ($child instanceof DOMElement) {
 				$stack->push($child);
 			}
 		}
-		
+
 		// And now, we do the filtering:
 		if (in_array(strtolower($element->nodeName), $tags)) {
 			// It's an unwanted tag; unwrap it:
 			while ($element->hasChildNodes()) {
 				$element->parentNode->insertBefore($element->firstChild, $element);
 			}
-			
+
 			// Finally, delete the offending element:
 			$element->parentNode->removeChild($element);
 		} else {
@@ -127,7 +127,7 @@ function strip_tags_and_attributes($html, $tags, $attributes = array()) {
 			for($i = 0; $i < $element->attributes->length; $i++) {
 				$attribute = $element->attributes->item($i);
 				$name = strtolower($attribute->name);
-				
+
 				if (in_array($name, $attributes)) {
 					// Found an unsafe attribute; remove it:
 					$element->removeAttribute($attribute->name);
@@ -136,11 +136,11 @@ function strip_tags_and_attributes($html, $tags, $attributes = array()) {
 			}
 		}
 	}
-	
+
 	$html = $dom->saveHTML();
 	$start = strpos($html, '<div>');
 	$end = strrpos($html, '</div>');
-	
+
 	return substr($html, $start + 5, $end - $start - 5);
 }
 
@@ -165,9 +165,16 @@ function file_extension($fname) {
 	return $ext;
 }
 
+function file_name($fname) {
+	$ext = file_extension($fname);
+	$fname = substr($fname, 0, strlen($fname) - (($ext == "") ? strlen($ext) : strlen("." . $ext)));
+	DLOG("Filename: " . $fname . " Extension: " . $ext);
+	return $fname;
+}
+
 function cmvc_include($fname) {
 	$basepath = dirname(dirname(__FILE__) . "../");
-	
+
 	$dirs_up = array(
 			"./",
 			"../",
@@ -176,7 +183,7 @@ function cmvc_include($fname) {
 			"../../../../",
 			"../../../../../"
 	);
-	
+
 	// Put all directories into this array, where source files shall be included.
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
@@ -188,7 +195,7 @@ function cmvc_include($fname) {
 			"include/",
 			"include/libcompactmvc/"
 	);
-	
+
 	foreach ($dirs_up as $u) {
 		foreach ($dirs_down as $d) {
 			// if directory of index.php or below
@@ -255,22 +262,49 @@ function uppercase($str) {
 	return $str;
 }
 
-function translate($id, $language) {
-	$chr = new CachedHttpRequest(REDIS_KEY_CACHEDHTTP_TTL);
-	$url = BASE_URL . "/couchdb/" . TRANSLATION_DATABASE . "/" . $id;
-	$res = $chr->get($url);
-	if ($res === false || $res == null) {
-		ELOG("TRANSLATION NOT FOUND: id='$id', language='$language'\n" . getStackTrace());
-		return "";
+function tr($id, $language, $text = null) {
+	if ($text == null) {
+		if (array_key_exists("tr", $GLOBALS)) {
+			return $GLOBALS["tr"][$id][$language];
+		} else {
+			$chr = new CachedHttpRequest();
+			$url = BASE_URL . "/couchdb/" . TRANSLATION_DATABASE . "/" . $id;
+			$res = $chr->get($url);
+			if ($res === false || $res == null) {
+				ELOG("TRANSLATION NOT FOUND: id='$id', language='$language'\n" . getStackTrace());
+				return "";
+			}
+			$dec = json_decode($res);
+			if (!is_object($dec)) {
+				ELOG("ERRONEOUS CONTENT IN LANGUAGE CACHE: id='$id', language='$language', content='$res'\n" . getStackTrace());
+				// we delete the erroneous entry here to fix the language cache content
+				$chr->flush($url);
+				return "";
+			}
+			return $dec->$language;
+		}
+	} else {
+		$GLOBALS["tr"][$id][$language] = $text;
 	}
-	$dec = json_decode($res);
-	if (!is_object($dec)) {
-		ELOG("ERRONEOUS CONTENT IN LANGUAGE CACHE: id='$id', language='$language', content='$res'\n" . getStackTrace());
-		// we delete the erroneous entry here to fix the language cache content
-		$chr->flush($url);
-		return "";
+}
+
+function obj_sort_by_member(&$obj_arr, $member) {
+	DLOG();
+	$unsorted = true;
+	while ($unsorted) {
+		$unsorted = false;
+		foreach ($obj_arr as $key => $val) {
+			if (array_key_exists($key + 1, $obj_arr)) {
+				if ($obj_arr[$key + 1]->{$member} < $obj_arr[$key]->{$member}) {
+					$unsorted = true;
+					$tmp = $obj_arr[$key];
+					$obj_arr[$key] = $obj_arr[$key + 1];
+					$obj_arr[$key + 1] = $tmp;
+				}
+			}
+		}
 	}
-	return $dec->$language;
+	return $obj_arr;
 }
 
 $GLOBALS["SITEMAP"] = array();
@@ -278,7 +312,7 @@ $GLOBALS["SITEMAP"] = array();
 /**
  * Callback function that builds the sitemap array.
  *
- * @param LinkProperty $lp        	
+ * @param LinkProperty $lp
  */
 function add_to_sitemap(LinkProperty $lp) {
 	if ($lp->is_in_sitemap())
@@ -288,7 +322,8 @@ function add_to_sitemap(LinkProperty $lp) {
 // This list may be completed with required entries
 define('MIME_TYPE_HTML', 'text/html; charset=utf-8');
 define('MIME_TYPE_JSON', 'application/json; charset=utf-8');
-define('MIME_TYPE_JPG', 'image/jpeg');
+define('MIME_TYPE_JPG', 'image/jpg');
+define('MIME_TYPE_JPEG', 'image/jpeg');
 define('MIME_TYPE_PNG', 'image/png');
 define('MIME_TYPE_GIF', 'image/gif');
 define('MIME_TYPE_PDF', 'application/pdf');

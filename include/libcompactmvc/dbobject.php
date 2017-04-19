@@ -17,12 +17,15 @@ class DbObject extends DbAccess implements JsonSerializable {
 	private $__tablename;
 	private $__isnew;
 	private $__td;
+	private $__fk_resolution;
+	private $__fk_obj_cache;
 
 	/**
 	 * This method is called from the constructor when an object is created.
 	 */
 	protected function init() {
 		DLOG();
+		$this->table(get_class($this));
 	}
 
 	/**
@@ -41,9 +44,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $members:
+	 * @param array() $members:
 	 *        	array or DbObject
-	 * @param unknown_type $isnew
+	 * @param bool $isnew
 	 */
 	public function __construct($members = array(), $isnew = true) {
 		parent::__construct();
@@ -51,6 +54,8 @@ class DbObject extends DbAccess implements JsonSerializable {
 			$this->__member_variables = $members;
 		else if (is_object($members) && is_subclass_of($members, "DbObject"))
 			$this->__member_variables = $members->to_array();
+		$this->__fk_resolution = true;
+		$this->__fk_obj_cache = array();
 		$this->__tablename = null;
 		$this->__isnew = $isnew;
 		$this->__td = new TableDescription();
@@ -61,31 +66,38 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $var_name
+	 * @param string $var_name
 	 */
 	public function __get($var_name) {
 		if (!isset($this->__tablename) || $this->__tablename == "") {
 			return (array_key_exists($var_name, $this->__member_variables)) ? $this->__member_variables[$var_name] : null;
 		}
 		$ret = null;
-		$this->__td = (isset($this->__td)) ? $this->__td : new TableDescription();
-		$fks = $this->__td->fkinfo($this->__tablename);
-		foreach ($fks as $fk) {
-			$tmp = explode(".", $fk->fk);
-			$column = $tmp[1];
-			$tmp = explode(".", $fk->ref);
-			$reftab = $tmp[0];
-			$refcol = $tmp[1];
-			if ($column == $var_name) {
-				$qb = new QueryBuilder();
-				$q = $qb->select($reftab, array(
-						$refcol => $this->__member_variables[$var_name]
-				));
-				$ret = DbAccess::get_instance(DBA_DEFAULT_CLASS)->run_query($q, true, true, null, $reftab, false);
+		if ($this->__fk_resolution) {
+			if (array_key_exists($var_name, $this->__fk_obj_cache)) {
+				$ret = $this->__fk_obj_cache[$var_name];
+			} else {
+				$this->__td = (isset($this->__td)) ? $this->__td : new TableDescription();
+				$fks = $this->__td->fkinfo($this->__tablename);
+				foreach ($fks as $fk) {
+					$tmp = explode(".", $fk->fk);
+					$column = $tmp[1];
+					$tmp = explode(".", $fk->ref);
+					$reftab = $tmp[0];
+					$refcol = $tmp[1];
+					if ($column == $var_name) {
+						$qb = new QueryBuilder();
+						$q = $qb->select($reftab, array(
+								$refcol => $this->__member_variables[$var_name]
+						));
+						$ret = $this->run_query($q, true, true, null, $reftab, false);
+					}
+				}
+				if (count($ret) == 1) {
+					$ret = $ret[0];
+				}
+				$this->__fk_obj_cache[$var_name] = $ret;
 			}
-		}
-		if (count($ret) == 1) {
-			$ret = $ret[0];
 		}
 		if ($ret == null) {
 			$ret = (array_key_exists($var_name, $this->__member_variables)) ? $this->__member_variables[$var_name] : null;
@@ -97,6 +109,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 *
 	 * @param unknown_type $var_name
 	 * @param unknown_type $value
+	 * @return DbObject
 	 */
 	public function __set($var_name, $value) {
 		$this->__member_variables[$var_name] = $value;
@@ -116,8 +129,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @param unknown_type $tablename
+	 * @param string $tablename
 	 * @throws InvalidArgumentException
+	 * @return DbObject
 	 */
 	public function table($tablename) {
 		if ($this->__tablename != "" && isset($this->__tablename) && $this->__tablename != $tablename) {
@@ -128,13 +142,13 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
-	 * (non-PHPdoc)
 	 *
-	 * @see DbAccess::by()
+	 * @param array $constraint
+	 * @return DbObject
 	 */
 	public function by($constraint = array()) {
 		if (!isset($this->__tablename)) {
-			throw new Exception("Unknown table. Query can not be built .");
+			throw new Exception("Invalid call: No table selected.");
 		}
 		$constraint = ($constraint == null) ? array() : $constraint;
 		$qb = new QueryBuilder();
@@ -156,11 +170,12 @@ class DbObject extends DbAccess implements JsonSerializable {
 	/**
 	 *
 	 * @throws Exception
+	 * @return DbObject
 	 */
 	public function save() {
 		$this->on_before_save();
 		if (!isset($this->__tablename)) {
-			throw new Exception("Tablename must be set to be able to save new DbObjects to database.");
+			throw new Exception("Invalid call: No table selected.");
 		}
 		$cols = $this->__td->columns($this->__tablename);
 		$pks = $this->__td->primary_keys($this->__tablename);
@@ -191,6 +206,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
+	 * Delete the current record
+	 *
+	 * @return DbObject
 	 */
 	public function delete() {
 		$pks = $this->__td->primary_keys($this->__tablename);
@@ -209,9 +227,55 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
+	 * Get all records from the table
+	 *
+	 * @return DbObject[]
+	 */
+	public function all() {
+		DLOG();
+		return $this->by_table($this->__tablename, array());
+	}
+
+	/**
+	 * Get all records from the table where the given constraint matches
+	 *
+	 * @param array Constraint array
+	 * @return DbObject[] Result records
+	 */
+	public function all_by($constraint = array()) {
+		DLOG();
+		return $this->by_table($this->__tablename, $constraint);
+	}
+
+	/**
+	 * Convert this object to an array
+	 *
+	 * @return array()
 	 */
 	public function to_array() {
 		return $this->__member_variables;
+	}
+
+	/**
+	 * Enable/Disable foreign key resolution
+	 *
+	 * @param bool $enabled
+	 */
+	public function fk_resolution($enabled = true) {
+		DLOG();
+		if ($enabled !== true && $enabled !== false)
+			throw new InvalidArgumentException("Boolean expected", 500);
+		$this->__fk_resolution = $enabled;
+	}
+
+	/**
+	 * Tells if the foreign key resolution is enabled or not
+	 *
+	 * @return bool
+	 */
+	public function fk_resolution_enabled() {
+		DLOG();
+		return $this->__fk_resolution;
 	}
 
 }

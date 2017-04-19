@@ -1,4 +1,6 @@
 <?php
+$cwd = getcwd();
+chdir(realpath(dirname(__FILE__)));
 include('./include/libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
@@ -44,13 +46,6 @@ class Main {
 
 }
 
-// redirect
-if (php_sapi_name() == "cli") {
-	if ($argc <= 1) {
-		die("CLI Mode detected: Please give a valid CLI submodule name as first parameter.\nValid modules are: cli\n");
-	}
-}
-
 // entry point (MAIN)
 try {
 	$run = new Main();
@@ -69,4 +64,5 @@ try {
 	$run->log($e->getTraceAsString());
 }
 
+chdir($cwd);
 

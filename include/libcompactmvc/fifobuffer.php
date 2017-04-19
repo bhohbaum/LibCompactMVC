@@ -37,6 +37,8 @@ class FIFOBuffer {
 			$this->id_bufferid = $id;
 			$this->load_state();
 		}
+		if (!is_dir("./files/lock/"))
+			mkdir("./files/lock/");
 		$this->lockfile = "./files/lock/" . $this->id_bufferid . ".lock";
 	}
 
@@ -152,6 +154,7 @@ class FIFOBuffer {
 	 */
 	public function is_empty() {
 		$this->check_buffer_status();
+		$this->load_state();
 		return !($this->id_first != null || $this->id_last != null);
 	}
 
@@ -182,6 +185,7 @@ class FIFOBuffer {
 			$this->lock();
 		}
 		$this->check_buffer_status();
+		$this->load_state();
 		if ($this->is_empty()) {
 			$elem = new FIFOBufferElement();
 			$elem->set_data($data);
@@ -215,6 +219,7 @@ class FIFOBuffer {
 			$this->lock();
 		}
 		$this->check_buffer_status();
+		$this->load_state();
 		if ($this->is_empty()) {
 			if (!$ignore_lock) {
 				$this->unlock();
@@ -327,6 +332,7 @@ class FIFOBuffer {
 			$this->lock();
 		}
 		$this->check_buffer_status();
+		$this->load_state();
 		if ($this->is_empty()) {
 			if (!$ignore_lock) {
 				$this->unlock();
@@ -355,6 +361,7 @@ class FIFOBuffer {
 			$this->lock();
 		}
 		$this->check_buffer_status();
+		$this->load_state();
 		if ($this->is_empty()) {
 			if (!$ignore_lock) {
 				$this->unlock();

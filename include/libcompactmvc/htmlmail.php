@@ -53,7 +53,7 @@ class HTMLMail {
 	 * HTMLMail::MAIL_TYPE_TEXT
 	 * HTMLMail::MAIL_TYPE_HTML
 	 *
-	 * @param Integer $type        	
+	 * @param Integer $type
 	 */
 	public function __construct($type = self::MAIL_TYPE_HTML) {
 		DLOG();
@@ -76,7 +76,7 @@ class HTMLMail {
 	 * HTMLMail::MAIL_TYPE_TEXT
 	 * HTMLMail::MAIL_TYPE_HTML
 	 *
-	 * @param Integer $type        	
+	 * @param Integer $type
 	 */
 	public function set_mail_type($type) {
 		DLOG();
@@ -90,7 +90,7 @@ class HTMLMail {
 	 * HTMLMail::TRANS_TYPE_MAIL
 	 * HTMLMail::TRANS_TYPE_SMTP
 	 *
-	 * @param unknown_type $type        	
+	 * @param unknown_type $type
 	 */
 	public function set_transfer_type($type) {
 		DLOG();
@@ -273,7 +273,12 @@ class HTMLMail {
 		$this->assemble_mail();
 		switch ($this->transfertype) {
 			case self::TRANS_TYPE_MAIL:
-				if (!(mail(mb_encode_mimeheader($this->receiver_name, "UTF-8", "Q") . ' <' . $this->receiver_mail . ">", mb_encode_mimeheader($this->subject, "UTF-8", "Q"), $this->mailbody, $this->mailheader, '-f' . $this->sender_mail))) {
+				if ($this->receiver_name == "") {
+					$receiver = $this->receiver_mail;
+				} else {
+					$receiver = mb_encode_mimeheader($this->receiver_name, "UTF-8", "Q") . " <" . $this->receiver_mail . ">";
+				}
+				if (!(mail($receiver, mb_encode_mimeheader($this->subject, "UTF-8", "Q"), $this->mailbody, $this->mailheader, '-f' . $this->sender_mail))) {
 					throw new Exception("An error occurred. Function mail() returned false.");
 				}
 				break;
@@ -323,7 +328,7 @@ class HTMLMail {
 		$this->mailheader .= 'MIME-Version: 1.0' . "\n";
 		$this->mailheader .= 'X-Mailer: LibCompactMVC Mail Module (c) 2012 by Botho Hohbaum.' . "\n";
 		$this->mailheader .= "\n\n";
-		
+
 		$this->mailbody = "--" . $this->boundary_m . "\n";
 		$this->mailbody .= 'Content-Type: multipart/related; type="multipart/alternative"; boundary="' . $this->boundary_r . '"' . "\n";
 		$this->mailbody .= "\n\n";

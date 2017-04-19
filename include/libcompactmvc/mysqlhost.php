@@ -61,7 +61,7 @@ class MySQLHost extends mysqli {
 		return $this->type;
 	}
 
-	public function query($query, $is_write_access) {
+	public function query($query) {
 		$this->lazy_init();
 		return parent::query($query);
 	}
@@ -71,19 +71,19 @@ class MySQLHost extends mysqli {
 		return parent::autocommit($mode);
 	}
 
-	public function begin_transaction() {
+	public function begin_transaction($flags = NULL, $name = NULL) {
 		$this->lazy_init();
-		return parent::begin_transaction();
+		return parent::begin_transaction($flags, $name);
 	}
 
-	public function commit() {
+	public function commit($flags = NULL, $name = NULL) {
 		$this->lazy_init();
-		return parent::commit();
+		return parent::commit($flags, $name);
 	}
 
-	public function rollback() {
+	public function rollback($flags = NULL, $name = NULL) {
 		$this->lazy_init();
-		return parent::rollback();
+		return parent::rollback($flags, $name);
 	}
 
 	public function real_escape_string($str) {
