@@ -50,12 +50,12 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 */
 	public function __construct($members = array(), $isnew = true) {
 		parent::__construct();
+		$this->__fk_resolution = true;
+		$this->__fk_obj_cache = array();
 		if (is_array($members))
 			$this->__member_variables = $members;
 		else if (is_object($members) && is_subclass_of($members, "DbObject"))
 			$this->__member_variables = $members->to_array();
-		$this->__fk_resolution = true;
-		$this->__fk_obj_cache = array();
 		$this->__tablename = null;
 		$this->__isnew = $isnew;
 		$this->__td = new TableDescription();
@@ -91,12 +91,12 @@ class DbObject extends DbAccess implements JsonSerializable {
 								$refcol => $this->__member_variables[$var_name]
 						));
 						$ret = $this->run_query($q, true, true, null, $reftab, false);
+						if (count($ret) == 1) {
+							$ret = $ret[0];
+						}
+						$this->__fk_obj_cache[$var_name] = $ret;
 					}
 				}
-				if (count($ret) == 1) {
-					$ret = $ret[0];
-				}
-				$this->__fk_obj_cache[$var_name] = $ret;
 			}
 		}
 		if ($ret == null) {
@@ -120,6 +120,10 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 */
 	public function jsonSerialize() {
 		$ret = array();
+		if (!isset($this->__fk_resolution))
+			$this->__fk_resolution = true;
+		if (!isset($this->__fk_obj_cache))
+			$this->__fk_obj_cache = array();
 		foreach ($this->__member_variables as $key => $val) {
 			$val = $this->__get($key);
 			$ret[$key] = (!is_string($val)) ? $val : UTF8::encode($val);
