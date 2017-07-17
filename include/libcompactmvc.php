@@ -64,5 +64,4 @@ cmvc_include_dir("./application/", array(
 		"CWebDriverTestCase.php"
 ));
 
-
 // let's begin the execution...

@@ -15,7 +15,7 @@ LIBCOMPACTMVC_ENTRY;
 class DBException extends Exception {
 
 	public function __construct($message = null, $code = null, $previous = null) {
-		DLOG("MySQL Errno $code: $message");
+		DLOG("DB Exception $code: $message");
 		parent::__construct($message, $code, $previous);
 	}
 

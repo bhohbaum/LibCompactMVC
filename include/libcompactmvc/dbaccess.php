@@ -41,6 +41,8 @@ abstract class DbAccess {
 			if (($name == null) || ($name == "")) {
 				$name = get_class($this);
 			}
+			if (!is_subclass_of($name, "DbAccess"))
+				throw new DBException("Class must be a subclass of DbAccess.", 500);
 			self::$instance[$name] = new $name();
 		}
 
@@ -244,17 +246,6 @@ abstract class DbAccess {
 			return self::$mysqli->real_escape_string($str);
 		}
 		throw new Exception("DbAccess::mysqli is not initialized, unable to escape string.");
-	}
-
-	/**
-	 * Converts arrays to DbObject, if required.
-	 *
-	 * @param Array_or_Object $var
-	 * @return DbObject instance
-	 */
-	protected function mkobj($var) {
-		DLOG();
-		return (is_object($var)) ? $var : new DbObject($var);
 	}
 
 	/**

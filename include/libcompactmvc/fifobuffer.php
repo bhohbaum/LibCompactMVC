@@ -223,7 +223,6 @@ class FIFOBuffer {
 		if ($this->is_empty()) {
 			if (!$ignore_lock) {
 				$this->unlock();
-				// $mutex->unlock();
 			}
 			return null;
 		}
@@ -238,6 +237,7 @@ class FIFOBuffer {
 			$this->id_last = null;
 		}
 		$this->save_state();
+		usleep(1000);
 		$this->delete_element($elem->get_id());
 		if (!$ignore_lock) {
 			$this->unlock();
@@ -405,17 +405,28 @@ class FIFOBuffer {
 	 * Set an explicit lock on the buffer.
 	 */
 	public function lock() {
+		clearstatcache($this->lockfile);
 		while (file_exists($this->lockfile)) {
 			usleep(10);
 		}
-		file_put_contents($this->lockfile, "");
+		$fh = fopen($this->lockfile, "w+");
+		fwrite($fh, "locked");
+		fflush($fh);
+		fclose($fh);
+		clearstatcache($this->lockfile);
+		while (!file_exists($this->lockfile)) {
+			usleep(10);
+		}
 	}
 
 	/**
 	 * Remove an explicit lock from the buffer.
 	 */
 	public function unlock() {
-		@unlink($this->lockfile);
+		clearstatcache($this->lockfile);
+		if (file_exists($this->lockfile))
+			@unlink($this->lockfile);
+		clearstatcache($this->lockfile);
 	}
 
 	/**

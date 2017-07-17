@@ -327,6 +327,7 @@ define('MIME_TYPE_JPEG', 'image/jpeg');
 define('MIME_TYPE_PNG', 'image/png');
 define('MIME_TYPE_GIF', 'image/gif');
 define('MIME_TYPE_PDF', 'application/pdf');
+define('MIME_TYPE_DDS', 'image/vnd-ms.dds');
 define('MIME_TYPE_BINARY', 'application/binary');
 define('MIME_TYPE_OCTET_STREAM', 'application/octet-stream');
 
