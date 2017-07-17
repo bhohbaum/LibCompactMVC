@@ -270,4 +270,12 @@ abstract class DbAccess {
 		return $var;
 	}
 
+	protected function cmpsqlnull($var) {
+		if ($this->sqlnull($var) == "null") {
+			return "IS";
+		} else {
+			return "=";
+		}
+	}
+
 }

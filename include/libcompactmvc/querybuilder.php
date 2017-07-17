@@ -24,8 +24,8 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename        	
-	 * @param unknown_type $constraint        	
+	 * @param unknown_type $tablename
+	 * @param unknown_type $constraint
 	 */
 	public function select($tablename, $constraint = array()) {
 		$q = "SELECT * FROM `" . $tablename . "`";
@@ -34,7 +34,7 @@ class QueryBuilder extends DbAccess {
 			$desc = $this->td->columninfo($tablename);
 			foreach ($desc as $key => $val) {
 				if (array_key_exists($val->Field, $constraint)) {
-					$q .= " `" . $val->Field . "` = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+					$q .= " " . $val->Field . " " .$this->cmpsqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 				}
 			}
 			$q = substr($q, 0, strlen($q) - 5);
@@ -45,8 +45,8 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename        	
-	 * @param unknown_type $fields        	
+	 * @param unknown_type $tablename
+	 * @param unknown_type $fields
 	 */
 	public function insert($tablename, $fields) {
 		$nofields = true;
@@ -76,9 +76,9 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename        	
-	 * @param unknown_type $fields        	
-	 * @param unknown_type $constraint        	
+	 * @param unknown_type $tablename
+	 * @param unknown_type $fields
+	 * @param unknown_type $constraint
 	 */
 	public function update($tablename, $fields, $constraint) {
 		$desc = $this->td->columninfo($tablename);
@@ -94,7 +94,7 @@ class QueryBuilder extends DbAccess {
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $constraint)) {
 				$noconstraint = false;
-				$q .= "`" . $val->Field . "` = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+				$q .= $val->Field . " " . $this->cmpsqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 			}
 		}
 		if ($noconstraint) {
@@ -107,15 +107,15 @@ class QueryBuilder extends DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $tablename        	
-	 * @param unknown_type $constraint        	
+	 * @param unknown_type $tablename
+	 * @param unknown_type $constraint
 	 */
 	public function delete($tablename, $constraint) {
 		$desc = $this->td->columninfo($tablename);
 		$q = "DELETE FROM `" . $tablename . "` WHERE ";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $constraint)) {
-				$q .= "`" . $val->Field . "` = " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+				$q .= $val->Field . " " . $this->cmpsqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 5);

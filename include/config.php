@@ -3,12 +3,12 @@ include_once('libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Application config
+ * LibCompactMVC application loader
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
  * @package     LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
- * @link		http://www.adrodev.de
+ * @link		http://www.github.com/bhohbaum
  */
 
 // Set global constants
@@ -39,10 +39,10 @@ setlocale(LC_ALL, "de_DE.UTF-8", "de_DE@euro", "de_DE", "de", "ge");
 define('WS_SRV_COUNT', 1);
 define('WS_PROT_EVENT_DISPATCH', 'event-dispatch-protocol');
 $GLOBALS['WS_BASE_URL'] = array(
-		((is_tls_con()) ? 'wss' : 'ws') . '://digimap.de:12333/'
+		((is_tls_con()) ? 'wss' : 'ws') . '://example.de:12333/'
 );
 $GLOBALS['WS_SRV_ADDR'] = array(
-		'digimap.de'
+		'example.de'
 );
 $GLOBALS['WS_SRV_PORT'] = array(
 		'12333'
@@ -57,7 +57,7 @@ define('SESSION_TIMEOUT', 1200);
 
 // Certificate validation in CachedHttpRequest?
 define('SSL_VERIFYPEER', true);
-define('SSL_VERIFYHOST', true);
+define('SSL_VERIFYHOST', 2);
 
 // Further constants to be set at installation time
 define('UPLOAD_BASE_DIR', './files/upload');				// relative to $_SERVER['DOCUMENT_ROOT']
@@ -75,7 +75,8 @@ define('DEFAULT_TIMEZONE', 'CET');
 define('CAPTCHA_RES_PATH', "./include/resources");							// relative to $_SERVER['DOCUMENT_ROOT']
 define('ST_CAPTCHA_SESS_VAR', "captcha");
 
-// define('PROXY_CONFIG', 'LI-RES1083:21schaan@li-proxy.hag.hilti.com');
+// uncomment to use proxy
+// define('PROXY_CONFIG', '');
 // define('PROXY_PORT', 8080);
 
 define('CEPH_CONF', './files/ceph/ceph.prod.conf');
@@ -96,6 +97,24 @@ define('REDIS_KEY_HTMLCACHE_TTL', 10000);
 define('REDIS_KEY_CACHEDHTTP_PFX', 'HTTPCACHE_');
 define('REDIS_KEY_CACHEDHTTP_TTL', 10000);
 
+// couchdb database
+define('TRANSLATION_DATABASE', 'libcompactmvc');
+
+// DB Server:
+// DB schema name for ORM learning
+define('MYSQL_SCHEMA', 'libcompactmvc');
+$GLOBALS['MYSQL_HOSTS'] = array(
+		new MySQLHost("localhost", "root", "Mausi_303", MYSQL_SCHEMA, MySQLHost::SRV_TYPE_READWRITE)
+);
+$GLOBALS['MYSQL_NO_CACHING'] = array(
+		TBLV_NEXT_RECEIVER,
+		TBLV_SEND_LIST,
+		TBLV_TODAYS_MAILINGS,
+		TBLV_TRACKING_COMBINED,
+		TBLP_TRACKING_OVERVIEW
+);
+define("DBA_DEFAULT_CLASS", "DBA");
+
 define('TBL_APP_PFX', 'cmvc_');
 define('TBL_EVENT_TYPES', 'event_types');
 define('TBL_IMAGES', 'images');
@@ -114,19 +133,3 @@ define('TBLV_TODAYS_MAILINGS', 'todays_mailings');
 define('TBLV_TRACKING_COMBINED', 'tracking_combined');
 
 define('TBLP_TRACKING_OVERVIEW', 'tracking_overview');
-
-// DB Server:
-// DB schema name for ORM learning
-define('MYSQL_SCHEMA', 'libcompactmvc');
-$GLOBALS['MYSQL_HOSTS'] = array(
-		new MySQLHost("localhost", "root", "Mausi_303", MYSQL_SCHEMA, MySQLHost::SRV_TYPE_READWRITE)
-);
-$GLOBALS['MYSQL_NO_CACHING'] = array(
-		TBLV_NEXT_RECEIVER,
-		TBLV_SEND_LIST,
-		TBLV_TODAYS_MAILINGS,
-		TBLV_TRACKING_COMBINED,
-		TBLP_TRACKING_OVERVIEW
-);
-define("DBA_DEFAULT_CLASS", "DBA");
-

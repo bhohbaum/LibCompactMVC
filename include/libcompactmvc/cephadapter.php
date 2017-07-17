@@ -37,7 +37,7 @@ if (extension_loaded("rados")) {
 		 *
 		 * @return CephAdapter
 		 */
-		public static function get_instance() {
+		public static function get_instance($a = NULL, $b = NULL, $c = NULL, $d = NULL, $e = NULL, $f = NULL, $g = NULL, $h = NULL, $i = NULL, $j = NULL, $k = NULL, $l = NULL, $m = NULL, $n = NULL, $o = NULL, $p = NULL) {
 			DLOG();
 			return parent::get_instance();
 		}
@@ -68,6 +68,6 @@ if (extension_loaded("rados")) {
 			$res = rados_objects_list($this->ctx);
 			return $res;
 		}
-	
+
 	}
 }

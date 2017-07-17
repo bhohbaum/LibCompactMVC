@@ -321,6 +321,7 @@ function add_to_sitemap(LinkProperty $lp) {
 
 // This list may be completed with required entries
 define('MIME_TYPE_HTML', 'text/html; charset=utf-8');
+define('MIME_TYPE_CSV', 'text/csv; charset=utf-8');
 define('MIME_TYPE_JSON', 'application/json; charset=utf-8');
 define('MIME_TYPE_JPG', 'image/jpg');
 define('MIME_TYPE_JPEG', 'image/jpeg');
