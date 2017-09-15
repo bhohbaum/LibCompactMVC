@@ -55,6 +55,11 @@ define('REGISTER_HTTP_VARS', true);
 define('SESSION_DYNAMIC_ID_DISABLED', true);
 define('SESSION_TIMEOUT', 1200);
 
+// Active Sessions measuring
+define('ACTIVESESSIONS_MIN_HITS', 60);
+define('ACTIVESESSIONS_MAX_HITS', 180);
+define('ACTIVESESSIONS_HIT_INCR', 20);
+
 // Certificate validation in CachedHttpRequest?
 define('SSL_VERIFYPEER', true);
 define('SSL_VERIFYHOST', 2);

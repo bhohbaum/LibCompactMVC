@@ -17,13 +17,13 @@ class Session {
 	// REMEMBER!!!
 	// NEVER use the $_SESSION directly when using this class!
 	// your data will get lost!
-	
+
 	// keeps instance of the classs
 	private static $instance;
-	
+
 	// contains all session data
 	private static $parray;
-	
+
 	// private constructor prevents direct instantiation
 	private function __construct() {
 		if (!isset($_SESSION)) {
@@ -42,7 +42,7 @@ class Session {
 		DLOG("Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id));
 		DLOG("Loaded current content: " . var_export(unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id)), true));
-		
+
 		// The following lines change the session id with every request.
 		// This makes it harder for attackers to "steal" our session.
 		// THIS WILL CAUSE TROUBLE WITH AJAX CALLS!!!
@@ -64,12 +64,12 @@ class Session {
 			session_regenerate_id(true);
 		}
 	}
-	
+
 	// prevent cloning
 	private function __clone() {
 		DLOG();
 	}
-	
+
 	// store our data into the $_SESSION variable
 	public function __destruct() {
 		if (!isset(self::$instance)) {
@@ -79,6 +79,7 @@ class Session {
 		DLOG("Saving current content: " . var_export(self::$parray, true));
 		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
 		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);
+		ActiveSessions::get_instance()->update();
 	}
 
 	/**
@@ -172,7 +173,7 @@ class Session {
 	/**
 	 * Forcibly set the given session id and load their data.
 	 *
-	 * @param unknown_type $id        	
+	 * @param unknown_type $id
 	 */
 	public function force_id($id) {
 		DLOG("Saving current content: " . var_export(self::$parray, true));
@@ -182,6 +183,7 @@ class Session {
 		$this->session_id = $id;
 		DLOG("Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id));
+		ActiveSessions::get_instance()->update();
 	}
 
 }

@@ -263,9 +263,9 @@ abstract class DbAccess {
 		$leadingplus = substr($var, 0, 1) == "+";
 		$iszero = ($var === "0");
 		if ($iszero || (is_numeric($var) && !$leadingzero && !$leadingplus)) {
-			$var = ($var == null) ? "null" : $var;
+			$var = (empty($var) && !is_numeric($var)) ? "null" : $var;
 		} else {
-			$var = ($var == null) ? "null" : "'" . $var . "'";
+			$var = (empty($var) && !is_numeric($var)) ? "null" : "'" . $var . "'";
 		}
 		return $var;
 	}
