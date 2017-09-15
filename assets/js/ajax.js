@@ -123,11 +123,9 @@ $ajax.prototype.init = function() {
 								console.log(e);
 							}
 						});
-						for (var i = 0; i < 3; i++) {
-							ajaxp.err(function() {
-								ajaxp.post(url);
-							});
-						}
+						ajaxp.err(function() {
+							ajaxp.post(url);
+						});
 						ajaxp.post(url);
 					} catch (e) {
 						console.log(e);
@@ -144,11 +142,9 @@ $ajax.prototype.init = function() {
 				console.log(e);
 			}
 		});
-		for (var i = 0; i < 3; i++) {
-			ajaxg.err(function(result) {
-				ajaxg.get(url);
-			});
-		}
+		ajaxg.err(function(result) {
+			ajaxg.get(url);
+		});
 		ajaxg.get(url);
 		$this.removeClass("ajax");
 	});
