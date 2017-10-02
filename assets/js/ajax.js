@@ -320,7 +320,7 @@ $ws.prototype._run_handlers = function(data) {
  * ORM client
  **********************************************************************************************************************************************/
 function $DbObject(ep) {
-	this.ep = ep + "/";
+	this._ep = ep + "/";
 }
 
 $DbObject.prototype.create = function(cb) {
@@ -339,7 +339,7 @@ $DbObject.prototype.create = function(cb) {
 		}
 		if (cb != undefined)
 			cb(me);
-	}).put(this.ep);
+	}).put(this._ep);
 }
 
 $DbObject.prototype.read = function(id, cb) {
@@ -353,7 +353,7 @@ $DbObject.prototype.read = function(id, cb) {
 		}
 		if (cb != undefined)
 			cb(me);
-	}).get(this.ep + id);
+	}).get(this._ep + id);
 }
 
 $DbObject.prototype.update = function(cb) {
@@ -368,7 +368,7 @@ $DbObject.prototype.update = function(cb) {
 	.ok(function() {
 		if (cb != undefined)
 			cb(me);
-	}).post(this.ep + this.id);
+	}).post(this._ep + this.id);
 }
 
 $DbObject.prototype.del = function(cb) {
@@ -376,7 +376,7 @@ $DbObject.prototype.del = function(cb) {
 	.ok(function() {
 		if (cb != undefined)
 			cb(me);
-	}).del(this.ep + id);
+	}).del(this._ep + id);
 }
 
 $DbObject.prototype.copy = function(from) {
@@ -392,12 +392,12 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 		.data(data)
 		.ok(function(res) {
 			cb(JSON.parse(res));
-		}).post(this.ep + this.id + "/" + method);
+		}).post(this._ep + this.id + "/" + method);
 	} else {
 		new $ajax()
 		.ok(function(res) {
 			cb(JSON.parse(res));
-		}).post(this.ep + this.id + "/" + method);
+		}).post(this._ep + this.id + "/" + method);
 	}
 }
 
