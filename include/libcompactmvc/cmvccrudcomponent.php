@@ -39,7 +39,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	}
 
 	/**
-	 * Update record
+	 * Update record, call ORM methods
 	 */
 	protected function main_run_post() {
 		DLOG();
@@ -49,11 +49,25 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
 		$subject = new $table();
-		$subject->by(array(
-				$pk => $this->param(1)
-		));
+		if ($this->param(1) != "undefined")
+			$subject->by(array(
+					$pk => $this->param(1)
+			));
 		try {
-			$subject->{$this->param(2)} = $this->data;
+			if (is_callable(array(
+					$subject,
+					$this->param(2)
+			))) {
+				$method = $this->param(2);
+				try {
+					$this->json_response($subject->$method(json_decode($this->data, true)));
+				} catch (InvalidMemberException $e4) {
+					$this->json_response($subject->$method());
+				}
+				return;
+			} else {
+				$subject->{$this->param(2)} = $this->data;
+			}
 		} catch (InvalidMemberException $e1) {
 			DTOTool::copy($this, $subject);
 			try {

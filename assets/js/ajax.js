@@ -34,6 +34,7 @@ function $ajax() {
 /**
  * public functions
  */
+$ajax.prototype.retry_enabled = true;
 $ajax.prototype.get = function(url) {
 	return this._doRequest('GET', url);
 };
@@ -123,9 +124,11 @@ $ajax.prototype.init = function() {
 								console.log(e);
 							}
 						});
-						ajaxp.err(function() {
-							ajaxp.post(url);
-						});
+						for (var i = 0; i < 3; i++) {
+							ajaxp.err(function() {
+								ajaxp.post(url);
+							});
+						}
 						ajaxp.post(url);
 					} catch (e) {
 						console.log(e);
@@ -142,9 +145,11 @@ $ajax.prototype.init = function() {
 				console.log(e);
 			}
 		});
-		ajaxg.err(function(result) {
-			ajaxg.get(url);
-		});
+		for (var i = 0; i < 3; i++) {
+			ajaxg.err(function(result) {
+				ajaxg.get(url);
+			});
+		}
 		ajaxg.get(url);
 		$this.removeClass("ajax");
 	});
@@ -208,8 +213,10 @@ $ajax.prototype._doRequest = function(method, url, retry) {
 	cmd = "($_ajax.hasOwnProperty('" + url + "')) ? $_ajax['" + url + "']._checkRequest('" + method + "', '" + url + "', " + retry + ") : null";
 	delay = (retry + 5) / 5 * (15 + Object.keys($_ajax).length / 5);
 	ms = 1000 * delay;
-	console.log("Starting new timer (delay " + ms + "ms): " + cmd);
-	this._timer = setTimeout(cmd, ms);
+	if (this.retry_enabled) {
+		console.log("Starting new timer (delay " + ms + "ms): " + url);
+		this._timer = setTimeout(cmd, ms);
+	}
 	this._finished = false;
 	$_ajax[url] = this;
 	console.log($_ajax);
@@ -232,19 +239,23 @@ function $ws(url) {
 	this.url = null;
 	this.socket = null;
 	this.handlers = [];
-	if (url != undefined)
+	if (url != undefined) {
+		this.url = url;
 		this.id = url.substring(url.length - 32, url.length);
-	else
+		this.init();
+	} else {
 		this.id = null;
+	}
 }
 
 /**
  * public functions
  */
 $ws.prototype.init = function(url) {
-	this.url = url;
-	if (url != undefined)
+	if (url != undefined) {
+		this.url = url;
 		this.id = url.substring(url.length - 32, url.length);
+	}
 	try {
 		this.socket = new WebSocket(this.url, "event-dispatch-protocol");
 		console.log('WS startup - status ' + this.socket.readyState);
@@ -258,6 +269,10 @@ $ws.prototype.init = function(url) {
 		};
 		this.socket.onclose = function(msg) {
 			console.log("WS disconnected - status " + this.readyState);
+			setTimeout(function() {
+				console.log("Trying to reconnect...");
+				this.ws.init(this.ws.url);
+			}, 1000);
 		};
 	} catch (ex) {
 		console.log(ex);
@@ -301,7 +316,155 @@ $ws.prototype._run_handlers = function(data) {
 	}
 };
 
+/***********************************************************************************************************************************************
+ * ORM client
+ **********************************************************************************************************************************************/
+function $DbObject(ep) {
+	this.ep = ep + "/";
+}
 
+$DbObject.prototype.create = function(cb) {
+	var data = "";
+	var firstvar = true;
+	for (key in this) {
+		data += (firstvar ? "" : "&") + key + "=" + this[key];
+		firstvar = false;
+	}
+	new $ajax()
+	.data(data)
+	.ok(function(res) {
+		res = JSON.parse(res);
+		for (key in res) {
+			me[key] = res[key];
+		}
+		if (cb != undefined)
+			cb(me);
+	}).put(this.ep);
+}
+
+$DbObject.prototype.read = function(id, cb) {
+	var me = this;
+	this.id = id;
+	new $ajax()
+	.ok(function(res) {
+		res = JSON.parse(res);
+		for (key in res) {
+			me[key] = res[key];
+		}
+		if (cb != undefined)
+			cb(me);
+	}).get(this.ep + id);
+}
+
+$DbObject.prototype.update = function(cb) {
+	var data = "";
+	var firstvar = true;
+	for (key in this) {
+		data += (firstvar ? "" : "&") + key + "=" + this[key];
+		firstvar = false;
+	}
+	new $ajax()
+	.data(data)
+	.ok(function() {
+		if (cb != undefined)
+			cb(me);
+	}).post(this.ep + this.id);
+}
+
+$DbObject.prototype.del = function(cb) {
+	new $ajax()
+	.ok(function() {
+		if (cb != undefined)
+			cb(me);
+	}).del(this.ep + id);
+}
+
+$DbObject.prototype.copy = function(from) {
+	for (key in from) {
+		this[key] = from[key];
+	}
+}
+
+$DbObject.prototype.callMethod = function(cb, method, param) {
+	if (param != undefined) {
+		var data = "data=" + JSON.stringify(param);
+		new $ajax()
+		.data(data)
+		.ok(function(res) {
+			cb(JSON.parse(res));
+		}).post(this.ep + this.id + "/" + method);
+	} else {
+		new $ajax()
+		.ok(function(res) {
+			cb(JSON.parse(res));
+		}).post(this.ep + this.id + "/" + method);
+	}
+}
+
+$DbObject.prototype.mkType = function(cb, obj, type) {
+	out = new type();
+	out.copy(obj);
+	cb(out);
+}
+
+$DbObject.prototype.mkTypeArray = function(cb, arr, type) {
+	out = [];
+	for (idx in arr) {
+		tmp = new type();
+		tmp.copy(arr[idx]);
+		out.push(tmp);
+	}
+	cb(out);
+}
+
+$DbObject.prototype.by = function(cb, constraint, type) {
+	var me = this;
+	this.callMethod(function(res) {
+		me.mkType(cb, res, type);
+	}, "by", constraint);
+}
+
+$DbObject.prototype.all_by = function(cb, constraint, type) {
+	var me = this;
+	this.callMethod(function(res) {
+		me.mkTypeArray(cb, res, type);
+	}, "all_by", constraint);
+}
+
+
+/***********************************************************************************************************************************************
+ * Functions
+ **********************************************************************************************************************************************/
+var _eventHandlers = {};
+
+function addListener(node, event, handler, capture) {
+	if(!(node in _eventHandlers)) {
+		_eventHandlers[node] = {};
+	}
+	if(!(event in _eventHandlers[node])) {
+		_eventHandlers[node][event] = [];
+	}
+	_eventHandlers[node][event].push([handler, capture]);
+	node.addEventListener(event, handler, capture);
+}
+
+function removeAllListeners(node, event) {
+	if(node in _eventHandlers) {
+		var handlers = _eventHandlers[node];
+		if(event in handlers) {
+			var eventHandlers = handlers[event];
+			for(var i = eventHandlers.length; i--;) {
+				var handler = eventHandlers[i];
+				node.removeEventListener(event, handler[0], handler[1]);
+			}
+		}
+	}
+}
+
+
+/***********************************************************************************************************************************************
+ * Initialisation
+ **********************************************************************************************************************************************/
 $(document).ready(function() {
 	new $ajax().init();
 });

@@ -31,7 +31,7 @@ class WSAdapter {
 
 	public function get_srv_url() {
 		DLOG();
-		return $GLOBALS['WS_BASE_URL'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . md5(session_id());
+		return $GLOBALS['WS_BASE_URL'][Session::get_instance()->get_property(ST_WS_SRV_IDX)] . md5(Session::get_instance()->get_id());
 	}
 
 	public function notify($msg) {

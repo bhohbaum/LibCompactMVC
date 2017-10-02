@@ -13,7 +13,45 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
 
-/*
+/**
+ * Compares two strings and returns the character position of the first difference.
+ *
+ * @param unknown_type $str1
+ * @param unknown_type $str2
+ * @param unknown_type $encoding
+ */
+function strdiff($str1, $str2, $encoding = 'UTF-8') {
+	return mb_strlen(
+		mb_strcut(
+			$str1,
+			0, strspn($str1 ^ $str2, "\0"),
+			$encoding
+		),
+		$encoding
+	);
+}
+
+/**
+ * Converts unix to windows linebreaks
+ *
+ * @param string $string
+ */
+function cr2crlf($string) {
+	$string = preg_replace('~\R~u', "\r\n", $string);
+	return $string;
+}
+
+/**
+ * Converts windows to unix linebreaks
+ *
+ * @param string $string
+ */
+function crlf2cr($string) {
+	$string = preg_replace('~\R~u', "\n", $string);
+	return $string;
+}
+
+/**
  * Filesystem helper
  */
 function rrmdir($path, $ignore = array()) {
