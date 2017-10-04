@@ -146,6 +146,16 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
+	 * Returns the name of the table this object operates on.
+	 *
+	 * @return string Table name
+	 */
+	public function get_table() {
+		DLOG();
+		return $this->__tablename;
+	}
+
+	/**
 	 *
 	 * @param array $constraint
 	 * @return DbObject
@@ -203,7 +213,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 		}
 		$ret = $this->run_query($q, false, false, null, $this->__tablename, true);
 		if ($this->__isnew && count($pks) == 1) {
-			$this->__member_variables[$pks[0]] = $ret;
+			$this->by(array($pks[0] => $ret));
 		}
 		$this->__isnew = false;
 		return $this;

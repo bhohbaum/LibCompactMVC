@@ -35,6 +35,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$subject->by(array(
 				$pk => $this->param(1)
 		));
+		$subject->_type = $this->get_table_name();
 		$this->json_response($subject);
 	}
 
@@ -60,10 +61,20 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			))) {
 				$method = $this->param(2);
 				try {
-					$this->json_response($subject->$method(json_decode($this->data, true)));
+					$res = $subject->$method(json_decode($this->data, true));
 				} catch (InvalidMemberException $e4) {
-					$this->json_response($subject->$method());
+					$res = $subject->$method();
 				}
+				if (is_subclass_of($res, "DbObject")) {
+					$res->_type = $res->get_table();
+				} else if (is_array($res) && count($res) > 0) {
+					foreach ($res as $key => $val) {
+						if (is_subclass_of($res[$key], "DbObject")) {
+							$res[$key]->_type = $res[$key]->get_table();
+						}
+					}
+				}
+				$this->json_response($res);
 				return;
 			} else {
 				$subject->{$this->param(2)} = $this->data;
@@ -77,6 +88,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			}
 		}
 		$subject->save();
+		$subject->_type = $subject->get_table();
 		$this->json_response($subject);
 	}
 
@@ -98,6 +110,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			$subject->{$pk} = $this->param(1);
 		}
 		$subject->save();
+		$subject->_type = $this->get_table_name();
 		$this->json_response($subject);
 	}
 

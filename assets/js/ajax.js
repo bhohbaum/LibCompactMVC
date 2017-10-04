@@ -324,6 +324,7 @@ function $DbObject(ep) {
 }
 
 $DbObject.prototype.create = function(cb) {
+	var me = this;
 	var data = "";
 	var firstvar = true;
 	for (key in this) {
@@ -334,6 +335,9 @@ $DbObject.prototype.create = function(cb) {
 	.data(data)
 	.ok(function(res) {
 		res = JSON.parse(res);
+		var type = eval(res._type);
+		me.prototype = Object.create(type.prototype);
+		me.prototype.contructor = type;
 		for (key in res) {
 			me[key] = res[key];
 		}
@@ -348,6 +352,9 @@ $DbObject.prototype.read = function(id, cb) {
 	new $ajax()
 	.ok(function(res) {
 		res = JSON.parse(res);
+		var type = eval(res._type);
+		me.prototype = Object.create(type.prototype);
+		me.prototype.contructor = type;
 		for (key in res) {
 			me[key] = res[key];
 		}
@@ -365,7 +372,14 @@ $DbObject.prototype.update = function(cb) {
 	}
 	new $ajax()
 	.data(data)
-	.ok(function() {
+	.ok(function(res) {
+		res = JSON.parse(res);
+		var type = eval(res._type);
+		me.prototype = Object.create(type.prototype);
+		me.prototype.contructor = type;
+		for (key in res) {
+			me[key] = res[key];
+		}
 		if (cb != undefined)
 			cb(me);
 	}).post(this._ep + this.id);
@@ -386,48 +400,69 @@ $DbObject.prototype.copy = function(from) {
 }
 
 $DbObject.prototype.callMethod = function(cb, method, param) {
+	var me = this;
 	if (param != undefined) {
 		var data = "data=" + JSON.stringify(param);
 		new $ajax()
 		.data(data)
 		.ok(function(res) {
-			cb(JSON.parse(res));
+			res = JSON.parse(res);
+			if (res.length == undefined) {
+				me.mkType(cb, res);
+			} else {
+				me.mkTypeArray(cb, res);
+			}
 		}).post(this._ep + this.id + "/" + method);
 	} else {
 		new $ajax()
 		.ok(function(res) {
-			cb(JSON.parse(res));
+			res = JSON.parse(res);
+			if (res.length == undefined) {
+				me.mkType(cb, res);
+			} else {
+				me.mkTypeArray(cb, res);
+			}
 		}).post(this._ep + this.id + "/" + method);
 	}
 }
 
 $DbObject.prototype.mkType = function(cb, obj, type) {
-	out = new type();
-	out.copy(obj);
-	cb(out);
+	if (type === undefined) {
+		var cmd = "var tmp = new window." + obj._type + "();";
+		eval(cmd);
+	} else {
+		var tmp = new type();
+	}
+	tmp.copy(obj);
+	cb(tmp);
 }
 
 $DbObject.prototype.mkTypeArray = function(cb, arr, type) {
 	out = [];
 	for (idx in arr) {
-		tmp = new type();
+		if (type === undefined) {
+			var cmd = "var tmp = new window." + arr[idx]._type + "();";
+			eval(cmd);
+		} else {
+			var tmp = new type();
+		}
 		tmp.copy(arr[idx]);
 		out.push(tmp);
 	}
 	cb(out);
 }
 
-$DbObject.prototype.by = function(cb, constraint, type) {
+$DbObject.prototype.by = function(cb, constraint) {
 	var me = this;
 	this.callMethod(function(res) {
-		me.mkType(cb, res, type);
+		me.mkType(cb, res);
 	}, "by", constraint);
 }
 
-$DbObject.prototype.all_by = function(cb, constraint, type) {
+$DbObject.prototype.all_by = function(cb, constraint) {
 	var me = this;
 	this.callMethod(function(res) {
-		me.mkTypeArray(cb, res, type);
+		me.mkTypeArray(cb, res);
 	}, "all_by", constraint);
 }
 
