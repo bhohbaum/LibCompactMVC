@@ -324,7 +324,7 @@ $DbObject.prototype.create = function(cb) {
 	var data = "";
 	var firstvar = true;
 	for (key in this) {
-		data += (firstvar ? "" : "&") + key + "=" + this[key];
+		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
 		firstvar = false;
 	}
 	new $ajax()
@@ -363,7 +363,7 @@ $DbObject.prototype.update = function(cb) {
 	var data = "";
 	var firstvar = true;
 	for (key in this) {
-		data += (firstvar ? "" : "&") + key + "=" + this[key];
+		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
 		firstvar = false;
 	}
 	new $ajax()
