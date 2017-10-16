@@ -12,10 +12,10 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
 
 require_once('./include/libcompactmvc/functions.php');
 
-cmvc_include('mysqlhost.php');
-cmvc_include('config.php');
-cmvc_include('singleton.php');
-cmvc_include('log.php');
+@cmvc_include('mysqlhost.php');
+@cmvc_include('config.php');
+@cmvc_include('singleton.php');
+@cmvc_include('log.php');
 
 register_shutdown_function("last_error_handler");
 $GLOBALS["FATAL_ERR_MSG"] = "";

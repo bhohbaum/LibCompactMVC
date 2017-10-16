@@ -34,11 +34,11 @@ class Main {
 		$this->ad->set_default("login");
 		$this->ad->set_control("control");
 		$this->ad->run();
-		header("Content-Type: " . $this->ad->get_mime_type());
-// 		header("Content-Security-Policy: default-src * 'unsave-inline 'unsave-eval'; script-src 'self' www.google-analytics.com ajax.googleapis.com;");
-		header("X-Frame-Options: SAMEORIGIN");
-		header("X-XSS-Protection: 1; mode=block");
-		header("X-Content-Type-Options: nosniff");
+		@header("Content-Type: " . $this->ad->get_mime_type());
+// 		@header("Content-Security-Policy: default-src * 'unsave-inline 'unsave-eval'; script-src 'self' www.google-analytics.com ajax.googleapis.com;");
+		@header("X-Frame-Options: SAMEORIGIN");
+		@header("X-XSS-Protection: 1; mode=block");
+		@header("X-Content-Type-Options: nosniff");
 		echo($this->ad->get_ob());
 		DLOG("####### APPLICATION FINISHED SUCCESSFULLY! SENDING RESPONSE TO CLIENT... #######################");
 	}

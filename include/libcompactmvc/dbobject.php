@@ -59,6 +59,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$this->__tablename = null;
 		$this->__isnew = $isnew;
 		$this->__td = new TableDescription();
+		$this->__type = get_class($this);
 		$this->init();
 		if (!$isnew)
 			$this->on_after_load();

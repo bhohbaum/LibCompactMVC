@@ -316,7 +316,7 @@ $ws.prototype._run_handlers = function(data) {
  * ORM client
  **********************************************************************************************************************************************/
 function $DbObject(ep) {
-	this._ep = ep + "/";
+	this.__ep = ep + "/";
 }
 
 $DbObject.prototype.create = function(cb) {
@@ -331,15 +331,13 @@ $DbObject.prototype.create = function(cb) {
 	.data(data)
 	.ok(function(res) {
 		res = JSON.parse(res);
-		var type = eval(res._type);
+		var type = eval(res.__type);
 		me.prototype = Object.create(type.prototype);
 		me.prototype.contructor = type;
-		for (key in res) {
-			me[key] = res[key];
-		}
+		me.copy(res);
 		if (cb != undefined)
 			cb(me);
-	}).put(this._ep);
+	}).put(this.__ep);
 }
 
 $DbObject.prototype.read = function(id, cb) {
@@ -348,15 +346,13 @@ $DbObject.prototype.read = function(id, cb) {
 	new $ajax()
 	.ok(function(res) {
 		res = JSON.parse(res);
-		var type = eval(res._type);
+		var type = eval(res.__type);
 		me.prototype = Object.create(type.prototype);
 		me.prototype.contructor = type;
-		for (key in res) {
-			me[key] = res[key];
-		}
+		me.copy(res);
 		if (cb != undefined)
 			cb(me);
-	}).get(this._ep + id);
+	}).get(this.__ep + id);
 }
 
 $DbObject.prototype.update = function(cb) {
@@ -370,15 +366,13 @@ $DbObject.prototype.update = function(cb) {
 	.data(data)
 	.ok(function(res) {
 		res = JSON.parse(res);
-		var type = eval(res._type);
+		var type = eval(res.__type);
 		me.prototype = Object.create(type.prototype);
 		me.prototype.contructor = type;
-		for (key in res) {
-			me[key] = res[key];
-		}
+		me.copy(res);
 		if (cb != undefined)
 			cb(me);
-	}).post(this._ep + this.id);
+	}).post(this.__ep + this.id);
 }
 
 $DbObject.prototype.del = function(cb) {
@@ -386,12 +380,21 @@ $DbObject.prototype.del = function(cb) {
 	.ok(function() {
 		if (cb != undefined)
 			cb(me);
-	}).del(this._ep + id);
+	}).del(this.__ep + id);
 }
 
 $DbObject.prototype.copy = function(from) {
+	var me = this;
 	for (key in from) {
-		this[key] = from[key];
+		if (from.hasOwnProperty(key))
+			me[key] = from[key];
+	}
+	for (var property in me) {
+		if (me.hasOwnProperty(property)) {
+			if (typeof me[property] == "object")
+				if (me[property] != null && property != "prototype")
+					me[property] = me.mkType(null, me[property]);
+		}
 	}
 }
 
@@ -408,7 +411,7 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 			} else {
 				me.mkTypeArray(cb, res);
 			}
-		}).post(this._ep + this.id + "/" + method);
+		}).post(this.__ep + this.id + "/" + method);
 	} else {
 		new $ajax()
 		.ok(function(res) {
@@ -418,26 +421,29 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 			} else {
 				me.mkTypeArray(cb, res);
 			}
-		}).post(this._ep + this.id + "/" + method);
+		}).post(this.__ep + this.id + "/" + method);
 	}
 }
 
 $DbObject.prototype.mkType = function(cb, obj, type) {
 	if (type === undefined) {
-		var cmd = "var tmp = new window." + obj._type + "();";
+		var cmd = "var tmp = new window." + obj.__type + "();";
 		eval(cmd);
 	} else {
 		var tmp = new type();
 	}
 	tmp.copy(obj);
-	cb(tmp);
+	if (cb == null)
+		return tmp;
+	else
+		cb(tmp);
 }
 
 $DbObject.prototype.mkTypeArray = function(cb, arr, type) {
 	out = [];
 	for (idx in arr) {
 		if (type === undefined) {
-			var cmd = "var tmp = new window." + arr[idx]._type + "();";
+			var cmd = "var tmp = new window." + arr[idx].__type + "();";
 			eval(cmd);
 		} else {
 			var tmp = new type();
@@ -445,7 +451,10 @@ $DbObject.prototype.mkTypeArray = function(cb, arr, type) {
 		tmp.copy(arr[idx]);
 		out.push(tmp);
 	}
-	cb(out);
+	if (cb == null)
+		return out;
+	else
+		cb(out);
 }
 
 $DbObject.prototype.by = function(cb, constraint) {
