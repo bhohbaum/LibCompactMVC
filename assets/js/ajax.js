@@ -215,7 +215,6 @@ $ajax.prototype._doRequest = function(method, url, retry) {
 	}
 	this._finished = false;
 	$_ajax[url] = this;
-	//console.log($_ajax);
 	return this;
 };
 $ajax.prototype._checkRequest = function(method, url, retry) {
@@ -342,7 +341,6 @@ $DbObject.prototype.create = function(cb) {
 
 $DbObject.prototype.read = function(id, cb) {
 	var me = this;
-	this.id = id;
 	new $ajax()
 	.ok(function(res) {
 		res = JSON.parse(res);
@@ -372,7 +370,7 @@ $DbObject.prototype.update = function(cb) {
 		me.copy(res);
 		if (cb != undefined)
 			cb(me);
-	}).post(this.__ep + this.id);
+	}).post(this.__ep + this[this.__pk]);
 }
 
 $DbObject.prototype.del = function(cb) {
@@ -380,7 +378,7 @@ $DbObject.prototype.del = function(cb) {
 	.ok(function() {
 		if (cb != undefined)
 			cb(me);
-	}).del(this.__ep + id);
+	}).del(this.__ep + this[this.__pk]);
 }
 
 $DbObject.prototype.copy = function(from) {
@@ -411,7 +409,7 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 			} else {
 				me.mkTypeArray(cb, res);
 			}
-		}).post(this.__ep + this.id + "/" + method);
+		}).post(this.__ep + this[this.__pk] + "/" + method);
 	} else {
 		new $ajax()
 		.ok(function(res) {
@@ -421,7 +419,7 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 			} else {
 				me.mkTypeArray(cb, res);
 			}
-		}).post(this.__ep + this.id + "/" + method);
+		}).post(this.__ep + this[this.__pk] + "/" + method);
 	}
 }
 

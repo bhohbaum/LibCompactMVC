@@ -143,6 +143,10 @@ class DbObject extends DbAccess implements JsonSerializable {
 			throw new InvalidArgumentException("Table can only be set once and can not be changed afterwards.");
 		}
 		$this->__tablename = $tablename;
+		if ($tablename != "DbObject") {
+			$pks = $this->__td->primary_keys($this->__tablename);
+			$this->__pk = $pks[0];
+		}
 		return $this;
 	}
 
