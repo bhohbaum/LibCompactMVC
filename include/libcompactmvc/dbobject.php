@@ -145,7 +145,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$this->__tablename = $tablename;
 		if ($tablename != "DbObject") {
 			$pks = $this->__td->primary_keys($this->__tablename);
-			$this->__pk = $pks[0];
+			$this->__pk = (count($pks) > 0) ? $pks[0] : null;
 		}
 		return $this;
 	}

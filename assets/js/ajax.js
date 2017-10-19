@@ -264,9 +264,10 @@ $ws.prototype.init = function(url) {
 		};
 		this.socket.onclose = function(msg) {
 			console.log("WS disconnected - status " + this.readyState);
+			var me = this;
 			setTimeout(function() {
 				console.log("Trying to reconnect...");
-				this.ws.init(this.ws.url);
+				me.ws.init(me.ws.url);
 			}, 1000);
 		};
 	} catch (ex) {
@@ -314,6 +315,10 @@ $ws.prototype._run_handlers = function(data) {
 /***********************************************************************************************************************************************
  * ORM client
  **********************************************************************************************************************************************/
+function $DbException(message) {
+	this.message = message;
+}
+
 function $DbObject(ep) {
 	this.__ep = ep + "/";
 }
@@ -332,7 +337,7 @@ $DbObject.prototype.create = function(cb) {
 		res = JSON.parse(res);
 		var type = eval(res.__type);
 		me.prototype = Object.create(type.prototype);
-		me.prototype.contructor = type;
+		me.prototype.constructor = type;
 		me.copy(res);
 		if (cb != undefined)
 			cb(me);
@@ -346,7 +351,7 @@ $DbObject.prototype.read = function(id, cb) {
 		res = JSON.parse(res);
 		var type = eval(res.__type);
 		me.prototype = Object.create(type.prototype);
-		me.prototype.contructor = type;
+		me.prototype.constructor = type;
 		me.copy(res);
 		if (cb != undefined)
 			cb(me);
@@ -354,6 +359,8 @@ $DbObject.prototype.read = function(id, cb) {
 }
 
 $DbObject.prototype.update = function(cb) {
+	if (this.__pk == null)
+		throw new $DbException("Table has no primary key! Update is not possible.");
 	var data = "";
 	var firstvar = true;
 	for (key in this) {
@@ -366,7 +373,7 @@ $DbObject.prototype.update = function(cb) {
 		res = JSON.parse(res);
 		var type = eval(res.__type);
 		me.prototype = Object.create(type.prototype);
-		me.prototype.contructor = type;
+		me.prototype.constructor = type;
 		me.copy(res);
 		if (cb != undefined)
 			cb(me);
@@ -374,6 +381,8 @@ $DbObject.prototype.update = function(cb) {
 }
 
 $DbObject.prototype.del = function(cb) {
+	if (this.__pk == null)
+		throw new $DbException("Table has no primary key! Deletion is not possible.");
 	new $ajax()
 	.ok(function() {
 		if (cb != undefined)
