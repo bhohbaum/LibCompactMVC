@@ -434,12 +434,17 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 
 $DbObject.prototype.mkType = function(cb, obj, type) {
 	if (type === undefined) {
-		var cmd = "var tmp = new window." + obj.__type + "();";
-		eval(cmd);
+		if (obj.hasOwnProperty("__type")) {
+			var cmd = "var tmp = new window." + obj.__type + "();";
+			eval(cmd);
+		}
 	} else {
 		var tmp = new type();
 	}
-	tmp.copy(obj);
+	if (obj.hasOwnProperty("__type"))
+		tmp.copy(obj);
+	else
+		tmp = obj;
 	if (cb == null)
 		return tmp;
 	else
@@ -450,12 +455,17 @@ $DbObject.prototype.mkTypeArray = function(cb, arr, type) {
 	out = [];
 	for (idx in arr) {
 		if (type === undefined) {
-			var cmd = "var tmp = new window." + arr[idx].__type + "();";
-			eval(cmd);
+			if (arr[idx].hasOwnProperty("__type")) {
+				var cmd = "var tmp = new window." + arr[idx].__type + "();";
+				eval(cmd);
+			}
 		} else {
 			var tmp = new type();
 		}
-		tmp.copy(arr[idx]);
+		if (arr[idx].hasOwnProperty("__type"))
+			tmp.copy(arr[idx]);
+		else
+			tmp = arr[idx];
 		out.push(tmp);
 	}
 	if (cb == null)

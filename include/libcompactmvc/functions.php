@@ -300,6 +300,14 @@ function uppercase($str) {
 	return $str;
 }
 
+function lowercase($str) {
+	$str = strtolower($str);
+	$str = str_replace("Ä", "ä", $str);
+	$str = str_replace("Ö", "ö", $str);
+	$str = str_replace("Ü", "ü", $str);
+	return $str;
+}
+
 function tr($id, $language, $text = null) {
 	if ($text == null) {
 		if (array_key_exists("tr", $GLOBALS)) {

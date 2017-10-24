@@ -18,8 +18,7 @@ abstract class CMVCComponent extends CMVCController {
 	private $__run_executed = false;
 
 	/**
-	 * Has to be implemented by every subclass.
-	 * The output of the component (in the view) is identified by this string.
+	 * Has to be implemented by every subclass. The output of the component (in the view) is identified by this string.
 	 *
 	 * @return String Component identification string
 	 */
@@ -27,7 +26,16 @@ abstract class CMVCComponent extends CMVCController {
 
 	/**
 	 *
-	 * @param int $base_param        	
+	 * @return String Unique component id string, for distinguishing multiple instances within one request.
+	 */
+	protected function get_component_instance_id() {
+		DLOG();
+		return $this->__instance_id;
+	}
+
+	/**
+	 *
+	 * @param int $base_param
 	 */
 	public function __construct($base_param = 0) {
 		DLOG();
@@ -42,7 +50,7 @@ abstract class CMVCComponent extends CMVCController {
 
 	/**
 	 *
-	 * @param int $pnum        	
+	 * @param int $pnum
 	 */
 	public function set_base_param($pnum) {
 		DLOG($pnum);
@@ -66,7 +74,7 @@ abstract class CMVCComponent extends CMVCController {
 
 	/**
 	 *
-	 * @param int $pnum        	
+	 * @param int $pnum
 	 */
 	protected function param($pnum) {
 		if (!is_int($pnum))
