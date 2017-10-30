@@ -98,7 +98,7 @@ class View extends InputSanitizer {
 	 */
 	public function set_component($key, CMVCController $component) {
 		if (array_key_exists($key, $this->__comp))
-			throw new Exception("Component id is already in use.");
+			throw new Exception("Component id is already in use: " . $key);
 		$this->__comp[$key] = $component;
 		return $this;
 	}

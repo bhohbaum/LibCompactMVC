@@ -67,6 +67,8 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				$this->json_response($res);
 				return;
 			} else {
+				if ($this->param(2) == null)
+					throw new InvalidMemberException('$this->param(2) is null, doing full copy...');
 				$subject->{$this->param(2)} = $this->data;
 			}
 		} catch (InvalidMemberException $e1) {

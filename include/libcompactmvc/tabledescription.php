@@ -114,5 +114,14 @@ class TableDescription extends DbAccess {
 			return false;
 		}
 	}
+	
+	public function get_all_tables() {
+		$q = "
+		SELECT		table_name 
+		FROM		information_schema.tables
+		WHERE		table_schema='" . MYSQL_SCHEMA . "'";
+		$desc = $this->run_query($q, true, false, "table_name");
+		return $desc;
+	}
 
 }

@@ -49,7 +49,6 @@ class ActionDispatcher extends InputSanitizer {
 				try {
 					$this->get_handlersobj($this->control_action)->get_view()->clear();
 					$this->get_handlersobj($this->control_action)->get_view()->set_action_mapper(self::$action_mapper);
-					//$this->get_handlersobj($this->control_action)->get_view()->set_value(self::$actionname, $this->action);
 					$this->get_handlersobj($this->control_action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
@@ -75,7 +74,6 @@ class ActionDispatcher extends InputSanitizer {
 				try {
 					$this->get_handlersobj($this->action)->get_view()->clear();
 					$this->get_handlersobj($this->action)->get_view()->set_action_mapper(self::$action_mapper);
-					//$this->get_handlersobj($this->action)->get_view()->set_value(self::$actionname, $this->action);
 					$this->get_handlersobj($this->action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");

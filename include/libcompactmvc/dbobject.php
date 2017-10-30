@@ -19,6 +19,13 @@ class DbObject extends DbAccess implements JsonSerializable {
 	private $__td;
 	private $__fk_resolution;
 	private $__fk_obj_cache;
+	
+	/**
+	 * @return string Endpoint URL for this DTO
+	 */
+	public function get_endpoint() {
+		throw new DBException("get_endpoint() has to be implemented in DTO classes!");
+	}
 
 	/**
 	 * This method is called from the constructor when an object is created.

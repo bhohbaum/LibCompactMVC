@@ -50,7 +50,7 @@ abstract class CMVCComponent extends CMVCController {
 
 	/**
 	 *
-	 * @param int $pnum
+	 * @param int $pnum Set the param position
 	 */
 	public function set_base_param($pnum) {
 		DLOG($pnum);
@@ -58,13 +58,32 @@ abstract class CMVCComponent extends CMVCController {
 			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
 		$this->__base_param = $pnum;
 	}
+	
+	/**
+	 * 
+	 * @return int The param position
+	 */
+	protected function get_base_param() {
+		DLOG();
+		return $this->__base_param;
+	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see CMVCController::run()
+	 */
 	public function run() {
 		DLOG();
 		$this->__run_executed = true;
 		parent::run();
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see CMVCController::get_ob()
+	 */
 	public function get_ob() {
 		DLOG();
 		if (!$this->__run_executed)

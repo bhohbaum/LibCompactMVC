@@ -160,7 +160,7 @@ abstract class CMVCController extends InputSanitizer {
 		DLOG(UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
 		$this->__mime_type = MIME_TYPE_JSON;
 		$this->__view->clear();
-		$this->__view->add_template("out.tpl");
+		$this->__view->add_template("__out.tpl");
 		$this->__view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
 	}
 
@@ -172,7 +172,7 @@ abstract class CMVCController extends InputSanitizer {
 		DLOG();
 		$this->__mime_type = $mime;
 		$this->__view->clear();
-		$this->__view->add_template("out.tpl");
+		$this->__view->add_template("__out.tpl");
 		$this->__view->set_value("out", $obj);
 	}
 
@@ -338,7 +338,7 @@ abstract class CMVCController extends InputSanitizer {
 		self::$__rbrc = RBRC::get_instance($this->request(), $observe_headers);
 		if (self::$__rbrc->get()) {
 			$this->__view->clear();
-			$this->__view->add_template("out.tpl");
+			$this->__view->add_template("__out.tpl");
 			$this->__view->set_value("out", self::$__rbrc->get());
 			$this->__ob = $this->__view->render();
 			throw new RBRCException();

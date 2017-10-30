@@ -498,8 +498,10 @@ $this-&gt;lnk()
 
 verwenden. Beide Funktionen haben folgende Vier optionalen Parameter:
 
+{{
 **function **lnk($action = **null**, $param0 = **null**, $urltail = "",
 $lang = **null**);
+}}
 
 Die beiden Variablen $action und $param0 wählen intern die entsprechende
 LinkProperty aus einem der beiden Array aus, die man im
