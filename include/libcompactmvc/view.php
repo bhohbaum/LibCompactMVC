@@ -84,7 +84,7 @@ class View extends InputSanitizer {
 	 * @param String $key
 	 */
 	private function get_value($key) {
-		if (isset($this->__vals[$key])) {
+		if (array_key_exists($key, $this->__vals)) {
 			return $this->__vals[$key];
 		} else {
 			return "";

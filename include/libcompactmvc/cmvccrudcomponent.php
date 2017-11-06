@@ -13,13 +13,27 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
 abstract class CMVCCRUDComponent extends CMVCComponent {
+	protected $subject;
 
 	/**
 	 * Overwrite this method to define the table that shall be operated on.
 	 *
 	 * @return String Table name to operate on
 	 */
-	abstract protected function get_table_name();
+	protected function get_table_name() {
+		DLOG();
+		$td = new TableDescription();
+		$found = false;
+		foreach ($td->get_all_tables() as $table) {
+			if ($table == $this->get_component_id()) {
+				$found = true;
+				break;
+			}
+		}
+		if (!$found)
+			throw new Exception("Table does not exist: " . $this->get_component_id(), 500);
+		return $this->get_component_id();
+	}
 
 	/**
 	 * Get record by id
@@ -31,11 +45,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
-		$subject = new $table();
-		$subject->by(array(
+		$this->subject = new $table();
+		$this->subject->by(array(
 				$pk => $this->param(1)
 		));
-		$this->json_response($subject);
+		$this->json_response($this->subject);
 	}
 
 	/**
@@ -48,39 +62,39 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
-		$subject = new $table();
+		$this->subject = new $table();
 		if ($this->param(1) != "undefined")
-			$subject->by(array(
+			$this->subject->by(array(
 					$pk => $this->param(1)
 			));
 		try {
 			if (is_callable(array(
-					$subject,
+					$this->subject,
 					$this->param(2)
 			))) {
 				$method = $this->param(2);
 				try {
-					$res = $subject->$method(json_decode($this->data, true));
+					$res = $this->subject->$method(json_decode($this->data, true));
 				} catch (InvalidMemberException $e4) {
-					$res = $subject->$method();
+					$res = $this->subject->$method();
 				}
 				$this->json_response($res);
 				return;
 			} else {
 				if ($this->param(2) == null)
 					throw new InvalidMemberException('$this->param(2) is null, doing full copy...');
-				$subject->{$this->param(2)} = $this->data;
+				$this->subject->{$this->param(2)} = $this->data;
 			}
 		} catch (InvalidMemberException $e1) {
-			DTOTool::copy($this, $subject);
+			DTOTool::copy($this, $this->subject);
 			try {
-				$subject->{$pk} = $this->{$pk};
+				$this->subject->{$pk} = $this->{$pk};
 			} catch (InvalidMemberException $e2) {
-				$subject->{$pk} = $this->param(1);
+				$this->subject->{$pk} = $this->param(1);
 			}
 		}
-		$subject->save();
-		$this->json_response($subject);
+		$this->subject->save();
+		$this->json_response($this->subject);
 	}
 
 	/**
@@ -93,15 +107,15 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
-		$subject = new $table();
-		DTOTool::copy($this, $subject);
+		$this->subject = new $table();
+		DTOTool::copy($this, $this->subject);
 		try {
-			$subject->{$pk} = $this->{$pk};
+			$this->subject->{$pk} = $this->{$pk};
 		} catch (InvalidMemberException $e2) {
-			$subject->{$pk} = $this->param(1);
+			$this->subject->{$pk} = $this->param(1);
 		}
-		$subject->save();
-		$this->json_response($subject);
+		$this->subject->save();
+		$this->json_response($this->subject);
 	}
 
 	/**
@@ -114,11 +128,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
-		$subject = new $table();
-		$subject->by(array(
+		$this->subject = new $table();
+		$this->subject->by(array(
 				$pk => $this->param(1)
 		));
-		$subject->delete();
+		$this->subject->delete();
 	}
 
 }

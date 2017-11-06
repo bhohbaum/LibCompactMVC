@@ -39,7 +39,7 @@ class TableDescription extends DbAccess {
 			return $desc;
 		}
 		$q = "DESCRIBE " . $tablename;
-		$desc = $this->run_query($q, true, true);
+		$desc = $this->run_query($q, true, true, null, null, false);
 		self::$colinfoarr[$tablename] = $desc;
 		RedisAdapter::get_instance()->set(REDIS_KEY_TBLDESC_PFX . $tablename, serialize($desc));
 		return $desc;
@@ -59,16 +59,14 @@ class TableDescription extends DbAccess {
 			self::$fkinfoarr[$tablename] = $desc;
 			return $desc;
 		}
-		$q = "SELECT
-					CONCAT(table_name, '.', column_name) as 'fk',
+		$q = "
+		SELECT		CONCAT(table_name, '.', column_name) as 'fk',
 					CONCAT(referenced_table_name, '.', referenced_column_name) as 'ref'
-				FROM
-					information_schema.key_column_usage
-				WHERE
-					referenced_table_name IS NOT NULL
-				AND table_schema = '" . MYSQL_SCHEMA . "'
-				AND table_name = '" . $tablename . "'";
-		$desc = $this->run_query($q, true, true);
+		FROM		information_schema.key_column_usage
+		WHERE		referenced_table_name IS NOT NULL
+		AND			table_schema = '" . MYSQL_SCHEMA . "'
+		AND			table_name = '" . $tablename . "'";
+		$desc = $this->run_query($q, true, true, null, null, false);
 		self::$fkinfoarr[$tablename] = $desc;
 		RedisAdapter::get_instance()->set(REDIS_KEY_FKINFO_PFX . $tablename, serialize($desc));
 		return $desc;
@@ -119,8 +117,8 @@ class TableDescription extends DbAccess {
 		$q = "
 		SELECT		table_name 
 		FROM		information_schema.tables
-		WHERE		table_schema='" . MYSQL_SCHEMA . "'";
-		$desc = $this->run_query($q, true, false, "table_name");
+		WHERE		table_schema = '" . MYSQL_SCHEMA . "'";
+		$desc = $this->run_query($q, true, false, "table_name", "information_schema.tables", false);
 		return $desc;
 	}
 

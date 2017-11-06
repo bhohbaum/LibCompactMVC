@@ -334,10 +334,14 @@ $DbObject.prototype.create = function(cb) {
 	new $ajax()
 	.data(data)
 	.ok(function(res) {
-		res = JSON.parse(res);
-		var obj = eval("new " + res.__type + "()");
-		obj.copy(res);
-		me.copy(res);
+		res = JSON.tryParse(res);
+		try {
+			var obj = eval("new " + res.__type + "()");
+			obj.copy(res);
+			me.copy(res);
+		} catch (e) {
+			obj = res;
+		}
 		if (cb != undefined)
 			cb(obj);
 	}).put(this.__ep);
@@ -347,10 +351,14 @@ $DbObject.prototype.read = function(id, cb) {
 	var me = this;
 	new $ajax()
 	.ok(function(res) {
-		res = JSON.parse(res);
-		var obj = eval("new " + res.__type + "()");
-		obj.copy(res);
-		me.copy(res);
+		res = JSON.tryParse(res);
+		try {
+			var obj = eval("new " + res.__type + "()");
+			obj.copy(res);
+			me.copy(res);
+		} catch (e) {
+			obj = res;
+		}
 		if (cb != undefined)
 			cb(obj);
 	}).get(this.__ep + id);
@@ -376,10 +384,14 @@ $DbObject.prototype.update = function(cb) {
 	new $ajax()
 	.data(data)
 	.ok(function(res) {
-		res = JSON.parse(res);
-		var obj = eval("new " + res.__type + "()");
-		obj.copy(res);
-		me.copy(res);
+		res = JSON.tryParse(res);
+		try {
+			var obj = eval("new " + res.__type + "()");
+			obj.copy(res);
+			me.copy(res);
+		} catch (e) {
+			obj = res;
+		}
 		if (cb != undefined)
 			cb(obj);
 	}).post(this.__ep + this[this.__pk]);
@@ -414,12 +426,12 @@ $DbObject.prototype.copy = function(from) {
 $DbObject.prototype.callMethod = function(cb, method, param) {
 	var me = this;
 	if (param != undefined) {
-		var data = "data=" + JSON.stringify(param);
+		var data = "data=" + encodeURIComponent(JSON.stringify(param));
 		new $ajax()
 		.data(data)
 		.ok(function(res) {
-			res = JSON.parse(res);
-			if (res == null || res.length == undefined) {
+			res = JSON.tryParse(res);
+			if (res == null || res.length == undefined || typeof res == "string") {
 				me.mkType(cb, res);
 			} else {
 				me.mkTypeArray(cb, res);
@@ -428,8 +440,8 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 	} else {
 		new $ajax()
 		.ok(function(res) {
-			res = JSON.parse(res);
-			if (res == null || res.length == undefined) {
+			res = JSON.tryParse(res);
+			if (res == null || res.length == undefined || typeof res == "string") {
 				me.mkType(cb, res);
 			} else {
 				me.mkTypeArray(cb, res);
@@ -441,6 +453,8 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 $DbObject.prototype.mkType = function(cb, obj, type) {
 	if (type === undefined) {
 		if (obj == null) {
+			if (cb == null)
+				return;
 			cb(obj);
 			return;
 		} else {
@@ -529,6 +543,23 @@ function removeAllListeners(node, event) {
 	}
 }
 
+function isJSON(json) {
+	try {
+		var obj = JSON.parse(json)
+		if (obj && (typeof obj === 'object' || typeof obj === 'boolean') && obj !== null) {
+			return true
+		}
+	} catch (err) {}
+	return false
+}
+
+JSON.tryParse = function(json) {
+	try {
+		return (isJSON(json)) ? JSON.parse(json) : eval(json);
+	} catch (e) {
+		return json;
+	}
+}
 
 /*******************************************************************************
  * Initialisation

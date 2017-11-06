@@ -24,7 +24,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 * @return string Endpoint URL for this DTO
 	 */
 	public function get_endpoint() {
-		throw new DBException("get_endpoint() has to be implemented in DTO classes!");
+		throw new DBException("get_endpoint() has to be implemented in all DTO classes! Method is missing in class '" . get_class($this) . "'.");
 	}
 
 	/**

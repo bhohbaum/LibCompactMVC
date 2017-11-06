@@ -236,7 +236,7 @@ abstract class DbAccess {
 
 	/**
 	 *
-	 * @param unknown_type $str
+	 * @param unknown $str
 	 * @throws Exception
 	 */
 	protected function escape($str) {
@@ -270,6 +270,11 @@ abstract class DbAccess {
 		return $var;
 	}
 
+	/**
+	 * 
+	 * @param unknown $var value that needs to be compared
+	 * @return string comparison operator
+	 */
 	protected function cmpsqlnull($var) {
 		if ($this->sqlnull($var) == "null") {
 			return "IS";

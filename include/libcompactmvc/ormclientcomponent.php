@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../../include/libcompactmvc.php')) include_once('../../include/libcompactmvc.php');
+if (file_exists('../../include/libcompactmvc.php'))
+	include_once('../../include/libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
