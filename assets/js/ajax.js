@@ -117,6 +117,8 @@ $ajax.prototype.init = function() {
 						var ajaxp = new $ajax();
 						ajaxp.data("&data=" + encodeURIComponent(data));
 						ajaxp.ok(function(result) {
+							if (content == undefined)
+								return;
 							var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
 							try {
 								eval(cmd);
@@ -134,19 +136,21 @@ $ajax.prototype.init = function() {
 				});
 			}
 		}
-		var ajaxg = new $ajax();
-		ajaxg.ok(function(result) {
-			var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
-			try {
-				eval(cmd);
-			} catch (e) {
-				console.log(e);
-			}
-		});
-		ajaxg.err(function(result) {
+		if (content != undefined) {
+			var ajaxg = new $ajax();
+			ajaxg.ok(function(result) {
+				var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
+				try {
+					eval(cmd);
+				} catch (e) {
+					console.log(e);
+				}
+			});
+			ajaxg.err(function(result) {
+				ajaxg.get(url);
+			});
 			ajaxg.get(url);
-		});
-		ajaxg.get(url);
+		}
 		$this.removeClass("ajax");
 	});
 };
@@ -342,7 +346,7 @@ $DbObject.prototype.create = function(cb) {
 		} catch (e) {
 			obj = res;
 		}
-		if (cb != undefined)
+		if (typeof cb == "function")
 			cb(obj);
 	}).put(this.__ep);
 }
@@ -359,7 +363,7 @@ $DbObject.prototype.read = function(id, cb) {
 		} catch (e) {
 			obj = res;
 		}
-		if (cb != undefined)
+		if (typeof cb == "function")
 			cb(obj);
 	}).get(this.__ep + id);
 }
@@ -453,9 +457,8 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 $DbObject.prototype.mkType = function(cb, obj, type) {
 	if (type === undefined) {
 		if (obj == null) {
-			if (cb == null)
-				return;
-			cb(obj);
+			if (typeof cb == "function")
+				cb(obj);
 			return;
 		} else {
 			if (obj.hasOwnProperty("__type")) {
@@ -517,22 +520,34 @@ $DbObject.prototype.all_by = function(cb, constraint) {
 /*******************************************************************************
  * Functions
  ******************************************************************************/
-var _eventHandlers = {};
+var __eventHandlers = {};
 
 function addListener(node, event, handler, capture) {
-	if(!(node in _eventHandlers)) {
-		_eventHandlers[node] = {};
+	var supportsPassive = false;
+	if(!(node in __eventHandlers)) {
+		__eventHandlers[node] = {};
 	}
-	if(!(event in _eventHandlers[node])) {
-		_eventHandlers[node][event] = [];
+	if(!(event in __eventHandlers[node])) {
+		__eventHandlers[node][event] = [];
 	}
-	_eventHandlers[node][event].push([handler, capture]);
+	if (capture == undefined) {
+		try {
+			var opts = Object.defineProperty({}, 'passive', {
+				get: function() {
+					supportsPassive = true;
+				}
+			});
+			window.addEventListener("test", null, opts);
+		} catch (e) {}
+		capture = supportsPassive ? { passive: true } : false;
+	}
+	__eventHandlers[node][event].push([handler, capture]);
 	node.addEventListener(event, handler, capture);
 }
 
 function removeAllListeners(node, event) {
-	if(node in _eventHandlers) {
-		var handlers = _eventHandlers[node];
+	if(node in __eventHandlers) {
+		var handlers = __eventHandlers[node];
 		if(event in handlers) {
 			var eventHandlers = handlers[event];
 			for(var i = eventHandlers.length; i--;) {
