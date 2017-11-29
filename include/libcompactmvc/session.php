@@ -72,7 +72,7 @@ class Session {
 
 	// store our data into the $_SESSION variable
 	public function __destruct() {
-		if (!isset(self::$instance)) {
+		if (self::$instance == null) {
 			DLOG("Sessions was destroyed. Deleting redis data.");
 			RedisAdapter::get_instance()->delete("SESSION_" . $this->session_id);
 		}
@@ -89,7 +89,7 @@ class Session {
 	 * @return Session
 	 */
 	public static function get_instance() {
-		if (!isset(self::$instance)) {
+		if (self::$instance == null) {
 			$c = __CLASS__;
 			self::$instance = new $c();
 		}
@@ -158,7 +158,7 @@ class Session {
 			ini_set('session.cookie_secure', 1);
 		session_start();
 		session_regenerate_id(true);
-		unset(self::$instance);
+		self::$instance = null;
 	}
 
 	/**
