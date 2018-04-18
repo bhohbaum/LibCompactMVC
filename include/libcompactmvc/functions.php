@@ -300,12 +300,20 @@ function uppercase($str) {
 	return $str;
 }
 
+function uc($str) {
+	return uppercase($str);
+}
+
 function lowercase($str) {
 	$str = strtolower($str);
 	$str = str_replace("Ä", "ä", $str);
 	$str = str_replace("Ö", "ö", $str);
 	$str = str_replace("Ü", "ü", $str);
 	return $str;
+}
+
+function lc($str) {
+	lowercase($str);
 }
 
 function tr($id, $language, $text = null) {

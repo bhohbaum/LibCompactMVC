@@ -1,5 +1,5 @@
 <?php
-$cwd = getcwd();
+$GLOBALS["CWD"] = getcwd();
 chdir(realpath(dirname(__FILE__)));
 include('./include/libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
@@ -64,5 +64,5 @@ try {
 	$run->log($e->getTraceAsString());
 }
 
-chdir($cwd);
+chdir($GLOBALS["CWD"]);
 

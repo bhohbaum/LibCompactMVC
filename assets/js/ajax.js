@@ -337,7 +337,9 @@ $DbObject.prototype.create = function(cb) {
 	}
 	new $ajax()
 	.data(data)
-	.ok(function(res) {
+	.err(function(res) {
+		throw new $DbException(res);
+	}).ok(function(res) {
 		res = JSON.tryParse(res);
 		try {
 			var obj = eval("new " + res.__type + "()");
@@ -354,7 +356,9 @@ $DbObject.prototype.create = function(cb) {
 $DbObject.prototype.read = function(id, cb) {
 	var me = this;
 	new $ajax()
-	.ok(function(res) {
+	.err(function(res) {
+		throw new $DbException(res);
+	}).ok(function(res) {
 		res = JSON.tryParse(res);
 		try {
 			var obj = eval("new " + res.__type + "()");
@@ -387,7 +391,9 @@ $DbObject.prototype.update = function(cb) {
 	}
 	new $ajax()
 	.data(data)
-	.ok(function(res) {
+	.err(function(res) {
+		throw new $DbException(res);
+	}).ok(function(res) {
 		res = JSON.tryParse(res);
 		try {
 			var obj = eval("new " + res.__type + "()");
@@ -406,7 +412,9 @@ $DbObject.prototype.del = function(cb) {
 		throw new $DbException("Table has no primary key! Deletion is not possible.");
 	var me = this;
 	new $ajax()
-	.ok(function() {
+	.err(function(res) {
+		throw new $DbException(res);
+	}).ok(function() {
 		if (cb != undefined)
 			cb(me);
 	}).del(this.__ep + this[this.__pk]);
@@ -433,7 +441,9 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 		var data = "data=" + encodeURIComponent(JSON.stringify(param));
 		new $ajax()
 		.data(data)
-		.ok(function(res) {
+		.err(function(res) {
+			throw new $DbException(res);
+		}).ok(function(res) {
 			res = JSON.tryParse(res);
 			if (res == null || res.length == undefined || typeof res == "string") {
 				me.mkType(cb, res);
@@ -443,7 +453,9 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 		}).post(this.__ep + this[this.__pk] + "/" + method);
 	} else {
 		new $ajax()
-		.ok(function(res) {
+		.err(function(res) {
+			throw new $DbException(res);
+		}).ok(function(res) {
 			res = JSON.tryParse(res);
 			if (res == null || res.length == undefined || typeof res == "string") {
 				me.mkType(cb, res);
