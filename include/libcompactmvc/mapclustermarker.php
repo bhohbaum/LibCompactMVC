@@ -12,14 +12,15 @@ LIBCOMPACTMVC_ENTRY;
  * @license BSD License (see LICENSE file in root directory)
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
-class MapClusterMarker extends DbObject {
+class MapClusterMarker {
+	public $lat;
+	public $lng;
+	public $size;
 
-	public function __construct($lat, $lng, $size, $isnew = true) {
-		parent::__construct(array(
-				"lat" => $lat,
-				"lng" => $lng,
-				"size" => $size
-		), $isnew);
+	public function __construct($lat, $lng, $size) {
+		$this->lat = $lat;
+		$this->lng = $lng;
+		$this->size = $size;
 	}
 
 }

@@ -32,7 +32,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 */
 	protected function init() {
 		DLOG();
-		$this->table(get_class($this));
+		$tablename = $this->get_table();
+		if ($tablename == null) $tablename = get_class($this);
+		$this->table($tablename);
 	}
 
 	/**
