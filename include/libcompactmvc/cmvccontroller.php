@@ -439,60 +439,64 @@ abstract class CMVCController extends InputSanitizer {
 		if (!isset($this->__view)) {
 			$this->__view = new View();
 		}
-		switch ($this->get_method()) {
-			case 'GET':
-				$this->pre_run_get();
-				break;
-			case 'POST':
-				$this->pre_run_post();
-				break;
-			case 'PUT':
-				$this->pre_run_put();
-				break;
-			case 'DELETE':
-				$this->pre_run_delete();
-				break;
-			case 'EXEC':
-				$this->pre_run_exec();
-				break;
+		try {
+			switch ($this->get_method()) {
+				case 'GET':
+					$this->pre_run_get();
+					break;
+				case 'POST':
+					$this->pre_run_post();
+					break;
+				case 'PUT':
+					$this->pre_run_put();
+					break;
+				case 'DELETE':
+					$this->pre_run_delete();
+					break;
+				case 'EXEC':
+					$this->pre_run_exec();
+					break;
+			}
+			$this->pre_run();
+			switch ($this->get_method()) {
+				case 'GET':
+					$this->main_run_get();
+					break;
+				case 'POST':
+					$this->main_run_post();
+					break;
+				case 'PUT':
+					$this->main_run_put();
+					break;
+				case 'DELETE':
+					$this->main_run_delete();
+					break;
+				case 'EXEC':
+					$this->main_run_exec();
+					break;
+			}
+			$this->main_run();
+			switch ($this->get_method()) {
+				case 'GET':
+					$this->post_run_get();
+					break;
+				case 'POST':
+					$this->post_run_post();
+					break;
+				case 'PUT':
+					$this->post_run_put();
+					break;
+				case 'DELETE':
+					$this->post_run_delete();
+					break;
+				case 'EXEC':
+					$this->post_run_exec();
+					break;
+			}
+			$this->post_run();
+		} catch (Exception $e) {
+			$this->run_exception_handler($e);
 		}
-		$this->pre_run();
-		switch ($this->get_method()) {
-			case 'GET':
-				$this->main_run_get();
-				break;
-			case 'POST':
-				$this->main_run_post();
-				break;
-			case 'PUT':
-				$this->main_run_put();
-				break;
-			case 'DELETE':
-				$this->main_run_delete();
-				break;
-			case 'EXEC':
-				$this->main_run_exec();
-				break;
-		}
-		$this->main_run();
-		switch ($this->get_method()) {
-			case 'GET':
-				$this->post_run_get();
-				break;
-			case 'POST':
-				$this->post_run_post();
-				break;
-			case 'PUT':
-				$this->post_run_put();
-				break;
-			case 'DELETE':
-				$this->post_run_delete();
-				break;
-			case 'EXEC':
-				$this->post_run_exec();
-				break;
-		}
-		$this->post_run();
 
 		// If we have a redirect, we don't want the current template(s) to be generated.
 		if ($this->__redirect == "") {
@@ -509,7 +513,7 @@ abstract class CMVCController extends InputSanitizer {
 	 * @param Exception $e
 	 *        	the exception
 	 */
-	public function run_exception_handler($e) {
+	private function run_exception_handler($e) {
 		DLOG("Exception " . $e->getCode() . " '" . $e->getMessage() . "'");
 		if ($e instanceof RedirectException) {
 			$this->response_code($e->getCode());

@@ -79,7 +79,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 					if (array_key_exists("__type", $tmp)) {
 						if (class_exists($tmp["__type"])) {
 							if ($tmp["__type"] == "DbConstraint") {
-								$param = DbConstraint::jsonParse($this->data);
+								$param = DbConstraint::create_from_json($this->data);
 							}
 						}
 					}
@@ -148,14 +148,17 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	}
 
 	/**
-	 * Do not print stack trace in API environment, return json-serialized exception instead.
+	 * Do not print stack trace in API environment, catch and return exception json-serialized instead.
 	 *
 	 * {@inheritdoc}
 	 * @see CMVCController::exception_handler()
 	 */
 	protected function exception_handler($e) {
 		DLOG(print_r($e, true));
-		$this->json_response($e);
+		$this->json_response(array(
+				"message" => $e->getMessage(),
+				"trace" => $e->getTrace()
+		));
 	}
 	
 }

@@ -28,13 +28,13 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	public const COMPARE_LIKE = "LIKE";
 	public const COMPARE_NOT_LIKE = "NOT LIKE";
 	public const COMPARE_GREATER_THAN = ">";
-	public const COMPARE_SMALLER_THAN = "<";
+	public const COMPARE_LESS_THAN = "<";
 	
 	/**
 	 * 
 	 * @param array $constraint
 	 */
-	public function __construct($constraint = array()) {
+	public function __construct(array $constraint = array()) {
 		DLOG(print_r($constraint, true));
 		$this->constraint = $constraint;
 		$this->filter = array();
@@ -57,7 +57,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 * @param unknown $value
 	 * @return DbFilter
 	 */
-	public function set_column_filter($column, $value) {
+	public function set_column_filter(string $column, $value) {
 		DLOG();
 		$this->constraint[$column] = $value;
 		return $this;
@@ -68,7 +68,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 * @param unknown $logic_op
 	 * @return DbFilter
 	 */
-	public function set_logical_operator($logic_op) {
+	public function set_logical_operator(string $logic_op) {
 		DLOG();
 		$this->logic_op = $logic_op;
 		return $this;
@@ -79,7 +79,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 * @param unknown $comparator
 	 * @return DbFilter
 	 */
-	public function set_comparator($comparator) {
+	public function set_comparator(string $comparator) {
 		DLOG();
 		$this->comparator = $comparator;
 		return $this;
@@ -134,7 +134,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 		return json_encode($base, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
 	
-	public static function jsonParse(string $json) {
+	public static function create_from_json(string $json) {
 		$tmp = json_decode($json, true);
 		if (array_key_exists("__type", $tmp)) {
 			if (class_exists($tmp["__type"])) {
@@ -142,7 +142,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 					$tmpobj = json_decode($json, false);
 					$ret = new DbFilter();
 					foreach ($tmpobj->filter as $filter) {
-						$f = DbFilter::jsonParse(json_encode($filter));
+						$f = DbFilter::create_from_json(json_encode($filter));
 						if ($f != null) $ret->add_filter($f);
 					}
 					$ret->comparator = $tmpobj->comparator;

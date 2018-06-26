@@ -105,7 +105,7 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 		return json_encode($base, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
 	
-	public static function jsonParse(string $json) {
+	public static function create_from_json(string $json) {
 		$tmp = json_decode($json, true);
 		if (array_key_exists("__type", $tmp)) {
 			if (class_exists($tmp["__type"])) {
@@ -113,7 +113,7 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 					$tmpobj = json_decode($json, false);
 					$ret = new DbConstraint();
 					foreach ($tmpobj->filter as $filter) {
-						$f = DbFilter::jsonParse(json_encode($filter));
+						$f = DbFilter::create_from_json(json_encode($filter));
 						if ($f != null) $ret->add_filter($f);
 					}
 					$ret->comparator = $tmpobj->comparator;

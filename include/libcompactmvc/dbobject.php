@@ -21,6 +21,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	private $__fk_obj_cache;
 	
 	/**
+	 *
 	 * @return string Endpoint URL for this DTO
 	 */
 	public function get_endpoint() {
@@ -267,12 +268,25 @@ class DbObject extends DbAccess implements JsonSerializable {
 	/**
 	 * Get all records from the table where the given constraint matches
 	 *
-	 * @param array Constraint array
+	 * @param
+	 *        	array Constraint array
 	 * @return DbObject[] Result records
 	 */
 	public function all_by($constraint = array()) {
 		DLOG();
 		return $this->by_table($this->__tablename, $constraint);
+	}
+
+	/**
+	 * Get all records from the table where the given constraint matches
+	 *
+	 * @param
+	 *        	array Constraint array
+	 * @return DbObject[] Result records
+	 */
+	public function all_like($constraint = array()) {
+		DLOG();
+		return $this->by_table($this->__tablename, $constraint, true);
 	}
 
 	/**

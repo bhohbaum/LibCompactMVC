@@ -320,7 +320,17 @@ $ws.prototype._run_handlers = function(data) {
  * ORM client: DTO
  ******************************************************************************/
 function $DbException(message) {
-	this.message = message;
+	if (isJSON(message)) {
+		message = JSON.parse(message);
+		if (message.hasOwnProperty("message")) {
+			this.message = message.message;
+		}
+		if (message.hasOwnProperty("trace")) {
+			this.trace = message.trace;
+		}
+	} else {
+		this.message = message;
+	}
 }
 
 function $DbObject(ep) {
@@ -553,7 +563,7 @@ const $DB_COMPARE_NOT_EQUAL = "!=";
 const $DB_COMPARE_LIKE = "LIKE";
 const $DB_COMPARE_NOT_LIKE = "NOT LIKE";
 const $DB_COMPARE_GREATER_THAN = ">";
-const $DB_COMPARE_SMALLER_THAN = "<";
+const $DB_COMPARE_LESS_THAN = "<";
 
 const $DB_ORDER_ASCENDING = "ASC";
 const $DB_ORDER_DESCENDING = "DESC";

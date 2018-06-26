@@ -53,11 +53,7 @@ class ActionDispatcher extends InputSanitizer {
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
 				} catch (RedirectException $re) {
-					$this->get_handlersobj($this->control_action)->run_exception_handler($re);
-					if (!$re->is_internal())
-						return;
-				} catch (Exception $e) {
-					$this->get_handlersobj($this->control_action)->run_exception_handler($e);
+					if (!$re->is_internal()) return;
 				}
 				if ($this->get_handlersobj($this->control_action)->get_redirect() != "") {
 					$this->action = $this->get_handlersobj($this->control_action)->get_redirect();
@@ -77,8 +73,6 @@ class ActionDispatcher extends InputSanitizer {
 					$this->get_handlersobj($this->action)->run();
 				} catch (RBRCException $rbrce) {
 					DLOG("Returning response from the RBRC.");
-				} catch (Exception $e) {
-					$this->get_handlersobj($this->action)->run_exception_handler($e);
 				}
 			}
 		} while ($this->get_handlersobj($this->action)->get_redirect() != "");
