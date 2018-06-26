@@ -54,6 +54,8 @@ cmvc_include('inputsanitizer.php');
 cmvc_include('actionmapperinterface.php');
 cmvc_include('cmvccontroller.php');
 cmvc_include('cmvccomponent.php');
+cmvc_include('dbaccess.php');
+cmvc_include('dbfilter.php');
 
 // load the framework
 cmvc_include_dir("./include/libcompactmvc/");

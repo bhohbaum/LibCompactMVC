@@ -61,7 +61,7 @@ class MySQLHost extends mysqli {
 		return $this->type;
 	}
 
-	public function query($query) {
+	public function query($query, $resultmode = NULL) {
 		$this->lazy_init();
 		return parent::query($query);
 	}

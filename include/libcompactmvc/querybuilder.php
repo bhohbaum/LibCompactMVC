@@ -29,15 +29,44 @@ class QueryBuilder extends DbAccess {
 	 */
 	public function select($tablename, $constraint = array()) {
 		$q = "SELECT * FROM `" . $tablename . "`";
-		if (count($constraint) > 0) {
-			$q .= " WHERE";
-			$desc = $this->td->columninfo($tablename);
-			foreach ($desc as $key => $val) {
-				if (array_key_exists($val->Field, $constraint)) {
-					$q .= " " . $val->Field . " " .$this->cmpsqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
+			$q .= " WHERE " . $constraint->get_query_substring();
+		} else {
+			if (count($constraint) > 0) {
+				$q .= " WHERE";
+				$desc = $this->td->columninfo($tablename);
+				foreach ($desc as $key => $val) {
+					if (array_key_exists($val->Field, $constraint)) {
+						$q .= " " . $val->Field . " " . $this->cmpissqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+					}
 				}
+				$q = substr($q, 0, strlen($q) - 5);
 			}
-			$q = substr($q, 0, strlen($q) - 5);
+		}
+		DLOG($q);
+		return $q;
+	}
+	
+	/**
+	 *
+	 * @param unknown_type $tablename
+	 * @param unknown_type $constraint
+	 */
+	public function like($tablename, $constraint = array()) {
+		$q = "SELECT * FROM `" . $tablename . "`";
+		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
+			$q .= " WHERE " . $constraint->get_query_substring();
+		} else {
+			if (count($constraint) > 0) {
+				$q .= " WHERE";
+				$desc = $this->td->columninfo($tablename);
+				foreach ($desc as $key => $val) {
+					if (array_key_exists($val->Field, $constraint)) {
+						$q .= " " . $val->Field . " LIKE " . $this->sqlnull($this->escape($constraint[$val->Field]), true) . " AND ";
+					}
+				}
+				$q = substr($q, 0, strlen($q) - 5);
+			}
 		}
 		DLOG($q);
 		return $q;
@@ -80,7 +109,7 @@ class QueryBuilder extends DbAccess {
 	 * @param unknown_type $fields
 	 * @param unknown_type $constraint
 	 */
-	public function update($tablename, $fields, $constraint) {
+	public function update($tablename, $fields, $constraint = array()) {
 		$desc = $this->td->columninfo($tablename);
 		$q = "UPDATE `" . $tablename . "` SET ";
 		foreach ($desc as $key => $val) {
@@ -91,16 +120,21 @@ class QueryBuilder extends DbAccess {
 		$q = substr($q, 0, strlen($q) - 2);
 		$q .= " WHERE ";
 		$noconstraint = true;
-		foreach ($desc as $key => $val) {
-			if (array_key_exists($val->Field, $constraint)) {
-				$noconstraint = false;
-				$q .= $val->Field . " " . $this->cmpsqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
+			$q .= $constraint->get_query_substring();
+			$noconstraint = false;
+		} else {
+			foreach ($desc as $key => $val) {
+				if (array_key_exists($val->Field, $constraint)) {
+					$noconstraint = false;
+					$q .= $val->Field . " " . $this->cmpissqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+				}
 			}
+			$q = substr($q, 0, strlen($q) - 5);
 		}
 		if ($noconstraint) {
 			throw new InvalidArgumentException("Constraint missing. Query: '" . $q . "'");
 		}
-		$q = substr($q, 0, strlen($q) - 5);
 		DLOG($q);
 		return $q;
 	}
@@ -110,12 +144,16 @@ class QueryBuilder extends DbAccess {
 	 * @param unknown_type $tablename
 	 * @param unknown_type $constraint
 	 */
-	public function delete($tablename, $constraint) {
+	public function delete($tablename, $constraint = array()) {
 		$desc = $this->td->columninfo($tablename);
 		$q = "DELETE FROM `" . $tablename . "` WHERE ";
-		foreach ($desc as $key => $val) {
-			if (array_key_exists($val->Field, $constraint)) {
-				$q .= $val->Field . " " . $this->cmpsqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
+			$q .= $constraint->get_query_substring();
+		} else {
+			foreach ($desc as $key => $val) {
+				if (array_key_exists($val->Field, $constraint)) {
+					$q .= $val->Field . " " . $this->cmpissqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
+				}
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 5);

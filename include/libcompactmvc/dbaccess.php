@@ -189,10 +189,13 @@ abstract class DbAccess {
 	 * @param String $tablename
 	 * @param array $constraint
 	 */
-	public function by_table($tablename, $constraint = null) {
+	public function by_table($tablename, $constraint = null, $wildcard = false) {
 		$qb = new QueryBuilder();
 		$constraint = ($constraint == null) ? array() : $constraint;
-		$q = $qb->select($tablename, $constraint);
+		if ($wildcard)
+			$q = $qb->like($tablename, $constraint);
+		else
+			$q = $qb->select($tablename, $constraint);
 		$res = $this->run_query($q, true, true, null, $tablename, false);
 		return $res;
 	}
@@ -256,31 +259,44 @@ abstract class DbAccess {
 	 *        	String_or_Number input value that has to be transformed
 	 * @return String value to concatenate with the rest of the sql query
 	 */
-	protected function sqlnull($var) {
+	protected function sqlnull($var, $wildcard = false) {
 		// we don't DLOG here, it's spaming...
 		// DLOG();
 		$leadingzero = substr($var, 0, 1) == "0";
 		$leadingplus = substr($var, 0, 1) == "+";
 		$iszero = ($var === "0");
 		if ($iszero || (is_numeric($var) && !$leadingzero && !$leadingplus)) {
-			$var = (empty($var) && !is_numeric($var)) ? "null" : $var;
+			$var = (empty($var) && !is_numeric($var)) ? "null" : ($wildcard ? "'%" : "") . $var . ($wildcard ? "%'" : "");
 		} else {
-			$var = (empty($var) && !is_numeric($var)) ? "null" : "'" . $var . "'";
+			$var = (empty($var) && !is_numeric($var)) ? "null" : "'" . ($wildcard ? "%" : "") . $var . ($wildcard ? "%" : "") . "'";
 		}
 		return $var;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param unknown $var value that needs to be compared
 	 * @return string comparison operator
 	 */
-	protected function cmpsqlnull($var) {
+	protected function cmpissqlnull($var) {
 		if ($this->sqlnull($var) == "null") {
 			return "IS";
 		} else {
 			return "=";
 		}
 	}
-
+	
+	/**
+	 *
+	 * @param unknown $var value that needs to be compared
+	 * @return string comparison operator
+	 */
+	protected function cmpisnotsqlnull($var) {
+		if ($this->sqlnull($var) == "null") {
+			return "IS NOT";
+		} else {
+			return "!=";
+		}
+	}
+	
 }

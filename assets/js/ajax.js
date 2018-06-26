@@ -317,7 +317,7 @@ $ws.prototype._run_handlers = function(data) {
 };
 
 /*******************************************************************************
- * ORM client
+ * ORM client: DTO
  ******************************************************************************/
 function $DbException(message) {
 	this.message = message;
@@ -526,6 +526,116 @@ $DbObject.prototype.all_by = function(cb, constraint) {
 	this.callMethod(function(res) {
 		me.mkTypeArray(cb, res);
 	}, "all_by", constraint);
+}
+
+/*******************************************************************************
+ * ORM client: filter
+ ******************************************************************************/
+var $DbFilter = function(constraint = {}) {
+	this.__type = "DbFilter";
+	this.constraint = constraint;
+	this.filter = [];
+	this.comparator = "";
+	this.logic_op = "";
+}
+
+//derived from Object
+$DbFilter.prototype = Object.create(Object.prototype);
+$DbFilter.prototype.constructor = $DbFilter;
+
+const $DB_LOGIC_OPERATOR_AND = "AND";
+const $DB_LOGIC_OPERATOR_OR = "OR";
+const $DB_LOGIC_OPERATOR_XOR = "XOR";
+const $DB_LOGIC_OPERATOR_NOT = "NOT";
+
+const $DB_COMPARE_EQUAL = "=";
+const $DB_COMPARE_NOT_EQUAL = "!=";
+const $DB_COMPARE_LIKE = "LIKE";
+const $DB_COMPARE_NOT_LIKE = "NOT LIKE";
+const $DB_COMPARE_GREATER_THAN = ">";
+const $DB_COMPARE_SMALLER_THAN = "<";
+
+const $DB_ORDER_ASCENDING = "ASC";
+const $DB_ORDER_DESCENDING = "DESC";
+
+$DbFilter.prototype.add_filter = function(filter) {
+	this.filter[this.filter.length] = filter;
+	return this;
+}
+
+/**
+ * 
+ * @param unknown column
+ * @param unknown value
+ * @return $DbFilter
+ */
+$DbFilter.prototype.set_column_filter = function(column, value) {
+	this.constraint[column] = value;
+	return this;
+}
+
+/**
+ * 
+ * @param unknown logic_op
+ * @return $DbFilter
+ */
+$DbFilter.prototype.set_logical_operator = function(logic_op) {
+	this.logic_op = logic_op;
+	return this;
+}
+
+/**
+ * 
+ * @param unknown comparator
+ * @return $DbFilter$DB_ORDER_ASCENDING$DB_ORDER_ASCENDING
+ */
+$DbFilter.prototype.set_comparator = function(comparator) {
+	this.comparator = comparator;
+	return this;
+}
+
+
+/*******************************************************************************
+ * ORM client: constraints
+ ******************************************************************************/
+var $DbConstraint = function(constraint = {}) {
+	$DbFilter.call(this, constraint);
+	this.__type = "DbConstraint";
+	this.order = {};
+	this.limit = [];
+}
+
+// derived from $DbFilter
+$DbConstraint.prototype = Object.create($DbFilter.prototype);
+$DbConstraint.prototype.constructor = $DbConstraint;
+
+/**
+ * 
+ * @param unknown column name of the column that shall be sorted
+ * @param unknown direction $DB_ORDER_ASCENDING or $DB_ORDER_DESCENDING
+ * @return $DbConstraint
+ */
+$DbConstraint.prototype.order_by = function(column, direction) {
+	this.order[column] = direction;
+	return this;
+}
+
+/**
+ * 
+ * @param unknown start_or_count SQL LIMIT operator: first parameter
+ * @param unknown opt_count SQL LIMIT operator: second parameter
+ * @return $DbConstraint
+ */
+$DbConstraint.prototype.set_limit = function(start_or_count, opt_count = null) {
+	this.limit = [];
+	if (start_or_count === null && opt_count === null) return;
+	if (opt_count == null) {
+		this.limit[0] = start_or_count;
+	} else {
+		this.limit[0] = start_or_count;
+		this.limit[1] = opt_count;
+	}
+	return this;
 }
 
 

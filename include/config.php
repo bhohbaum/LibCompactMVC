@@ -1,9 +1,9 @@
 <?php
-include_once('libcompactmvc.php');
+include_once ('libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * LibCompactMVC application loader
+ * Application config
  *
  * @author      Botho Hohbaum <bhohbaum@googlemail.com>
  * @package     LibCompactMVC
@@ -13,10 +13,18 @@ LIBCOMPACTMVC_ENTRY;
 
 // Set global constants
 // Debug messages & logging
-// 0	off
-// 1	on
-define('DEBUG', 1);
-define('LOG_LEVEL', 3);
+// 0 off
+// 1 on
+if (gethostname() == 'vweb02') {
+	define('DEBUG', 1);
+	define('LOG_LEVEL', 3);
+} else if (gethostname() == 'production') {
+	define('DEBUG', 0);
+	define('LOG_LEVEL', 0);
+} else {
+	define('DEBUG', 1);
+	define('LOG_LEVEL', 3);
+}
 
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);
@@ -74,10 +82,22 @@ define('LOG_TYPE', 0);
 define('LOG_TARGET', 1);
 define('LOG_IDENT', 'libcompactmvc');
 define('LOG_FACILITY', 'local7');
-define('BASE_URL', 'http://libcompactmvc.local');
+if (gethostname() == 'libo') {
+	define('BASE_URL', 'http://siemenscms.kmundp.local');
+} else if (gethostname() == 'develwebss') {
+	define('BASE_URL', 'http://siemenscmsdwss.kmundp.local');
+} else if (gethostname() == 'vweb02') {
+	define('BASE_URL', 'http://siemenscms2.miu08-server.de');
+} else if (gethostname() == 'develwebpm') {
+	define('BASE_URL', 'http://siemens.develwebpm');
+} else if (gethostname() == 'production') {
+	define('BASE_URL', 'http://staging-ingenuity.com');
+} else if (gethostname() == 'staging') {
+	define('BASE_URL', 'http://staging-ingenuity.com:81');
+}
 define('DEFAULT_TIMEZONE', 'CET');
 
-define('CAPTCHA_RES_PATH', "./include/resources");							// relative to $_SERVER['DOCUMENT_ROOT']
+define('CAPTCHA_RES_PATH', "./include/resources"); // relative to $_SERVER['DOCUMENT_ROOT']
 define('ST_CAPTCHA_SESS_VAR', "captcha");
 
 // uncomment to use proxy
@@ -85,7 +105,7 @@ define('ST_CAPTCHA_SESS_VAR', "captcha");
 // define('PROXY_PORT', 8080);
 
 define('CEPH_CONF', './files/ceph/ceph.prod.conf');
-define('CEPH_POOL', 'digimap');
+define('CEPH_POOL', 'ceph');
 define('CEPH_MAX_OBJ_SIZE', 64 * 1024 * 1024);
 
 define('REDIS_KEY_PREFIX', 'CMVC_');
@@ -94,7 +114,7 @@ define('REDIS_KEY_RCACHE_TTL', 7200);
 define('REDIS_KEY_TBLDESC_PFX', 'TBLDESC_');
 define('REDIS_KEY_FKINFO_PFX', 'FKINFO_');
 define('REDIS_KEY_TBLCACHE_PFX', 'TBLCACHE_');
-define('REDIS_KEY_TBLCACHE_TTL', 7200);
+define('REDIS_KEY_TBLCACHE_TTL', 720000);
 define('REDIS_KEY_FIFOBUFF_PFX', 'FIFOBUFF_');
 define('REDIS_KEY_FIFOBUFF_TTL', 10000);
 define('REDIS_KEY_HTMLCACHE_PFX', 'HTMLCACHE_');
@@ -105,11 +125,14 @@ define('REDIS_KEY_CACHEDHTTP_TTL', 10000);
 // couchdb database
 define('TRANSLATION_DATABASE', 'libcompactmvc');
 
+// Session tokens
+define('ST_USER_ID', 'user_id');
+
 // DB Server:
 // DB schema name for ORM learning
 define('MYSQL_SCHEMA', 'libcompactmvc');
 $GLOBALS['MYSQL_HOSTS'] = array(
-		new MySQLHost("localhost", "root", "Mausi_303", MYSQL_SCHEMA, MySQLHost::SRV_TYPE_READWRITE)
+		new MySQLHost("localhost", "root", "toor", MYSQL_SCHEMA, MySQLHost::SRV_TYPE_READWRITE)
 );
 $GLOBALS['MYSQL_NO_CACHING'] = array(
 		TBLV_NEXT_RECEIVER,
