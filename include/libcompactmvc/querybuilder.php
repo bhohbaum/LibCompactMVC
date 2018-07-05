@@ -21,6 +21,20 @@ class QueryBuilder extends DbAccess {
 		parent::__construct();
 		$this->td = new TableDescription();
 	}
+	
+	private function selcols($tablename, $constraint) {
+		$selcols = "*";
+		if (!is_array($constraint)) {
+			if (is_array($this->td->primary_keys($tablename)) && get_class($constraint) == "DbConstraint") {
+				if ($constraint->get_query_info()["count"]) {
+					$selcols = "COUNT(" . $this->td->primary_keys($tablename)[0] . ") AS count";
+				} else {
+					$selcols = "*";
+				}
+			}
+		}
+		return $selcols;
+	}
 
 	/**
 	 *
@@ -28,19 +42,13 @@ class QueryBuilder extends DbAccess {
 	 * @param unknown_type $constraint
 	 */
 	public function select($tablename, $constraint = array()) {
-		$q = "SELECT * FROM `" . $tablename . "`";
+		$q = "SELECT " . $this->selcols($tablename, $constraint) . " FROM `" . $tablename . "`";
 		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
-			$q .= " WHERE " . $constraint->get_query_substring();
+			$q .= " WHERE " . $constraint->get_query_info()["where_string"];
 		} else {
 			if (count($constraint) > 0) {
-				$q .= " WHERE";
-				$desc = $this->td->columninfo($tablename);
-				foreach ($desc as $key => $val) {
-					if (array_key_exists($val->Field, $constraint)) {
-						$q .= " " . $val->Field . " " . $this->cmpissqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
-					}
-				}
-				$q = substr($q, 0, strlen($q) - 5);
+				$q .= " WHERE ";
+				$q .= $this->where_substring($tablename, $constraint);
 			}
 		}
 		DLOG($q);
@@ -53,19 +61,13 @@ class QueryBuilder extends DbAccess {
 	 * @param unknown_type $constraint
 	 */
 	public function like($tablename, $constraint = array()) {
-		$q = "SELECT * FROM `" . $tablename . "`";
+		$q = "SELECT " . $this->selcols($tablename, $constraint) . " FROM `" . $tablename . "`";
 		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
-			$q .= " WHERE " . $constraint->get_query_substring();
+			$q .= " WHERE " . $constraint->get_query_info()["where_string"];
 		} else {
 			if (count($constraint) > 0) {
-				$q .= " WHERE";
-				$desc = $this->td->columninfo($tablename);
-				foreach ($desc as $key => $val) {
-					if (array_key_exists($val->Field, $constraint)) {
-						$q .= " " . $val->Field . " LIKE " . $this->sqlnull($this->escape($constraint[$val->Field]), true) . " AND ";
-					}
-				}
-				$q = substr($q, 0, strlen($q) - 5);
+				$q .= " WHERE ";
+				$q .= $this->where_substring($tablename, $constraint, array(), DbFilter::COMPARE_LIKE);
 			}
 		}
 		DLOG($q);
@@ -119,21 +121,10 @@ class QueryBuilder extends DbAccess {
 		}
 		$q = substr($q, 0, strlen($q) - 2);
 		$q .= " WHERE ";
-		$noconstraint = true;
 		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
-			$q .= $constraint->get_query_substring();
-			$noconstraint = false;
+			$q .= $constraint->get_query_info()["where_string"];
 		} else {
-			foreach ($desc as $key => $val) {
-				if (array_key_exists($val->Field, $constraint)) {
-					$noconstraint = false;
-					$q .= $val->Field . " " . $this->cmpissqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
-				}
-			}
-			$q = substr($q, 0, strlen($q) - 5);
-		}
-		if ($noconstraint) {
-			throw new InvalidArgumentException("Constraint missing. Query: '" . $q . "'");
+			$q .= $this->where_substring($tablename, $constraint);
 		}
 		DLOG($q);
 		return $q;
@@ -148,17 +139,62 @@ class QueryBuilder extends DbAccess {
 		$desc = $this->td->columninfo($tablename);
 		$q = "DELETE FROM `" . $tablename . "` WHERE ";
 		if (!is_array($constraint) && get_class($constraint) == "DbConstraint") {
-			$q .= $constraint->get_query_substring();
+			$q .= $constraint->get_query_info()["where_string"];
 		} else {
-			foreach ($desc as $key => $val) {
-				if (array_key_exists($val->Field, $constraint)) {
-					$q .= $val->Field . " " . $this->cmpissqlnull($this->escape($constraint[$val->Field])) . " " . $this->sqlnull($this->escape($constraint[$val->Field])) . " AND ";
-				}
-			}
+			$q .= $this->where_substring($tablename, $constraint);
 		}
-		$q = substr($q, 0, strlen($q) - 5);
 		DLOG($q);
 		return $q;
 	}
+	
+	/**
+	 * 
+	 * @param array $constraint
+	 * @param array $filter
+	 * @param unknown $comparator
+	 * @param unknown $logic_op
+	 * @return string
+	 */
+	public function where_substring($table = null, $constraint = array(), $filter = array(), $comparator = DbFilter::COMPARE_EQUAL, $logic_op = DbFilter::LOGIC_OPERATOR_AND) {
+		if ($table == null) return "1";
+		if (count($constraint) == 0 && count($filter) == 0) return "1";
+		$desc = $this->td->columninfo($table);
+		$first = true;
+		$qstr1 = "(";
+		foreach ($constraint as $col => $val) {
+			foreach ($desc as $k => $v) {
+				if ($v->Field == $col) {
+					if (!$first) $qstr1 .= $logic_op . " ";
+					$first = false;
+					$qstr1 .= "`" . $col . "` " . $this->comparator($comparator, $val) . " " . $this->sqlnull($this->escape($val)) . " ";
+				}
+			}
+		}
+		$qstr2 = "";
+		foreach ($filter as $filter) {
+			if (!$first) $qstr2 .= $logic_op . " ";
+			$first = false;
+			$qstr2 .= $filter->get_query_substring();
+		}
+		$qstr2 .= ")";
+		$qstr = $qstr1 . $qstr2;
+		DLOG($qstr);
+		return $qstr;
+	}
+	
+	/**
+	 *
+	 * @param unknown $val
+	 * @return string|unknown
+	 */
+	protected function comparator($comparator, $val) {
+		if ($comparator == DbFilter::COMPARE_EQUAL)
+			return $this->cmpissqlnull($val);
+		else if ($comparator == DbFilter::COMPARE_NOT_EQUAL)
+			return $this->cmpisnotsqlnull($val);
+		else
+			return $comparator;
+	}
+	
 
 }

@@ -274,6 +274,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 */
 	public function all_by($constraint = array()) {
 		DLOG();
+		if (get_class($constraint) == "DbConstraint") {
+			$constraint->set_dto($this);
+		}
 		return $this->by_table($this->__tablename, $constraint);
 	}
 

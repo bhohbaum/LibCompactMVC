@@ -32,9 +32,14 @@ function $ajax() {
 
 
 /**
- * public functions
+ * configuration, may be changed at runtime
  */
 $ajax.prototype.retry_enabled = true;
+$ajax.prototype.value_binding = true;
+
+/**
+ * public functions
+ */
 $ajax.prototype.get = function(url) {
 	return this._doRequest('GET', url);
 };
@@ -111,27 +116,29 @@ $ajax.prototype.init = function() {
 		for (var i = 0; i < events.length; i++) {
 			if ($this.attr("data-" + events[i]) != null) {
 				$this.on(events[i], function(event) {
-					var cmd = 'var data = ' + $this.attr("data-" + event.type);
-					try {
-						eval(cmd);
-						var ajaxp = new $ajax();
-						ajaxp.data("&data=" + encodeURIComponent(data));
-						ajaxp.ok(function(result) {
-							if (content == undefined)
-								return;
-							var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
-							try {
-								eval(cmd);
-							} catch (e) {
-								console.log(e);
-							}
-						});
-						ajaxp.err(function() {
+					if ($ajax.prototype.value_binding) {
+						var cmd = 'var data = ' + $this.attr("data-" + event.type);
+						try {
+							eval(cmd);
+							var ajaxp = new $ajax();
+							ajaxp.data("&data=" + encodeURIComponent(data));
+							ajaxp.ok(function(result) {
+								if (content == undefined)
+									return;
+								var cmd = (content.substring(0, 6) == "$this.") ? content : "$this." + content;
+								try {
+									eval(cmd);
+								} catch (e) {
+									console.log(e);
+								}
+							});
+							ajaxp.err(function() {
+								ajaxp.post(url);
+							});
 							ajaxp.post(url);
-						});
-						ajaxp.post(url);
-					} catch (e) {
-						console.log(e);
+						} catch (e) {
+							console.log(e);
+						}
 					}
 				});
 			}
@@ -146,8 +153,8 @@ $ajax.prototype.init = function() {
 					console.log(e);
 				}
 			});
-			ajaxg.err(function(result) {
-				ajaxg.get(url);
+			ajaxg.err(function(result, code) {
+				if (code != 404) ajaxg.get(url);
 			});
 			ajaxg.get(url);
 		}
@@ -192,7 +199,7 @@ $ajax.prototype._callHandler = function(url, response, rData) {
 			};
 		} else {
 			if (this._cberr) {
-				this._cberr(rData);
+				this._cberr(rData, response.target.status);
 			};
 		}
 	} catch (e) {
@@ -320,7 +327,7 @@ $ws.prototype._run_handlers = function(data) {
  * ORM client: DTO
  ******************************************************************************/
 function $DbException(message) {
-	if (isJSON(message)) {
+	if (JSON.isJSON(message)) {
 		message = JSON.parse(message);
 		if (message.hasOwnProperty("message")) {
 			this.message = message.message;
@@ -534,25 +541,17 @@ $DbObject.prototype.by = function(cb, constraint) {
 $DbObject.prototype.all_by = function(cb, constraint) {
 	var me = this;
 	this.callMethod(function(res) {
-		me.mkTypeArray(cb, res);
+		if (!Array.isArray(res)) {
+			cb(res);
+		} else {
+			me.mkTypeArray(cb, res);
+		}
 	}, "all_by", constraint);
 }
 
 /*******************************************************************************
  * ORM client: filter
  ******************************************************************************/
-var $DbFilter = function(constraint = {}) {
-	this.__type = "DbFilter";
-	this.constraint = constraint;
-	this.filter = [];
-	this.comparator = "";
-	this.logic_op = "";
-}
-
-//derived from Object
-$DbFilter.prototype = Object.create(Object.prototype);
-$DbFilter.prototype.constructor = $DbFilter;
-
 const $DB_LOGIC_OPERATOR_AND = "AND";
 const $DB_LOGIC_OPERATOR_OR = "OR";
 const $DB_LOGIC_OPERATOR_XOR = "XOR";
@@ -564,10 +563,29 @@ const $DB_COMPARE_LIKE = "LIKE";
 const $DB_COMPARE_NOT_LIKE = "NOT LIKE";
 const $DB_COMPARE_GREATER_THAN = ">";
 const $DB_COMPARE_LESS_THAN = "<";
+const $DB_COMPARE_GREATER_EQUAL_THAN = ">=";
+const $DB_COMPARE_LESS_EQUAL_THAN = "<=";
 
 const $DB_ORDER_ASCENDING = "ASC";
 const $DB_ORDER_DESCENDING = "DESC";
 
+var $DbFilter = function(constraint = {}) {
+	this.__type = "DbFilter";
+	this.constraint = constraint;
+	this.filter = [];
+	this.comparator = $DB_COMPARE_EQUAL;
+	this.logic_op = $DB_LOGIC_OPERATOR_AND;
+}
+
+//derived from Object
+$DbFilter.prototype = Object.create(Object.prototype);
+$DbFilter.prototype.constructor = $DbFilter;
+
+/**
+ * 
+ * @param $DbFilter filter add filter object
+ * @return $DbFilter
+ */
 $DbFilter.prototype.add_filter = function(filter) {
 	this.filter[this.filter.length] = filter;
 	return this;
@@ -597,7 +615,7 @@ $DbFilter.prototype.set_logical_operator = function(logic_op) {
 /**
  * 
  * @param unknown comparator
- * @return $DbFilter$DB_ORDER_ASCENDING$DB_ORDER_ASCENDING
+ * @return $DbFilter
  */
 $DbFilter.prototype.set_comparator = function(comparator) {
 	this.comparator = comparator;
@@ -613,11 +631,22 @@ var $DbConstraint = function(constraint = {}) {
 	this.__type = "DbConstraint";
 	this.order = {};
 	this.limit = [];
+	this.count = false;
 }
 
 // derived from $DbFilter
 $DbConstraint.prototype = Object.create($DbFilter.prototype);
 $DbConstraint.prototype.constructor = $DbConstraint;
+
+/**
+ * 
+ * @param bool count_only only return the number of records, not the records themselves
+ * @return $DbFilter
+ */
+$DbConstraint.prototype.count_only = function(count_only = true) {
+	this.count = count_only;
+	return this;
+}
 
 /**
  * 
@@ -677,20 +706,27 @@ function addListener(node, event, handler, capture) {
 	node.addEventListener(event, handler, capture);
 }
 
-function removeAllListeners(node, event) {
+function removeAllListeners(node, event = null) {
 	if(node in __eventHandlers) {
 		var handlers = __eventHandlers[node];
-		if(event in handlers) {
-			var eventHandlers = handlers[event];
+		if (event != null) {
 			for(var i = eventHandlers.length; i--;) {
 				var handler = eventHandlers[i];
 				node.removeEventListener(event, handler[0], handler[1]);
+			}
+		} else {
+			if(event in handlers) {
+				var eventHandlers = handlers[event];
+				for(var i = eventHandlers.length; i--;) {
+					var handler = eventHandlers[i];
+					node.removeEventListener(event, handler[0], handler[1]);
+				}
 			}
 		}
 	}
 }
 
-function isJSON(json) {
+JSON.isJSON = function(json) {
 	try {
 		var obj = JSON.parse(json)
 		if (obj && (typeof obj === 'object' || typeof obj === 'boolean') && obj !== null) {
@@ -702,9 +738,15 @@ function isJSON(json) {
 
 JSON.tryParse = function(json) {
 	try {
-		return (isJSON(json)) ? JSON.parse(json) : eval(json);
+		return (JSON.isJSON(json)) ? JSON.parse(json) : eval(json);
 	} catch (e) {
 		return json;
+	}
+}
+
+if (typeof Array.isArray === 'undefined') {
+	Array.isArray = function(obj) {
+		return Object.prototype.toString.call(obj) === '[object Array]';
 	}
 }
 

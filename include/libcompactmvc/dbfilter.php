@@ -13,22 +13,27 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
 class DbFilter extends DbAccess implements JsonSerializable {
+	private $qb;
+	private $parent;					// parent element
+	
 	protected $filter = array();
 	protected $comparator = array();
 	protected $logic_op = array();
 	protected $constraint = array();
 	
-	public const LOGIC_OPERATOR_AND = "AND";
-	public const LOGIC_OPERATOR_OR = "OR";
-	public const LOGIC_OPERATOR_XOR = "XOR";
-	public const LOGIC_OPERATOR_NOT = "NOT";
+	const LOGIC_OPERATOR_AND = "AND";
+	const LOGIC_OPERATOR_OR = "OR";
+	const LOGIC_OPERATOR_XOR = "XOR";
+	const LOGIC_OPERATOR_NOT = "NOT";
 	
-	public const COMPARE_EQUAL = "=";
-	public const COMPARE_NOT_EQUAL = "!=";
-	public const COMPARE_LIKE = "LIKE";
-	public const COMPARE_NOT_LIKE = "NOT LIKE";
-	public const COMPARE_GREATER_THAN = ">";
-	public const COMPARE_LESS_THAN = "<";
+	const COMPARE_EQUAL = "=";
+	const COMPARE_NOT_EQUAL = "!=";
+	const COMPARE_LIKE = "LIKE";
+	const COMPARE_NOT_LIKE = "NOT LIKE";
+	const COMPARE_GREATER_THAN = ">";
+	const COMPARE_LESS_THAN = "<";
+	const COMPARE_GREATER_EQUAL_THAN = ">=";
+	const COMPARE_LESS_EQUAL_THAN = "<=";
 	
 	/**
 	 * 
@@ -38,6 +43,9 @@ class DbFilter extends DbAccess implements JsonSerializable {
 		DLOG(print_r($constraint, true));
 		$this->constraint = $constraint;
 		$this->filter = array();
+		$this->comparator = DbFilter::COMPARE_EQUAL;
+		$this->logic_op = DbFilter::LOGIC_OPERATOR_AND;
+		$this->qb = new QueryBuilder();
 	}
 	
 	/**
@@ -47,10 +55,26 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 */
 	public function add_filter(DbFilter $filter) {
 		DLOG();
+		$filter->set_parent($this);
 		$this->filter[] = $filter;
 		return $this;
 	}
 
+	protected function set_parent(DbFilter $parent) {
+		$this->parent = $parent;
+		return $this;
+	}
+	
+	public function get_table() {
+		$filter = $this;
+		while (get_class($filter) != "DbConstraint") {
+			$filter = $filter->parent;
+		}
+		$dto = $filter->get_dto();
+		$table = $dto->get_table();
+		return $table;
+	}
+	
 	/**
 	 * 
 	 * @param unknown $column
@@ -91,36 +115,8 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 */
 	public function get_query_substring() {
 		DLOG();
-		$first = true;
-		$qstr = "(";
-		foreach ($this->constraint as $col => $val) {
-			if (!$first) $qstr .= $this->logic_op . " ";
-			$first = false;
-			$qstr .= "`" . $col . "` " . $this->comparator($val) . " " . $this->sqlnull($this->escape($val)) . " ";
-		}
-		foreach ($this->filter as $filter) {
-			if (!$first) $qstr .= $this->logic_op . " ";
-			$first = false;
-			$qstr .= $filter->get_query_substring();
-		}
-		$qstr .= ")";
-		return $qstr;
+		return $this->qb->where_substring($this->get_table(), $this->constraint, $this->filter, $this->comparator, $this->logic_op);
 	}
-	
-	/**
-	 * 
-	 * @param unknown $val
-	 * @return string|unknown
-	 */
-	protected function comparator($val) {
-		if ($this->comparator == DbFilter::COMPARE_EQUAL)
-			return $this->cmpissqlnull($val);
-		else if ($this->comparator == DbFilter::COMPARE_NOT_EQUAL)
-			return $this->cmpisnotsqlnull($val);
-		else 
-			return $this->comparator;
-	}
-
 
 	/**
 	 */
@@ -134,7 +130,13 @@ class DbFilter extends DbAccess implements JsonSerializable {
 		return json_encode($base, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
 	
-	public static function create_from_json(string $json) {
+	/**
+	 * DbFilter factory
+	 * 
+	 * @param string $json
+	 * @return DbFilter
+	 */
+	public static function create_from_json($json) {
 		$tmp = json_decode($json, true);
 		if (array_key_exists("__type", $tmp)) {
 			if (class_exists($tmp["__type"])) {

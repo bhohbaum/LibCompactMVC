@@ -15,9 +15,11 @@ LIBCOMPACTMVC_ENTRY;
 class DbConstraint extends DbFilter implements JsonSerializable {
 	protected $order = array();
 	protected $limit = array();
+	protected $count = false;
+	protected $dto = null;
 	
-	public const ORDER_ASCENDING = "ASC";
-	public const ORDER_DESCENDING = "DESC";
+	const ORDER_ASCENDING = "ASC";
+	const ORDER_DESCENDING = "DESC";
 	
 	/**
 	 * 
@@ -28,7 +30,17 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 		parent::__construct($constraint);
 	}
 	
-		/**
+	public function set_dto(DbObject $dto) {
+		DLOG();
+		$this->dto = $dto;
+	}
+	
+	public function get_dto() {
+		DLOG();
+		return $this->dto;
+	}
+	
+	/**
 	 * 
 	 * @param unknown $column
 	 * @param unknown $direction
@@ -59,13 +71,19 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 		return $this;
 	}
 	
+	public function count_only(bool $count_only = null) {
+		DLOG();
+		$count_only = ($count_only == null) ? true : $count_only;
+		$this->count = $count_only;
+	}
+	
 	/**
 	 * 
-	 * {@inheritDoc}
-	 * @see DbFilter::get_query_substring()
+	 * @return array
 	 */
-	public function get_query_substring() {
+	public function get_query_info() {
 		DLOG();
+		$ret = array();
 		$first = true;
 		$qstr = parent::get_query_substring() . " ";
 		$qstr = ($qstr == "() ") ? "1 " : $qstr;
@@ -85,7 +103,9 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 				$qstr .= "LIMIT " . $this->limit[0] . ", " . $this->limit[1];
 			}
 		}
-		return $qstr;
+		$ret["where_string"] = $qstr;
+		$ret["count"] = $this->count;
+		return $ret;
 	}
 	
 	/**
@@ -105,7 +125,13 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 		return json_encode($base, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 	}
 	
-	public static function create_from_json(string $json) {
+	/**
+	 * DbConstraint factory
+	 * 
+	 * @param unknown $json
+	 * @return DbConstraint
+	 */
+	public static function create_from_json($json) {
 		$tmp = json_decode($json, true);
 		if (array_key_exists("__type", $tmp)) {
 			if (class_exists($tmp["__type"])) {
@@ -119,8 +145,9 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 					$ret->comparator = $tmpobj->comparator;
 					$ret->logic_op = $tmpobj->logic_op;
 					$ret->constraint = $tmpobj->constraint;
-					$ret->order = $tmpobj->order;
+					$ret->order = $tmp["order"];
 					$ret->limit = $tmpobj->limit;
+					$ret->count = $tmpobj->count;
 				}
 			}
 		}
