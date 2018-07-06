@@ -196,7 +196,7 @@ abstract class DbAccess {
 			$q = $qb->like($tablename, $constraint);
 		else
 			$q = $qb->select($tablename, $constraint);
-		if (get_class($constraint) == "DbConstraint" && $constraint->count)
+		if (is_object($constraint) && get_class($constraint) == "DbConstraint" && $constraint->count)
 			$res = $this->run_query($q, false, true, "count", $tablename, false);
 		else
 			$res = $this->run_query($q, true, true, null, $tablename, false);

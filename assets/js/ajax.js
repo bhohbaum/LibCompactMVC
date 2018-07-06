@@ -710,8 +710,8 @@ function removeAllListeners(node, event = null) {
 	if(node in __eventHandlers) {
 		var handlers = __eventHandlers[node];
 		if (event != null) {
-			for(var i = eventHandlers.length; i--;) {
-				var handler = eventHandlers[i];
+			for(var i = __eventHandlers.length; i--;) {
+				var handler = __eventHandlers[i];
 				node.removeEventListener(event, handler[0], handler[1]);
 			}
 		} else {

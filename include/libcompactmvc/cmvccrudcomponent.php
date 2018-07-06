@@ -76,7 +76,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				try {
 					$param = null;
 					$tmp = json_decode($this->data, true);
-					if (array_key_exists("__type", $tmp)) {
+					if (is_array($tmp) && array_key_exists("__type", $tmp)) {
 						if (class_exists($tmp["__type"])) {
 							if ($tmp["__type"] == "DbConstraint") {
 								$param = DbConstraint::create_from_json($this->data);
