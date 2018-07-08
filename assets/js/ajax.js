@@ -28,6 +28,7 @@ function $ajax() {
 	this._data = "";
 	this._finished = false;
 	this._xhr = new XMLHttpRequest();
+	this._retry = 0;
 };
 
 
@@ -35,6 +36,7 @@ function $ajax() {
  * configuration, may be changed at runtime
  */
 $ajax.prototype.retry_enabled = true;
+$ajax.prototype.max_retry = 5;
 $ajax.prototype.value_binding = true;
 
 /**
@@ -93,6 +95,7 @@ $ajax.prototype.err = function(cb) {
 	return this;
 };
 $ajax.prototype.init = function() {
+	var me = this;
 	$(".ajax").each(function() {
 		var $this = $(this);
 		var praefix = ($this.attr("data-path").substring(0, 4) == "http") ? "" : "/";
@@ -132,8 +135,9 @@ $ajax.prototype.init = function() {
 									console.log(e);
 								}
 							});
-							ajaxp.err(function() {
-								ajaxp.post(url);
+							ajaxp.err(function(result, code) {
+								if ((me._retry++) < $ajax.prototype.max_retry) ajaxp.post(url);
+//								if (code < 400) ajaxp.post(url);
 							});
 							ajaxp.post(url);
 						} catch (e) {
@@ -154,7 +158,8 @@ $ajax.prototype.init = function() {
 				}
 			});
 			ajaxg.err(function(result, code) {
-				if (code != 404) ajaxg.get(url);
+				if ((me._retry++) < $ajax.prototype.max_retry) ajaxg.get(url);
+//				if (code < 400) ajaxg.get(url);
 			});
 			ajaxg.get(url);
 		}
@@ -334,6 +339,9 @@ function $DbException(message) {
 		}
 		if (message.hasOwnProperty("trace")) {
 			this.trace = message.trace;
+		}
+		if (message.hasOwnProperty("code")) {
+			this.code = message.code;
 		}
 	} else {
 		this.message = message;
