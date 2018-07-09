@@ -717,9 +717,9 @@ function addListener(node, event, handler, capture) {
 function removeAllListeners(node, event = null) {
 	if(node in __eventHandlers) {
 		var handlers = __eventHandlers[node];
-		if (event != null) {
-			for(var i = __eventHandlers.length; i--;) {
-				var handler = __eventHandlers[i];
+		if (event == null) {
+			for(var i = handlers.length; i--;) {
+				var handler = handlers[i];
 				node.removeEventListener(event, handler[0], handler[1]);
 			}
 		} else {
