@@ -153,11 +153,12 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	 * {@inheritdoc}
 	 * @see CMVCController::exception_handler()
 	 */
-	protected function exception_handler($e) {
+	protected function exception_handler(Exception $e) {
 		DLOG(print_r($e, true));
 		$this->json_response(array(
 				"message" => $e->getMessage(),
-				"trace" => $e->getTrace()
+				"trace" => $e->getTrace(), 
+				"code" => $e->getCode()
 		));
 	}
 	

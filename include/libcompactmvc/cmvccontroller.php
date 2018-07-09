@@ -128,7 +128,7 @@ abstract class CMVCController extends InputSanitizer {
 	 *
 	 * @param Exception $e
 	 */
-	protected function exception_handler($e) {
+	protected function exception_handler(Exception $e) {
 		DLOG(get_class($e));
 		throw $e;
 	}
