@@ -22,7 +22,7 @@ if (extension_loaded("rados")) {
 			parent::__construct();
 			$this->rados = rados_create();
 			rados_conf_read_file($this->rados, CEPH_CONF);
-			rados_connect($this->rados);
+			if (!rados_connect($this->rados)) throw new Exception("Could not connect to rados (ceph cluster)");
 			$this->ctx = rados_ioctx_create($this->rados, CEPH_POOL);
 		}
 
@@ -39,7 +39,7 @@ if (extension_loaded("rados")) {
 		 */
 		public static function get_instance($a = NULL, $b = NULL, $c = NULL, $d = NULL, $e = NULL, $f = NULL, $g = NULL, $h = NULL, $i = NULL, $j = NULL, $k = NULL, $l = NULL, $m = NULL, $n = NULL, $o = NULL, $p = NULL) {
 			DLOG();
-			return parent::get_instance();
+			return parent::get_instance($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p);
 		}
 
 		public function put($oid, $buf) {

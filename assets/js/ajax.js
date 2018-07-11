@@ -577,7 +577,8 @@ const $DB_COMPARE_LESS_EQUAL_THAN = "<=";
 const $DB_ORDER_ASCENDING = "ASC";
 const $DB_ORDER_DESCENDING = "DESC";
 
-var $DbFilter = function(constraint = {}) {
+var $DbFilter = function(constraint) {
+	constraint = (typeof constraint == "undefined") ? {} : constraint;
 	this.__type = "DbFilter";
 	this.constraint = constraint;
 	this.filter = [];
@@ -634,7 +635,8 @@ $DbFilter.prototype.set_comparator = function(comparator) {
 /*******************************************************************************
  * ORM client: constraints
  ******************************************************************************/
-var $DbConstraint = function(constraint = {}) {
+var $DbConstraint = function(constraint) {
+	constraint = (typeof constraint == "undefined") ? {} : constraint;
 	$DbFilter.call(this, constraint);
 	this.__type = "DbConstraint";
 	this.order = {};
@@ -651,7 +653,8 @@ $DbConstraint.prototype.constructor = $DbConstraint;
  * @param bool count_only only return the number of records, not the records themselves
  * @return $DbFilter
  */
-$DbConstraint.prototype.count_only = function(count_only = true) {
+$DbConstraint.prototype.count_only = function(count_only) {
+	count_only = (typeof count_only == "undefined") ? true : count_only;
 	this.count = count_only;
 	return this;
 }
@@ -673,7 +676,8 @@ $DbConstraint.prototype.order_by = function(column, direction) {
  * @param unknown opt_count SQL LIMIT operator: second parameter
  * @return $DbConstraint
  */
-$DbConstraint.prototype.set_limit = function(start_or_count, opt_count = null) {
+$DbConstraint.prototype.set_limit = function(start_or_count, opt_count) {
+	opt_count = (typeof opt_count == "undefined") ? null : opt_count;
 	this.limit = [];
 	if (start_or_count === null && opt_count === null) return;
 	if (opt_count == null) {
@@ -714,7 +718,8 @@ function addListener(node, event, handler, capture) {
 	node.addEventListener(event, handler, capture);
 }
 
-function removeAllListeners(node, event = null) {
+function removeAllListeners(node, event) {
+	event = (typeof event == "undefined") ? null : event;
 	if(node in __eventHandlers) {
 		var handlers = __eventHandlers[node];
 		if (event == null) {
