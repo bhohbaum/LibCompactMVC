@@ -77,9 +77,13 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 					$param = null;
 					$tmp = json_decode($this->data, true);
 					if (is_array($tmp) && array_key_exists("__type", $tmp)) {
-						if (class_exists($tmp["__type"])) {
+						$pclass = $tmp["__type"];
+						if (class_exists($pclass)) {
 							if ($tmp["__type"] == "DbConstraint") {
 								$param = DbConstraint::create_from_json($this->data);
+							} else {
+								$param = new $pclass;
+								DTOTool::copy(json_decode($this->data), $param);
 							}
 						}
 					}
