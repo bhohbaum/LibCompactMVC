@@ -61,12 +61,20 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$table = $this->get_table_name();
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
-		$pk = $pk[0];
+		$pk = (is_array($pk) && count($pk) > 0) ? $pk[0] : "id";
 		$this->subject = new $table();
-		if ($this->param(1) != "undefined")
+		if ($this->param(1) != "undefined") {
 			$this->subject->by(array(
 					$pk => $this->param(1)
 			));
+		} else {
+			try {
+				$subject = json_decode($this->__subject, false);
+				DTOTool::copy($subject, $this->subject);
+			} catch (InvalidMemberException $e5) {
+				WLOG("Unable to populate subject. Neither id to load subject from DB nor member data from client where provided.");
+			}
+		}
 		try {
 			if (is_callable(array(
 					$this->subject,
@@ -83,7 +91,8 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 								$param = DbConstraint::create_from_json($this->data);
 							} else {
 								$param = new $pclass;
-								DTOTool::copy(json_decode($this->data), $param);
+								$data = json_decode($this->data);
+								DTOTool::copy($data, $param);
 							}
 						}
 					}

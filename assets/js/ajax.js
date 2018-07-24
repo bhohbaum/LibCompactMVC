@@ -269,7 +269,7 @@ $ws.prototype.init = function(url) {
 	}
 	try {
 		this.socket = new WebSocket(this.url, "event-dispatch-protocol");
-		console.log('WS startup - status ' + this.socket.readyState);
+		console.log("WS startup - status " + this.socket.readyState);
 		this.socket.ws = this;
 		this.socket.onopen = function(msg) {
 			console.log("WS connected - status " + this.readyState);
@@ -305,10 +305,18 @@ $ws.prototype.set_handler = function(event, handler) {
 };
 
 $ws.prototype.send = function(msg) {
-	try {
-		this.socket.send(this.id + " " + msg);
-	} catch (ex) {
-		console.log(ex);
+	if (this.socket.readyState != 1) {
+		console.log("$ws::send(): No connection to websocket server (status: " + this.socket.readyState + "), re-sending message in 1s...");
+		var me = this;
+		setTimeout(function() {
+			me.send(msg);
+		}, 1000);
+	} else {
+		try {
+			this.socket.send(this.id + " " + msg);
+		} catch (ex) {
+			console.log(ex);
+		}
 	}
 	return this;
 }
@@ -463,7 +471,7 @@ $DbObject.prototype.copy = function(from) {
 $DbObject.prototype.callMethod = function(cb, method, param) {
 	var me = this;
 	if (param != undefined) {
-		var data = "data=" + encodeURIComponent(JSON.stringify(param));
+		var data = "data=" + encodeURIComponent(JSON.stringify(param)) + "&__subject=" + encodeURIComponent(JSON.stringify(me));
 		new $ajax()
 		.data(data)
 		.err(function(res) {
