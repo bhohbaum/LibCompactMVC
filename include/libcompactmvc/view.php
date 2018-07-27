@@ -15,12 +15,13 @@ LIBCOMPACTMVC_ENTRY;
  * @license BSD License (see LICENSE file in root directory)
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
-class View extends InputSanitizer {
+class View {
 	private $__part;
 	private $__vals;
 	private $__tpls;
 	private $__comp;
 	private static $__mapper;
+	
 	/**
 	 *
 	 * @var LinkBuilder
@@ -30,7 +31,6 @@ class View extends InputSanitizer {
 	/**
 	 */
 	public function __construct() {
-		parent::__construct();
 		$this->__part = array();
 		$this->__vals = array();
 		$this->__tpls = array();
@@ -90,8 +90,26 @@ class View extends InputSanitizer {
 			return "";
 		}
 	}
-
+	
 	/**
+	 * 
+	 * @return InputProvider
+	 */
+	private function get_input() {
+		return InputProvider::get_instance();
+	}
+	
+	/**
+	 * get variable content from request
+	 * 
+	 * @param unknown $var_name 
+	 * @return mixed
+	 */
+	private function get_input_var($var_name) {
+		return InputProvider::get_instance()->get_var($var_name);
+	}
+
+/**
 	 *
 	 * @param String $key
 	 * @param CMVCController $component
