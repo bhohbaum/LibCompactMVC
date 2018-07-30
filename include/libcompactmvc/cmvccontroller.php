@@ -18,6 +18,7 @@ abstract class CMVCController extends InputSanitizer {
 	private $__cmp_disp_base;
 	private $__mime_type;
 	private $__redirect;
+	private $__caching;
 
 	/**
 	 *
@@ -38,6 +39,7 @@ abstract class CMVCController extends InputSanitizer {
 		parent::__construct();
 		$this->__view = new View();
 		$this->__mime_type = MIME_TYPE_HTML;
+		$this->__caching = CACHING_ENABLED;
 	}
 
 	/**
@@ -184,6 +186,7 @@ abstract class CMVCController extends InputSanitizer {
 	protected function component_response() {
 		DLOG();
 		if ($this->get_dispatched_component() != null) {
+			$this->set_caching(false);
 			$this->binary_response($this->get_dispatched_component()->get_ob(), $this->get_dispatched_component()->get_mime_type());
 			return true;
 		} else {
@@ -340,7 +343,7 @@ abstract class CMVCController extends InputSanitizer {
 			$this->__view->clear();
 			$this->__view->add_template("__out.tpl");
 			$this->__view->set_value("out", self::$__rbrc->get());
-			$this->__ob = $this->__view->render();
+			$this->__ob = $this->__view->render($this->__caching);
 			throw new RBRCException();
 		}
 	}
@@ -500,7 +503,7 @@ abstract class CMVCController extends InputSanitizer {
 
 		// If we have a redirect, we don't want the current template(s) to be generated.
 		if ($this->__redirect == "") {
-			$this->__ob = $this->__view->render();
+			$this->__ob = $this->__view->render($this->__caching);
 			if (isset(self::$__rbrc)) {
 				self::$__rbrc->put($this->__ob);
 			}
@@ -533,11 +536,11 @@ abstract class CMVCController extends InputSanitizer {
 				}
 				return;
 			} catch (Exception $e1) {
-				$this->__ob = $this->__view->render();
+				$this->__ob = $this->__view->render($this->__caching);
 				$this->response_code($e->getCode());
 				throw $e1;
 			}
-			$this->__ob = $this->__view->render();
+			$this->__ob = $this->__view->render($this->__caching);
 			$this->response_code($e->getCode());
 		}
 	}
@@ -560,6 +563,11 @@ abstract class CMVCController extends InputSanitizer {
 	protected function set_mime_type($mime_type) {
 		DLOG($mime_type);
 		$this->__mime_type = $mime_type;
+	}
+	
+	protected function set_caching($caching = CACHING_ENABLED) {
+		DLOG($caching);
+		$this->__caching = $caching;
 	}
 
 	protected function get_db() {

@@ -213,7 +213,14 @@ class View {
 	 * @return string
 	 */
 	public function get_hash() {
-		return md5(serialize($this));
+		$serialized = serialize(array(
+				$this->__part,
+				$this->__vals,
+				$this->__tpls,
+				$this->__comp
+		));
+		$hash = md5($serialized);
+		return $hash;
 	}
 
 	/**
@@ -230,7 +237,7 @@ class View {
 		ob_start();
 		if ($caching) {
 			$start = microtime(true);
-			$key = REDIS_KEY_RCACHE_PFX . md5(serialize($this) . json_encode($this));
+			$key = REDIS_KEY_RCACHE_PFX . $this->get_hash();
 			$out = RedisAdapter::get_instance()->get($key);
 			if ($out !== false) {
 				RedisAdapter::get_instance()->expire($key, REDIS_KEY_RCACHE_TTL);
