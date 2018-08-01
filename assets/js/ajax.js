@@ -360,6 +360,9 @@ function $DbObject(ep) {
 	this.__ep = ep + "/";
 }
 
+/**
+ * 
+ */
 $DbObject.prototype.create = function(cb) {
 	var me = this;
 	var data = "";
@@ -386,8 +389,10 @@ $DbObject.prototype.create = function(cb) {
 	}).put(this.__ep);
 }
 
-$DbObject.prototype.read = function(id, cb) {
+$DbObject.prototype.read = function(p1, p2) {
 	var me = this;
+	var id = (typeof p1 == "function") ? p2 : p1;
+	var cb = (typeof p2 == "function") ? p2 : p1;
 	new $ajax()
 	.err(function(res) {
 		throw new $DbException(res);
@@ -524,6 +529,12 @@ $DbObject.prototype.mkType = function(cb, obj, type) {
 		cb(tmp);
 }
 
+/**
+ * 
+ * @param function cb
+ * @param array arr
+ * @param string type
+ */
 $DbObject.prototype.mkTypeArray = function(cb, arr, type) {
 	out = [];
 	for (idx in arr) {
@@ -621,7 +632,7 @@ $DbFilter.prototype.set_column_filter = function(column, value) {
 
 /**
  * 
- * @param unknown logic_op
+ * @param string logic_op
  * @return $DbFilter
  */
 $DbFilter.prototype.set_logical_operator = function(logic_op) {
@@ -631,7 +642,7 @@ $DbFilter.prototype.set_logical_operator = function(logic_op) {
 
 /**
  * 
- * @param unknown comparator
+ * @param string comparator
  * @return $DbFilter
  */
 $DbFilter.prototype.set_comparator = function(comparator) {
