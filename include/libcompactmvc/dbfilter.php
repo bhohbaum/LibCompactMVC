@@ -34,6 +34,8 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	const COMPARE_LESS_THAN = "<";
 	const COMPARE_GREATER_EQUAL_THAN = ">=";
 	const COMPARE_LESS_EQUAL_THAN = "<=";
+	const COMPARE_IN = "IN";
+	const COMPARE_NOT_IN = "NOT IN";
 	
 	/**
 	 * 
@@ -81,7 +83,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 * @param unknown $value
 	 * @return DbFilter
 	 */
-	public function set_column_filter(string $column, $value) {
+	public function set_column_filter($column, $value) {
 		DLOG();
 		$this->constraint[$column] = $value;
 		return $this;
@@ -92,7 +94,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 * @param unknown $logic_op
 	 * @return DbFilter
 	 */
-	public function set_logical_operator(string $logic_op) {
+	public function set_logical_operator($logic_op) {
 		DLOG();
 		$this->logic_op = $logic_op;
 		return $this;
@@ -103,7 +105,7 @@ class DbFilter extends DbAccess implements JsonSerializable {
 	 * @param unknown $comparator
 	 * @return DbFilter
 	 */
-	public function set_comparator(string $comparator) {
+	public function set_comparator($comparator) {
 		DLOG();
 		$this->comparator = $comparator;
 		return $this;

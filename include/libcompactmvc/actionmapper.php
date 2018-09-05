@@ -78,9 +78,9 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 			$arr = $this->get_mapping_2();
 			$GLOBALS["FATAL_ERR_MSG"] = "lang = $lang, action = $action";
 			if (!array_key_exists($lang, $arr)) {
-				throw new ActionMapperException("Missing mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
+				throw new ActionMapperException("Missing path mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
 			} else if (!array_key_exists($action, $arr[$lang])) {
-				throw new ActionMapperException("Missing mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
+				throw new ActionMapperException("Missing path mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
 			}
 			$lnk = $arr[$lang][$action]->get_path();
 		}
@@ -88,11 +88,11 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 			$arr = $this->get_mapping_3();
 			$GLOBALS["FATAL_ERR_MSG"] = "lang = $lang, action = $action, param0 = $param0";
 			if (!array_key_exists($lang, $arr)) {
-				throw new ActionMapperException("Missing mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
+				throw new ActionMapperException("Missing path mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
 			} else if (!array_key_exists($action, $arr[$lang])) {
-				throw new ActionMapperException("Missing mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
+				throw new ActionMapperException("Missing path mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
 			} else if (!array_key_exists($param0, $arr[$lang][$action])) {
-				throw new ActionMapperException("Missing mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
+				throw new ActionMapperException("Missing path mapping: lang = '$lang', action = '$action', param0 = '$param0', urltail = '$urltail'", 500);
 			}
 			$lnk = $arr[$lang][$action][$param0]->get_path();
 		}

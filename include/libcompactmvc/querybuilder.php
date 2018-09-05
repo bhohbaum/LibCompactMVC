@@ -166,7 +166,20 @@ class QueryBuilder extends DbAccess {
 				if ($v->Field == $col) {
 					if (!$first) $qstr1 .= $logic_op . " ";
 					$first = false;
-					$qstr1 .= "`" . $col . "` " . $this->comparator($comparator, $val) . " " . $this->sqlnull($this->escape($val)) . " ";
+					if ($comparator == DbFilter::COMPARE_IN || $comparator == DbFilter::COMPARE_NOT_IN) {
+						if (!is_array($val)) throw new DBException("IN comparator requires array(s) as column filter.");
+						$first2 = true;
+						$qstr2 = "(";
+						foreach ($val as $k2 => $v2) {
+							if (!$first2) $qstr2 .= ", ";
+							$first2 = false;
+							$qstr2 .= $this->sqlnull($this->escape($v2));
+						}
+						$qstr2 .= ")";
+						$qstr1 .= "`" . $col . "` " . $comparator . " " . $qstr2 . " ";
+					} else {
+						$qstr1 .= "`" . $col . "` " . $this->comparator($comparator, $val) . " " . $this->sqlnull($this->escape($val)) . " ";
+					}
 				}
 			}
 		}

@@ -18,20 +18,6 @@ class DbConstraint extends DbFilter implements JsonSerializable {
 	protected $count = false;
 	protected $dto = null;
 
-	const LOGIC_OPERATOR_AND = "AND";
-	const LOGIC_OPERATOR_OR = "OR";
-	const LOGIC_OPERATOR_XOR = "XOR";
-	const LOGIC_OPERATOR_NOT = "NOT";
-	
-	const COMPARE_EQUAL = "=";
-	const COMPARE_NOT_EQUAL = "!=";
-	const COMPARE_LIKE = "LIKE";
-	const COMPARE_NOT_LIKE = "NOT LIKE";
-	const COMPARE_GREATER_THAN = ">";
-	const COMPARE_LESS_THAN = "<";
-	const COMPARE_GREATER_EQUAL_THAN = ">=";
-	const COMPARE_LESS_EQUAL_THAN = "<=";
-	
 	const ORDER_ASCENDING = "ASC";
 	const ORDER_DESCENDING = "DESC";
 	

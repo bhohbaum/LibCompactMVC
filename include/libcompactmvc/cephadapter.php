@@ -52,7 +52,8 @@ if (extension_loaded("rados")) {
 			DLOG($oid);
 			$buf = rados_read($this->ctx, $oid, CEPH_MAX_OBJ_SIZE);
 			if (is_array($buf)) {
-				throw new EmptyResultException($buf['errMessage'], $buf['errCode']);
+				throw new EmptyResultException($buf['errMessage'], 404);
+// 				throw new EmptyResultException($buf['errMessage'], $buf['errCode']);
 			}
 			return $buf;
 		}
