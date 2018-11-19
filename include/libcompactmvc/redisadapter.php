@@ -139,5 +139,15 @@ class RedisAdapter {
 		unset($this->data[$key]);
 		return $this->redis->delete($key);
 	}
-
+	
+	public function flushall() {
+		DLOG();
+		return $this->redis->flushAll();
+	}
+	
+	public function flushdb() {
+		DLOG();
+		return $this->redis->flushDB();
+	}
+	
 }

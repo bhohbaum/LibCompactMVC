@@ -4,7 +4,7 @@ if (file_exists('../libcompactmvc.php'))
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Database Exception
+ * Empty Result Exception
  *
  * @author Botho Hohbaum <bhohbaum@googlemail.com>
  * @package LibCompactMVC
@@ -12,13 +12,14 @@ LIBCOMPACTMVC_ENTRY;
  * @license BSD License (see LICENSE file in root directory)
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
-class DBException extends Exception {
+class FileNotFoundException extends Exception {
 	public $previous;
 
-	public function __construct($message = null, $code = null, Exception $previous = null) {
-		DLOG("DB Exception $code: $message");
-		parent::__construct($message, $code, $previous);
+	public function __construct($filename = "", $code = 404, Exception $previous = null) {
+		$this->message = "File not found: $filename";
+		DLOG($this->message);
+		$this->code = $code;
 		$this->previous = $previous;
 	}
-
+	
 }

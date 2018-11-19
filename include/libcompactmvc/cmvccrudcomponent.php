@@ -29,7 +29,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		return $this->called_method;
 	}
 
-/**
+	/**
 	 * Overwrite this method to define the table that shall be operated on.
 	 *
 	 * @return String Table name to operate on

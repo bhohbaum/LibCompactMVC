@@ -109,7 +109,7 @@ class View {
 		return InputProvider::get_instance()->get_var($var_name);
 	}
 
-/**
+    /**
 	 *
 	 * @param String $key
 	 * @param CMVCController $component

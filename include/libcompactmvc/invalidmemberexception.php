@@ -13,11 +13,13 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
 class InvalidMemberException extends Exception {
+	public $previous;
 
-	public function __construct($message = "Invalid member", $code = null, $previous = null) {
+	public function __construct($message = "Invalid member", $code = null, Exception $previous = null) {
 		DLOG($message);
 		$this->message = $message;
 		$this->code = $code;
+		$this->previous = $previous;
 	}
 
 }

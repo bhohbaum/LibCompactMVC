@@ -13,11 +13,13 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
 class MultipleResultsException extends DBException {
+	public $previous;
 
-	public function __construct($message = "Multiple results", $code = 404, $previous = null) {
+	public function __construct($message = "Multiple results", $code = 404, Exception $previous = null) {
 		DLOG("Multiple results. Reason: $code: $message");
 		$this->message = $message;
 		$this->code = $code;
+		$this->previous = $previous;
 	}
 
 }
