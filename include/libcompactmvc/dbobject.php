@@ -180,6 +180,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 			throw new Exception("Invalid call: No table selected.");
 		}
 		$constraint = ($constraint == null) ? array() : $constraint;
+		if (is_object($constraint) && get_class($constraint) == "DbConstraint") {
+			$constraint->set_dto($this);
+		}
 		$qb = new QueryBuilder();
 		$q = $qb->select($this->__tablename, $constraint);
 		$res = $this->run_query($q, false, false, null, $this->__tablename, false);
@@ -206,8 +209,14 @@ class DbObject extends DbAccess implements JsonSerializable {
 		if (!isset($this->__tablename)) {
 			throw new Exception("Invalid call: No table selected.");
 		}
-		$cols = $this->__td->columns($this->__tablename);
 		$pks = $this->__td->primary_keys($this->__tablename);
+		$cols = $this->__td->columns($this->__tablename);
+		$ci = $this->__td->columninfo($this->__tablename);
+		foreach ($ci as $info) {
+			if ($info->Field == $pks[0] && strtolower(substr($info->Type, 0, 6)) === "binary") {
+				$this->__insid = rand(1, 1000000000);
+			}
+		}
 		$fields = array();
 		foreach ($cols as $key => $val) {
 			if (array_key_exists($val, $this->__member_variables)) {
@@ -228,7 +237,19 @@ class DbObject extends DbAccess implements JsonSerializable {
 		}
 		$ret = $this->run_query($q, false, false, null, $this->__tablename, true);
 		if ($this->__isnew && count($pks) == 1) {
-			$this->by(array($pks[0] => $ret));
+			foreach ($ci as $info) {
+				if ($info->Field == $pks[0] && strtolower(substr($info->Type, 0, 6)) !== "binary") {
+					$this->by(array($pks[0] => $ret));
+				} else {
+					if ($this->__insid != null) {
+						$this->by(array("__insid" => $this->__insid));
+						$fields["__insid"] = null;
+						$q = $qb->update($this->__tablename, $fields, array("__insid" => $this->__insid));
+						$ret = $this->run_query($q, false, false, null, $this->__tablename, true);
+						$this->__insid = null;
+					}
+				}
+			}
 		}
 		$this->__isnew = false;
 		return $this;

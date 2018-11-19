@@ -99,6 +99,8 @@ abstract class CMVCComponent extends CMVCController {
 		if (!is_int($pnum))
 			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
 		$varname = 'param' . ($this->__base_param + $pnum);
+		if (!array_key_exists($varname, self::$member_variables))
+			throw new InvalidMemberException("Invalid member: " . $varname);
 		$val = self::$member_variables[$varname];
 		DLOG($varname . " = " . $val);
 		return $val;

@@ -16,12 +16,12 @@
 //************************************************************************************************
 // constructor
 var <?= $table ?> = function() {
-	$DbObject.call(this, '<?= $this->get_value("endpoint_" . $table) ?>');
+	Ajax.DbObject.call(this, '<?= $this->get_value("endpoint_" . $table) ?>');
 	this.__type = "<?= $table ?>";
 };
 
-// set prototype (derive from $DbObject)
-<?= $table ?>.prototype = Object.create($DbObject.prototype);
+// set prototype (derive from Ajax.DbObject)
+<?= $table ?>.prototype = Object.create(Ajax.DbObject.prototype);
 
 // fix constructor
 <?= $table ?>.prototype.constructor = <?= $table ?>;

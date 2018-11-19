@@ -23,15 +23,24 @@ class QueryBuilder extends DbAccess {
 	}
 	
 	private function selcols($tablename, $constraint) {
-		$selcols = "*";
+		$ci = $this->td->columninfo($tablename);
+		$selcols = "";
 		if (!is_array($constraint)) {
 			if (is_array($this->td->primary_keys($tablename)) && get_class($constraint) == "DbConstraint") {
 				if ($constraint->get_query_info()["count"]) {
 					$selcols = "COUNT(" . $this->td->primary_keys($tablename)[0] . ") AS count";
-				} else {
-					$selcols = "*";
 				}
 			}
+		} 
+		if ($selcols == "") {
+			foreach ($ci as $column) {
+				if (strtolower(substr($column->Type, 0, 6)) == "binary") {
+					$selcols .= "HEX(" . $column->Field . ") AS " . $column->Field . ", ";
+				} else {
+					$selcols .= $column->Field . ", ";
+				}
+			}
+			$selcols = substr($selcols, 0, -2);
 		}
 		return $selcols;
 	}
@@ -96,7 +105,15 @@ class QueryBuilder extends DbAccess {
 		$q .= ") VALUES (";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {
-				$q .= $this->sqlnull($this->escape($fields[$val->Field])) . ", ";
+				if (strtolower(substr($val->Type, 0, 6)) == "binary") {
+					if($this->sqlnull($fields[$val->Field]) == "null") {
+						$q .= "null, ";
+					} else {
+						$q .= "UNHEX('" . $this->escape($fields[$val->Field]) . "'), ";
+					}
+				} else {
+					$q .= $this->sqlnull($this->escape($fields[$val->Field])) . ", ";
+				}
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 2);
@@ -116,7 +133,15 @@ class QueryBuilder extends DbAccess {
 		$q = "UPDATE `" . $tablename . "` SET ";
 		foreach ($desc as $key => $val) {
 			if (array_key_exists($val->Field, $fields)) {
-				$q .= "`" . $val->Field . "` = " . $this->sqlnull($this->escape($fields[$val->Field])) . ", ";
+				if (strtolower(substr($val->Type, 0, 6)) == "binary") {
+					if($this->sqlnull($fields[$val->Field]) == "null") {
+						$q .= "`" . $val->Field . "` = null, ";
+					} else {
+						$q .= "`" . $val->Field . "` = UNHEX('" . $this->escape($fields[$val->Field]) . "'), ";
+					}
+				} else {
+					$q .= "`" . $val->Field . "` = " . $this->sqlnull($this->escape($fields[$val->Field])) . ", ";
+				}
 			}
 		}
 		$q = substr($q, 0, strlen($q) - 2);
@@ -173,12 +198,28 @@ class QueryBuilder extends DbAccess {
 						foreach ($val as $k2 => $v2) {
 							if (!$first2) $qstr2 .= ", ";
 							$first2 = false;
-							$qstr2 .= $this->sqlnull($this->escape($v2));
+							if (strtolower(substr($v->Type, 0, 6)) == "binary") {
+								if($this->sqlnull($this->escape($val)) == "NULL") {
+									$qstr2 .= "NULL";
+								} else {
+									$qstr2 .= "UNHEX('" . $this->escape($val) . "')";
+								}
+							} else {
+								$qstr2 .= $this->sqlnull($this->escape($v2));
+							}
 						}
 						$qstr2 .= ")";
 						$qstr1 .= "`" . $col . "` " . $comparator . " " . $qstr2 . " ";
 					} else {
-						$qstr1 .= "`" . $col . "` " . $this->comparator($comparator, $val) . " " . $this->sqlnull($this->escape($val)) . " ";
+						if (strtolower(substr($v->Type, 0, 6)) == "binary") {
+							if($this->sqlnull($this->escape($val)) == "NULL") {
+								$qstr1 .= "`" . $col . "` = NULL ";
+							} else {
+								$qstr1 .= "`" . $col . "` " . $this->comparator($comparator, $val) . " UNHEX('" . $this->escape($val) . "') ";
+							}
+						} else {
+							$qstr1 .= "`" . $col . "` " . $this->comparator($comparator, $val) . " " . $this->sqlnull($this->escape($val)) . " ";
+						}
 					}
 				}
 			}
@@ -189,6 +230,7 @@ class QueryBuilder extends DbAccess {
 			$first = false;
 			$qstr2 .= $filter->get_query_substring();
 		}
+		$qstr1 = substr($qstr1, 0, -1);
 		$qstr2 .= ")";
 		$qstr = $qstr1 . $qstr2;
 		DLOG($qstr);

@@ -83,17 +83,9 @@ define('LOG_TARGET', 1);
 define('LOG_IDENT', 'libcompactmvc');
 define('LOG_FACILITY', 'local7');
 if (gethostname() == 'libo') {
-	define('BASE_URL', 'http://siemenscms.kmundp.local');
+	define('BASE_URL', 'http://cmvc.kmundp.local');
 } else if (gethostname() == 'develwebss') {
-	define('BASE_URL', 'http://siemenscmsdwss.kmundp.local');
-} else if (gethostname() == 'vweb02') {
-	define('BASE_URL', 'http://siemenscms2.miu08-server.de');
-} else if (gethostname() == 'develwebpm') {
-	define('BASE_URL', 'http://siemens.develwebpm');
-} else if (gethostname() == 'production') {
-	define('BASE_URL', 'http://staging-ingenuity.com');
-} else if (gethostname() == 'staging') {
-	define('BASE_URL', 'http://staging-ingenuity.com:81');
+	define('BASE_URL', 'http://cmvc.kmundp.local');
 }
 define('DEFAULT_TIMEZONE', 'CET');
 

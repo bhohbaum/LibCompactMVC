@@ -219,6 +219,8 @@ $ajax.prototype._callHandler = function(url, response, rData) {
 $ajax.prototype._doRequest = function(method, url, retry) {
 	retry = (typeof retry !== 'undefined') ? retry : 0;
 	var rnd = Math.round(Math.random() * 1000000000);
+	if (url.substr(url.length - 1, 1) =="/")
+		url = url.substr(0, url.length - 1);
 	if (!retry) url = url + "#req" + rnd;
 	this._xhr.open(method, url, true);
 	this._xhr.responseType = this._responseType;
@@ -254,7 +256,7 @@ function $ws(url) {
 	this.url = null;
 	this.socket = null;
 	this.handlers = [];
-	if (url != undefined) {
+	if (url !== undefined) {
 		this.url = url;
 		this.id = url.substring(url.length - 32, url.length);
 		this.init();
@@ -267,7 +269,7 @@ function $ws(url) {
  * public functions
  */
 $ws.prototype.init = function(url) {
-	if (url != undefined) {
+	if (url !== undefined) {
 		this.url = url;
 		this.id = url.substring(url.length - 32, url.length);
 	}
@@ -309,7 +311,7 @@ $ws.prototype.set_handler = function(event, handler) {
 };
 
 $ws.prototype.send = function(msg) {
-	if (this.socket.readyState != 1) {
+	if (this.socket.readyState !== 1) {
 		console.log("$ws::send(): No connection to websocket server (status: " + this.socket.readyState + "), re-sending message in 1s...");
 		var me = this;
 		setTimeout(function() {
@@ -333,7 +335,7 @@ $ws.prototype._run_handlers = function(data) {
 		if (Number.isInteger(parseInt(idx))) {
 			this.handlers[idx](data);
 		} else {
-			if (data.substring(33, 33 + idx.length) == idx) {
+			if (data.substring(33, 33 + idx.length) === idx) {
 				this.handlers[idx](data.substring(33 + idx.length + 1, data.length));
 			}
 		}
@@ -365,7 +367,7 @@ function $DbObject(ep) {
 }
 
 /**
- * 
+ *
  */
 $DbObject.prototype.create = function(cb) {
 	var me = this;
@@ -380,9 +382,10 @@ $DbObject.prototype.create = function(cb) {
 	.err(function(res) {
 		throw new $DbException(res);
 	}).ok(function(res) {
+		var obj;
 		res = JSON.tryParse(res);
 		try {
-			var obj = eval("new " + res.__type + "()");
+			eval("obj = new ORMClient." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
@@ -394,6 +397,7 @@ $DbObject.prototype.create = function(cb) {
 }
 
 $DbObject.prototype.read = function(p1, p2) {
+	var obj;
 	var me = this;
 	var id = (typeof p1 == "function") ? p2 : p1;
 	var cb = (typeof p2 == "function") ? p2 : p1;
@@ -403,7 +407,7 @@ $DbObject.prototype.read = function(p1, p2) {
 	}).ok(function(res) {
 		res = JSON.tryParse(res);
 		try {
-			var obj = eval("new " + res.__type + "()");
+			eval("obj = new ORMClient." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
@@ -415,42 +419,39 @@ $DbObject.prototype.read = function(p1, p2) {
 }
 
 $DbObject.prototype.update = function(cb) {
-	if (this.__pk == null)
+	if (this.__pk === null)
 		throw new $DbException("Table has no primary key! Update is not possible.");
 	var me = this;
 	var data = "";
 	var firstvar = true;
 	for (key in this) {
 		if (this.hasOwnProperty(key)) {
-			if (typeof this[key] != "object") {
-				data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
-				firstvar = false;
-			} else {
-				if (this[key] != null && this[key].prototype instanceof $DbObject)
-					this[key].update();
-			}
+			if (this[key] !== null && this[key].prototype instanceof $DbObject)
+				this[key].update();
 		}
 	}
+	data += "__subject=" + encodeURIComponent(JSON.stringify(me));
 	new $ajax()
 	.data(data)
 	.err(function(res) {
 		throw new $DbException(res);
 	}).ok(function(res) {
+		var obj;
 		res = JSON.tryParse(res);
 		try {
-			var obj = eval("new " + res.__type + "()");
+			eval("obj = new " + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
 			obj = res;
 		}
-		if (cb != undefined)
+		if (cb !== undefined)
 			cb(obj);
 	}).post(this.__ep + this[this.__pk]);
 }
 
 $DbObject.prototype.del = function(cb) {
-	if (this.__pk == null)
+	if (this.__pk === null)
 		throw new $DbException("Table has no primary key! Deletion is not possible.");
 	var me = this;
 	new $ajax()
@@ -471,7 +472,7 @@ $DbObject.prototype.copy = function(from) {
 	for (var property in me) {
 		if (me.hasOwnProperty(property)) {
 			if (typeof me[property] == "object")
-				if (me[property] != null && property != "prototype")
+				if (me[property] !== null && property !== "prototype")
 					me[property] = me.mkType(null, me[property]);
 		}
 	}
@@ -479,7 +480,7 @@ $DbObject.prototype.copy = function(from) {
 
 $DbObject.prototype.callMethod = function(cb, method, param) {
 	var me = this;
-	if (param != undefined) {
+	if (param !== undefined) {
 		var data = "data=" + encodeURIComponent(JSON.stringify(param)) + "&__subject=" + encodeURIComponent(JSON.stringify(me));
 		new $ajax()
 		.data(data)
@@ -487,19 +488,21 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 			throw new $DbException(res);
 		}).ok(function(res) {
 			res = JSON.tryParse(res);
-			if (res == null || res.length == undefined || typeof res == "string") {
+			if (res === null || res.length === undefined || typeof res == "string") {
 				me.mkType(cb, res);
 			} else {
 				me.mkTypeArray(cb, res);
 			}
 		}).post(this.__ep + this[this.__pk] + "/" + method);
 	} else {
+        var data = "__subject=" + encodeURIComponent(JSON.stringify(me));
 		new $ajax()
+		.data(data)
 		.err(function(res) {
 			throw new $DbException(res);
 		}).ok(function(res) {
 			res = JSON.tryParse(res);
-			if (res == null || res.length == undefined || typeof res == "string") {
+			if (res === null || res.length === undefined || typeof res == "string") {
 				me.mkType(cb, res);
 			} else {
 				me.mkTypeArray(cb, res);
@@ -509,25 +512,28 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 }
 
 $DbObject.prototype.mkType = function(cb, obj, type) {
+	var cmd;
+	var tmp;
 	if (type === undefined) {
-		if (obj == null) {
+		if (obj === null) {
 			if (typeof cb == "function")
 				cb(obj);
 			return;
 		} else {
 			if (obj.hasOwnProperty("__type")) {
-				var cmd = "var tmp = new window." + obj.__type + "();";
+				cmd = "tmp = new window." + obj.__type + "();";
 				eval(cmd);
 			}
 		}
 	} else {
-		var tmp = new type();
+		cmd = "tmp = new window." + type +"();";
+		eval(cmd);
 	}
 	if (obj.hasOwnProperty("__type"))
 		tmp.copy(obj);
 	else
 		tmp = obj;
-	if (cb == null)
+	if (cb === null)
 		return tmp;
 	else
 		cb(tmp);
@@ -540,15 +546,19 @@ $DbObject.prototype.mkType = function(cb, obj, type) {
  * @param string type
  */
 $DbObject.prototype.mkTypeArray = function(cb, arr, type) {
-	out = [];
+	var cmd;
+	var tmp;
+	var idx;
+	var out = [];
 	for (idx in arr) {
 		if (type === undefined) {
 			if (arr[idx].hasOwnProperty("__type")) {
-				var cmd = "var tmp = new window." + arr[idx].__type + "();";
+				cmd = "var tmp = new window." + arr[idx].__type + "();";
 				eval(cmd);
 			}
 		} else {
-			var tmp = new type();
+			cmd = "tmp = new window." + type + "();";
+			eval(cmd);
 		}
 		if (arr[idx].hasOwnProperty("__type"))
 			tmp.copy(arr[idx]);
@@ -556,7 +566,7 @@ $DbObject.prototype.mkTypeArray = function(cb, arr, type) {
 			tmp = arr[idx];
 		out.push(tmp);
 	}
-	if (cb == null)
+	if (cb === null)
 		return out;
 	else
 		cb(out);
@@ -596,6 +606,8 @@ const $DB_COMPARE_GREATER_THAN = ">";
 const $DB_COMPARE_LESS_THAN = "<";
 const $DB_COMPARE_GREATER_EQUAL_THAN = ">=";
 const $DB_COMPARE_LESS_EQUAL_THAN = "<=";
+const $DB_COMPARE_IN = "IN";
+const $DB_COMPARE_NOT_IN = "NOT IN";
 
 const $DB_ORDER_ASCENDING = "ASC";
 const $DB_ORDER_DESCENDING = "DESC";
@@ -703,7 +715,7 @@ $DbConstraint.prototype.set_limit = function(start_or_count, opt_count) {
 	opt_count = (typeof opt_count == "undefined") ? null : opt_count;
 	this.limit = [];
 	if (start_or_count === null && opt_count === null) return;
-	if (opt_count == null) {
+	if (opt_count === null) {
 		this.limit[0] = start_or_count;
 	} else {
 		this.limit[0] = start_or_count;
@@ -726,7 +738,7 @@ function addListener(node, event, handler, capture) {
 	if(!(event in __eventHandlers[node])) {
 		__eventHandlers[node][event] = [];
 	}
-	if (capture == undefined) {
+	if (capture === undefined) {
 		try {
 			var opts = Object.defineProperty({}, 'passive', {
 				get: function() {
@@ -745,10 +757,10 @@ function removeAllListeners(node, event) {
 	event = (typeof event == "undefined") ? null : event;
 	if(node in __eventHandlers) {
 		var handlers = __eventHandlers[node];
-		if (event == null) {
-			for(var i = handlers.length; i--;) {
-				var handler = handlers[i];
-				node.removeEventListener(event, handler[0], handler[1]);
+		if (event === null) {
+			for(var k = handlers.length; k--;) {
+				var hdl = handlers[k];
+				node.removeEventListener(event, hdl[0], hdl[1]);
 			}
 		} else {
 			if(event in handlers) {

@@ -13,9 +13,23 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
 abstract class CMVCCRUDComponent extends CMVCComponent {
-	protected $subject;
+	private $subject;
+	private $response;
+	private $called_method;
+	
+	protected function get_subject() {
+		return $this->subject;
+	}
+	
+	protected function get_response() {
+		return $this->response;
+	}
 
-	/**
+	protected function get_called_method() {
+		return $this->called_method;
+	}
+
+/**
 	 * Overwrite this method to define the table that shall be operated on.
 	 *
 	 * @return String Table name to operate on
@@ -34,6 +48,13 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			throw new Exception("Table does not exist: " . $this->get_component_id(), 500);
 		return $this->get_component_id();
 	}
+	
+	protected function json_response($obj) {
+		DLOG();
+		$this->response = $obj;
+		parent::json_response($obj);
+	}
+		
 
 	/**
 	 * Get record by id
@@ -67,13 +88,12 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			$this->subject->by(array(
 					$pk => $this->param(1)
 			));
-		} else {
-			try {
-				$subject = json_decode($this->__subject, false);
-				DTOTool::copy($subject, $this->subject);
-			} catch (InvalidMemberException $e5) {
-				WLOG("Unable to populate subject. Neither id to load subject from DB nor member data from client where provided.");
-			}
+		}
+		try {
+			$subject = json_decode($this->__subject, false);
+			DTOTool::copy($subject, $this->subject);
+		} catch (InvalidMemberException $e5) {
+// 			WLOG("Unable to populate subject. Neither id to load subject from DB nor member data from client where provided.");
 		}
 		try {
 			if (is_callable(array(
@@ -103,6 +123,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				} catch (InvalidMemberException $e4) {
 					$res = $this->subject->$method();
 				}
+				$this->called_method = $method;
 				$this->json_response($res);
 				return;
 			} else {
@@ -115,7 +136,10 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			try {
 				$this->subject->{$pk} = $this->{$pk};
 			} catch (InvalidMemberException $e2) {
-				$this->subject->{$pk} = $this->param(1);
+				try {
+					$this->subject->{$pk} = $this->param(1);
+				} catch (InvalidMemberException $e6) {
+				}
 			}
 		}
 		$this->subject->save();
@@ -137,7 +161,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		try {
 			$this->subject->{$pk} = $this->{$pk};
 		} catch (InvalidMemberException $e2) {
-			$this->subject->{$pk} = $this->param(1);
+			try {
+				$this->subject->{$pk} = $this->param(1);
+			} catch (InvalidMemberException $e) {
+				unset($this->subject->{$pk});
+			}
 		}
 		$this->subject->save();
 		$this->json_response($this->subject);
