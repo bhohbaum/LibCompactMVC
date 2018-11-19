@@ -384,7 +384,7 @@ $DbObject.prototype.create = function(cb) {
 		var obj;
 		res = JSON.tryParse(res);
 		try {
-			eval("obj = new ORMClient." + res.__type + "()");
+			eval("obj = new window." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
@@ -406,7 +406,7 @@ $DbObject.prototype.read = function(p1, p2) {
 	}).ok(function(res) {
 		res = JSON.tryParse(res);
 		try {
-			eval("obj = new ORMClient." + res.__type + "()");
+			eval("obj = new window." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
@@ -438,7 +438,7 @@ $DbObject.prototype.update = function(cb) {
 		var obj;
 		res = JSON.tryParse(res);
 		try {
-			eval("obj = new " + res.__type + "()");
+			eval("obj = new window." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
@@ -773,6 +773,10 @@ function removeAllListeners(node, event) {
 	}
 }
 
+function jQueryLoaded() {
+	return (typeof $ == "function") && ($ == jQuery)
+}
+
 JSON.isJSON = function(json) {
 	try {
 		var obj = JSON.parse(json)
@@ -800,7 +804,8 @@ if (typeof Array.isArray === 'undefined') {
 /*******************************************************************************
  * Initialisation
  ******************************************************************************/
-$(document).ready(function() {
+addListener(document, "readystatechange", function() {
+	console.log("Document ready state changed.");
 	new $ajax().init();
 });
 
