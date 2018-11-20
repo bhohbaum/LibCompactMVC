@@ -40,7 +40,8 @@ define('SMTP_SENDER_NAME', 'LibCompactMVC');
 define('MAIL_TRANS_TYPE', 'SMTP');
 define('MAIL_DEBUG_ADDR', 'b.hohbaum@googlemail.com');
 
-setlocale(LC_ALL, "de_DE.UTF-8", "de_DE@euro", "de_DE", "de", "ge");
+//setlocale(LC_ALL, "de_DE.UTF-8", "de_DE@euro", "de_DE", "de", "ge");
+setlocale(LC_ALL, 0);
 
 // WebSocket config
 // WS server cluster config

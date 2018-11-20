@@ -89,11 +89,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 					$pk => $this->param(1)
 			));
 		}
+		DTOTool::copy($this, $this->subject);
 		try {
 			$subject = json_decode($this->__subject, false);
 			DTOTool::copy($subject, $this->subject);
 		} catch (InvalidMemberException $e5) {
-// 			WLOG("Unable to populate subject. Neither id to load subject from DB nor member data from client where provided.");
 		}
 		try {
 			if (is_callable(array(
@@ -158,6 +158,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$pk = $pk[0];
 		$this->subject = new $table();
 		DTOTool::copy($this, $this->subject);
+		try {
+			$subject = json_decode($this->__subject, false);
+			DTOTool::copy($subject, $this->subject);
+		} catch (InvalidMemberException $e5) {
+		}
 		try {
 			$this->subject->{$pk} = $this->{$pk};
 		} catch (InvalidMemberException $e2) {

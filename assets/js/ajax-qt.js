@@ -408,10 +408,11 @@ DbObject.prototype.create = function(cb) {
     var me = this;
     var data = "";
     var firstvar = true;
-    for (var key in this) {
-        data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
-        firstvar = false;
-    }
+//    for (var key in this) {
+//        data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
+//        firstvar = false;
+//    }
+    data += "__subject=" + encodeURIComponent(JSON.stringify(me));
     new Ajax()
     .data(data)
     .err(function(res) {
