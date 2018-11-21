@@ -356,7 +356,10 @@ function $DbException(message) {
 		if (message.hasOwnProperty("code")) {
 			this.code = message.code;
 		}
-	} else {
+		if (message.hasOwnProperty("previous")) {
+			this.previous = message.previous;
+		}
+	} else {code
 		this.message = message;
 	}
 }
@@ -372,10 +375,11 @@ $DbObject.prototype.create = function(cb) {
 	var me = this;
 	var data = "";
 	var firstvar = true;
-	for (key in this) {
-		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
-		firstvar = false;
-	}
+//	for (key in this) {
+//		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
+//		firstvar = false;
+//	}
+    data += "__subject=" + encodeURIComponent(JSON.stringify(me));
 	new $ajax()
 	.data(data)
 	.err(function(res) {

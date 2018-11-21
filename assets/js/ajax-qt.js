@@ -381,20 +381,23 @@ $ws.prototype._run_handlers = function(data) {
  * ORM client: DTO
  ******************************************************************************/
 function DbException(message) {
-    if (JSON.isJSON(message)) {
-        message = JSON.parse(message);
-        if (message.hasOwnProperty("message")) {
-            this.message = message.message;
-        }
-        if (message.hasOwnProperty("trace")) {
-            this.trace = message.trace;
-        }
-        if (message.hasOwnProperty("code")) {
-            this.code = message.code;
-        }
-    } else {
-        this.message = message;
-    }
+	if (JSON.isJSON(message)) {
+		message = JSON.parse(message);
+		if (message.hasOwnProperty("message")) {
+			this.message = message.message;
+		}
+		if (message.hasOwnProperty("trace")) {
+			this.trace = message.trace;
+		}
+		if (message.hasOwnProperty("code")) {
+			this.code = message.code;
+		}
+		if (message.hasOwnProperty("previous")) {
+			this.previous = message.previous;
+		}
+	} else {code
+		this.message = message;
+	}
 }
 
 function DbObject(ep) {

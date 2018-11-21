@@ -106,7 +106,11 @@ class View {
 	 * @return mixed
 	 */
 	private function get_input_var($var_name) {
-		return InputProvider::get_instance()->get_var($var_name);
+		try {
+			return InputProvider::get_instance()->get_var($var_name);
+		} catch (InvalidMemberException $e) {
+			return "";
+		}
 	}
 
     /**

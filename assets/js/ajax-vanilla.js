@@ -357,7 +357,10 @@ function $DbException(message) {
 		if (message.hasOwnProperty("code")) {
 			this.code = message.code;
 		}
-	} else {
+		if (message.hasOwnProperty("previous")) {
+			this.previous = message.previous;
+		}
+	} else {code
 		this.message = message;
 	}
 }
@@ -373,10 +376,11 @@ $DbObject.prototype.create = function(cb) {
 	var me = this;
 	var data = "";
 	var firstvar = true;
-	for (key in this) {
-		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
-		firstvar = false;
-	}
+//	for (key in this) {
+//		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
+//		firstvar = false;
+//	}
+    data += "__subject=" + encodeURIComponent(JSON.stringify(me));
 	new $ajax()
 	.data(data)
 	.err(function(res) {
@@ -385,7 +389,7 @@ $DbObject.prototype.create = function(cb) {
 		var obj;
 		res = JSON.tryParse(res);
 		try {
-			eval("obj = new ORMClient." + res.__type + "()");
+			eval("obj = new window." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
@@ -407,7 +411,7 @@ $DbObject.prototype.read = function(p1, p2) {
 	}).ok(function(res) {
 		res = JSON.tryParse(res);
 		try {
-			eval("obj = new ORMClient." + res.__type + "()");
+			eval("obj = new window." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
@@ -439,7 +443,7 @@ $DbObject.prototype.update = function(cb) {
 		var obj;
 		res = JSON.tryParse(res);
 		try {
-			eval("obj = new " + res.__type + "()");
+			eval("obj = new window." + res.__type + "()");
 			obj.copy(res);
 			me.copy(res);
 		} catch (e) {
