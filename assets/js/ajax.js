@@ -359,7 +359,7 @@ function $DbException(message) {
 		if (message.hasOwnProperty("previous")) {
 			this.previous = message.previous;
 		}
-	} else {code
+	} else {
 		this.message = message;
 	}
 }

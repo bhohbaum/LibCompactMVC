@@ -292,7 +292,7 @@ class View {
 		} else if (file_exists($file2)) {
 			include ($file2);
 		} else {
-			throw new Exception("Could not find template file: " . $tpl_name, 404);
+			throw new FileNotFoundException("Could not find template file: " . $tpl_name, 404);
 		}
 	}
 

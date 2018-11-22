@@ -395,7 +395,7 @@ function DbException(message) {
 		if (message.hasOwnProperty("previous")) {
 			this.previous = message.previous;
 		}
-	} else {code
+	} else {
 		this.message = message;
 	}
 }
@@ -478,7 +478,7 @@ DbObject.prototype.update = function(cb) {
         var obj;
         res = JSON.tryParse(res);
         try {
-            eval("obj = new " + res.__type + "()");
+            eval("obj = new ORMClient." + res.__type + "()");
             obj.copy(res);
             me.copy(res);
         } catch (e) {

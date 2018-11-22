@@ -212,9 +212,11 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$pks = $this->__td->primary_keys($this->__tablename);
 		$cols = $this->__td->columns($this->__tablename);
 		$ci = $this->__td->columninfo($this->__tablename);
-		foreach ($ci as $info) {
-			if ($info->Field == $pks[0] && strtolower(substr($info->Type, 0, 6)) === "binary") {
-				$this->__insid = rand(1, 1000000000);
+		if ($this->__isnew) {
+			foreach ($ci as $info) {
+				if ($info->Field == $pks[0] && strtolower(substr($info->Type, 0, 6)) === "binary") {
+					$this->__insid = rand(1, 1000000000);
+				}
 			}
 		}
 		$fields = array();
