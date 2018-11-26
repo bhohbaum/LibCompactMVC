@@ -369,7 +369,7 @@ function $DbObject(ep) {
 }
 
 /**
- * 
+ *
  */
 $DbObject.prototype.create = function(cb) {
 	var me = this;
@@ -812,4 +812,5 @@ addListener(document, "readystatechange", function() {
 	console.log("Document ready state changed.");
 	new $ajax().init();
 });
+
 

@@ -184,7 +184,7 @@ class View {
 	 * @param int $index
 	 * @param String $name
 	 */
-	public function set_template(int $index, $name) {
+	public function set_template($index, $name) {
 		$this->__tpls[$index] = $name;
 		return $this;
 	}

@@ -812,6 +812,6 @@ if (typeof Array.isArray === 'undefined') {
 addListener(document, "readystatechange", function() {
 	console.log("Document ready state changed.");
 	new $ajax().init();
-})
+});
 
 
