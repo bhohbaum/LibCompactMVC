@@ -404,7 +404,9 @@ $DbObject.prototype.read = function(p1, p2) {
 	var me = this;
 	var id = (typeof p1 == "function") ? p2 : p1;
 	var cb = (typeof p2 == "function") ? p2 : p1;
+	var data = "__subject=" + encodeURIComponent(JSON.stringify(me));
 	new $ajax()
+	.data(data)
 	.err(function(res) {
 		throw new $DbException(res);
 	}).ok(function(res) {

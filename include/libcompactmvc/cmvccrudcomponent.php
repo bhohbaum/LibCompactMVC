@@ -51,6 +51,8 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	
 	protected function json_response($obj) {
 		DLOG();
+		// need to fix this loopback properly. this is a preliminary solution.
+		$obj->__subject = null;
 		$this->response = $obj;
 		parent::json_response($obj);
 	}

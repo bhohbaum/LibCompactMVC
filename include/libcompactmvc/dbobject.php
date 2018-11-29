@@ -29,13 +29,17 @@ class DbObject extends DbAccess implements JsonSerializable {
 	}
 
 	/**
-	 * This method is called from the constructor when an object is created.
+	 * This method is called from the constructor when an object is created and before the member vars are set via the constructor.
+	 */
+	protected function pre_init() {
+		DLOG();
+	}
+	
+	/**
+	 * This method is called from the constructor when an object is created and after the member vars are set via the constructor.
 	 */
 	protected function init() {
 		DLOG();
-		$tablename = $this->get_table();
-		if ($tablename == null) $tablename = get_class($this);
-		$this->table($tablename);
 	}
 
 	/**
@@ -44,7 +48,21 @@ class DbObject extends DbAccess implements JsonSerializable {
 	protected function on_before_save() {
 		DLOG();
 	}
+	
+	/**
+	 * This method is called after a save operation.
+	 */
+	protected function on_after_save() {
+		DLOG();
+	}
 
+	/**
+	 * This method is called before a load operation.
+	 */
+	protected function on_before_load() {
+		DLOG();
+	}
+	
 	/**
 	 * This method is called after a load operation.
 	 */
@@ -62,14 +80,26 @@ class DbObject extends DbAccess implements JsonSerializable {
 		parent::__construct();
 		$this->__fk_resolution = true;
 		$this->__fk_obj_cache = array();
-		if (is_array($members))
-			$this->__member_variables = $members;
-		else if (is_object($members) && is_subclass_of($members, "DbObject"))
-			$this->__member_variables = $members->to_array();
 		$this->__tablename = null;
 		$this->__isnew = $isnew;
 		$this->__td = new TableDescription();
 		$this->__type = get_class($this);
+		$tablename = $this->get_table();
+		if ($tablename == null) $tablename = get_class($this);
+		$this->table($tablename);
+		if (!$isnew)
+			$this->on_before_load();
+		$this->pre_init();
+		if (is_array($members)) {
+			foreach ($members as $key => $val) {
+				$this->__member_variables[$key] = $members[$key];
+			}
+		} else if (is_object($members) && is_subclass_of($members, "DbObject")) {
+			$tmp = $members->to_array();
+			foreach ($tmp as $key => $val) {
+				$this->__member_variables[$key] = $tmp[$key];
+			}
+		}
 		$this->init();
 		if (!$isnew)
 			$this->on_after_load();
@@ -254,6 +284,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 			}
 		}
 		$this->__isnew = false;
+		$this->on_after_save();
 		return $this;
 	}
 
