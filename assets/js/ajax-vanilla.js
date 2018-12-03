@@ -130,7 +130,7 @@ $ajax.prototype.init = function() {
 						try {
 							eval(cmd);
 							var ajaxp = new $ajax();
-							ajaxp.data("&data=" + encodeURIComponent(data));
+							ajaxp.data("&__object=" + encodeURIComponent(data));
 							ajaxp.ok(function(result) {
 								if (content == undefined)
 									return;
@@ -380,7 +380,9 @@ $DbObject.prototype.create = function(cb) {
 //		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
 //		firstvar = false;
 //	}
-    data += "__subject=" + encodeURIComponent(JSON.stringify(me));
+	if (me.hasOwnProperty("__subject")) delete me.__subject;
+	if (me.hasOwnProperty("__object")) delete me.__object;
+	data += "__subject=" + encodeURIComponent(JSON.stringify(me));
 	new $ajax()
 	.data(data)
 	.err(function(res) {
@@ -405,7 +407,11 @@ $DbObject.prototype.read = function(p1, p2) {
 	var me = this;
 	var id = (typeof p1 == "function") ? p2 : p1;
 	var cb = (typeof p2 == "function") ? p2 : p1;
+	if (me.hasOwnProperty("__subject")) delete me.__subject;
+	if (me.hasOwnProperty("__object")) delete me.__object;
+	var data = "__subject=" + encodeURIComponent(JSON.stringify(me));
 	new $ajax()
+	.data(data)
 	.err(function(res) {
 		throw new $DbException(res);
 	}).ok(function(res) {
@@ -434,6 +440,8 @@ $DbObject.prototype.update = function(cb) {
 				this[key].update();
 		}
 	}
+	if (me.hasOwnProperty("__subject")) delete me.__subject;
+	if (me.hasOwnProperty("__object")) delete me.__object;
 	data += "__subject=" + encodeURIComponent(JSON.stringify(me));
 	new $ajax()
 	.data(data)
@@ -484,8 +492,11 @@ $DbObject.prototype.copy = function(from) {
 
 $DbObject.prototype.callMethod = function(cb, method, param) {
 	var me = this;
+	var data = "";
+	if (me.hasOwnProperty("__subject")) delete me.__subject;
+	if (me.hasOwnProperty("__object")) delete me.__object;
 	if (param !== undefined) {
-		var data = "data=" + encodeURIComponent(JSON.stringify(param)) + "&__subject=" + encodeURIComponent(JSON.stringify(me));
+		data = "__object=" + encodeURIComponent(JSON.stringify(param)) + "&__subject=" + encodeURIComponent(JSON.stringify(me));
 		new $ajax()
 		.data(data)
 		.err(function(res) {
@@ -499,7 +510,7 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 			}
 		}).post(this.__ep + this[this.__pk] + "/" + method);
 	} else {
-        var data = "__subject=" + encodeURIComponent(JSON.stringify(me));
+		data = "__subject=" + encodeURIComponent(JSON.stringify(me));
 		new $ajax()
 		.data(data)
 		.err(function(res) {

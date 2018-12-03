@@ -381,23 +381,23 @@ $ws.prototype._run_handlers = function(data) {
  * ORM client: DTO
  ******************************************************************************/
 function DbException(message) {
-	if (JSON.isJSON(message)) {
-		message = JSON.parse(message);
-		if (message.hasOwnProperty("message")) {
-			this.message = message.message;
-		}
-		if (message.hasOwnProperty("trace")) {
-			this.trace = message.trace;
-		}
-		if (message.hasOwnProperty("code")) {
-			this.code = message.code;
-		}
-		if (message.hasOwnProperty("previous")) {
-			this.previous = message.previous;
-		}
-	} else {
-		this.message = message;
-	}
+    if (JSON.isJSON(message)) {
+        message = JSON.parse(message);
+        if (message.hasOwnProperty("message")) {
+            this.message = message.message;
+        }
+        if (message.hasOwnProperty("trace")) {
+            this.trace = message.trace;
+        }
+        if (message.hasOwnProperty("code")) {
+            this.code = message.code;
+        }
+        if (message.hasOwnProperty("previous")) {
+            this.previous = message.previous;
+        }
+    } else {
+        this.message = message;
+    }
 }
 
 function DbObject(ep) {
@@ -415,6 +415,8 @@ DbObject.prototype.create = function(cb) {
 //        data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
 //        firstvar = false;
 //    }
+    if (me.hasOwnProperty("__subject")) delete me.__subject;
+    if (me.hasOwnProperty("__object")) delete me.__object;
     data += "__subject=" + encodeURIComponent(JSON.stringify(me));
     new Ajax()
     .data(data)
@@ -440,6 +442,8 @@ DbObject.prototype.read = function(p1, p2) {
     var me = this;
     var id = (typeof p1 == "function") ? p2 : p1;
     var cb = (typeof p2 == "function") ? p2 : p1;
+    if (me.hasOwnProperty("__subject")) delete me.__subject;
+    if (me.hasOwnProperty("__object")) delete me.__object;
     new Ajax()
     .err(function(res) {
         throw new DbException(res);
@@ -469,6 +473,8 @@ DbObject.prototype.update = function(cb) {
                 this[key].update();
         }
     }
+    if (me.hasOwnProperty("__subject")) delete me.__subject;
+    if (me.hasOwnProperty("__object")) delete me.__object;
     data += "__subject=" + encodeURIComponent(JSON.stringify(me));
     new Ajax()
     .data(data)
@@ -520,6 +526,8 @@ DbObject.prototype.copy = function(from) {
 DbObject.prototype.callMethod = function(cb, method, param) {
     var me = this;
     var data = "";
+    if (me.hasOwnProperty("__subject")) delete me.__subject;
+    if (me.hasOwnProperty("__object")) delete me.__object;
     if (param !== undefined) {
         data = "data=" + encodeURIComponent(JSON.stringify(param)) + "&__subject=" + encodeURIComponent(JSON.stringify(me));
         new Ajax()

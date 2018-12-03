@@ -14,11 +14,16 @@ LIBCOMPACTMVC_ENTRY;
  */
 abstract class CMVCCRUDComponent extends CMVCComponent {
 	private $subject;
+	private $object;
 	private $response;
 	private $called_method;
 	
 	protected function get_subject() {
 		return $this->subject;
+	}
+	
+	protected function get_object() {
+		return $this->object;
 	}
 	
 	protected function get_response() {
@@ -51,8 +56,6 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	
 	protected function json_response($obj) {
 		DLOG();
-		// need to fix this loopback properly. this is a preliminary solution.
-		$obj->__subject = null;
 		$this->response = $obj;
 		parent::json_response($obj);
 	}
@@ -105,21 +108,21 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				$method = $this->param(2);
 				try {
 					$param = null;
-					$tmp = json_decode($this->data, true);
-					if (is_array($tmp) && array_key_exists("__type", $tmp)) {
-						$pclass = $tmp["__type"];
+					$this->object = json_decode($this->__object, true);
+					if (is_array($this->object) && array_key_exists("__type", $this->object)) {
+						$pclass = $this->object["__type"];
 						if (class_exists($pclass)) {
-							if ($tmp["__type"] == "DbConstraint") {
-								$param = DbConstraint::create_from_json($this->data);
+							if ($this->object["__type"] == "DbConstraint") {
+								$param = DbConstraint::create_from_json($this->__object);
 							} else {
 								$param = new $pclass;
-								$data = json_decode($this->data);
+								$data = json_decode($this->__object);
 								DTOTool::copy($data, $param);
 							}
 						}
 					}
 					if ($param == null) {
-						$param = json_decode($this->data, true);
+						$param = json_decode($this->__object, true);
 					}
 					$res = $this->subject->$method($param);
 				} catch (InvalidMemberException $e4) {
@@ -131,7 +134,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			} else {
 				if ($this->param(2) == null)
 					throw new InvalidMemberException('$this->param(2) is null, doing full copy...');
-				$this->subject->{$this->param(2)} = $this->data;
+				$this->subject->{$this->param(2)} = $this->__object;
 			}
 		} catch (InvalidMemberException $e1) {
 			DTOTool::copy($this, $this->subject);
