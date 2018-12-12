@@ -172,7 +172,7 @@ Ajax.prototype.init = function() {
                         try {
                             eval(cmd);
                             var ajaxp = new Ajax();
-                            ajaxp.data("&data=" + encodeURIComponent(data));
+                            ajaxp.data("&__object=" + encodeURIComponent(data));
                             ajaxp.ok(function(result) {
                                 if (content === undefined)
                                     return;
@@ -465,12 +465,20 @@ DbObject.prototype.update = function(cb) {
     if (this.__pk === null)
         throw new DbException("Table has no primary key! Update is not possible.");
     var me = this;
+    var varname = "";
     var data = "";
     var firstvar = true;
     for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            if (this[key] !== null && this[key].prototype instanceof DbObject)
-                this[key].update();
+        varname = key;
+        if (this.hasOwnProperty(varname)) {
+            if (this[varname] !== null) {
+                if (this[varname]["update"] !== undefined && this[varname]["__pk"] !== undefined) {
+                    if (typeof this[varname].update === "function" && typeof this[varname].__pk === "string") {
+                        this[varname].update();
+                        this[varname] = this[varname][this[varname]["__pk"]];
+                    }
+                }
+            }
         }
     }
     if (me.hasOwnProperty("__subject")) delete me.__subject;
@@ -529,7 +537,7 @@ DbObject.prototype.callMethod = function(cb, method, param) {
     if (me.hasOwnProperty("__subject")) delete me.__subject;
     if (me.hasOwnProperty("__object")) delete me.__object;
     if (param !== undefined) {
-        data = "data=" + encodeURIComponent(JSON.stringify(param)) + "&__subject=" + encodeURIComponent(JSON.stringify(me));
+        data = "__object=" + encodeURIComponent(JSON.stringify(param)) + "&__subject=" + encodeURIComponent(JSON.stringify(me));
         new Ajax()
         .data(data)
         .err(function(res) {

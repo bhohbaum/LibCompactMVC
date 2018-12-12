@@ -432,12 +432,20 @@ $DbObject.prototype.update = function(cb) {
 	if (this.__pk === null)
 		throw new $DbException("Table has no primary key! Update is not possible.");
 	var me = this;
+	var varname = "";
 	var data = "";
 	var firstvar = true;
 	for (key in this) {
-		if (this.hasOwnProperty(key)) {
-			if (this[key] !== null && this[key].prototype instanceof $DbObject)
-				this[key].update();
+		varname = key;
+		if (this.hasOwnProperty(varname)) {
+			if (this[varname] !== null) {
+				if (this[varname]["update"] !== undefined && this[varname]["__pk"] !== undefined) {
+					if (typeof this[varname].update === "function" && typeof this[varname].__pk === "string") {
+						this[varname].update();
+						this[varname] = this[varname][this[varname]["__pk"]];
+					}
+				}
+			}
 		}
 	}
 	if (me.hasOwnProperty("__subject")) delete me.__subject;
