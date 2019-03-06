@@ -7,11 +7,11 @@ LIBCOMPACTMVC_ENTRY;
  * This class calculates if a given point on earth (designated by its latitude and longitude) lies within a
  * given radius around another point.
  *
- * @author Botho Hohbaum <bhohbaum@googlemail.com>
- * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum
- * @license BSD License (see LICENSE file in root directory)
- * @link https://github.com/bhohbaum/LibCompactMVC
+ * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package		LibCompactMVC
+ * @copyright   Copyright (c) Media Impression Unit 08
+ * @license 	BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class MapRadius {
 	private $lat_ctr;

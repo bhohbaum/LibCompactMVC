@@ -7,11 +7,11 @@ LIBCOMPACTMVC_ENTRY;
  * Input provider
  * provides access to input vars and prevents them to appear in serialization
  *
- * @author Botho Hohbaum <bhohbaum@googlemail.com>
- * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum
- * @license BSD License (see LICENSE file in root directory)
- * @link https://github.com/bhohbaum/LibCompactMVC
+ * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package		LibCompactMVC
+ * @copyright   Copyright (c) Media Impression Unit 08
+ * @license 	BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class InputProvider extends InputSanitizer {
 	private static $instance = null;

@@ -6,10 +6,11 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * ormclientcomponentqt.php
  *
- * @author		Botho Hohbaum <bhohbaum@googlemail.com>
- * @package		digimap
+ * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package		LibCompactMVC
  * @copyright   Copyright (c) Media Impression Unit 08
- * @link		http://www.miu08.de
+ * @license 	BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class ORMClientComponentQt extends ORMClientComponent {
 	

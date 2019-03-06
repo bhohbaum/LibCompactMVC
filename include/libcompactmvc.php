@@ -4,7 +4,7 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
 /**
  * LibCompactMVC application loader
  *
- * @author      Botho Hohbaum <bhohbaum@googlemail.com>
+ * @author      Botho Hohbaum (bhohbaum@googlemail.com)
  * @package     LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
  * @link		http://www.github.com/bhohbaum

@@ -8,11 +8,11 @@ LIBCOMPACTMVC_ENTRY;
  * They where required to generate some
  * of the data now stored in the database in conjuction with the agencies.
  *
- * @author Botho Hohbaum <bhohbaum@googlemail.com>
- * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum
- * @license BSD License (see LICENSE file in root directory)
- * @link https://github.com/bhohbaum/LibCompactMVC
+ * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package		LibCompactMVC
+ * @copyright   Copyright (c) Media Impression Unit 08
+ * @license 	BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class GoogleMaps {
 

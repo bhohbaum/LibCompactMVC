@@ -6,11 +6,11 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * linkproperty.php
  *
- * @author Botho Hohbaum (bhohbaum@googlemail.com)
- * @package LibCompactMVC
- * @copyright Copyright (c) Botho Hohbaum 01.01.2016
- * @license BSD License (see LICENSE file in root directory)
- * @link https://github.com/bhohbaum
+ * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @package		LibCompactMVC
+ * @copyright   Copyright (c) Media Impression Unit 08
+ * @license 	BSD License (see LICENSE file in root directory)
+ * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class LinkProperty {
 	private $path;

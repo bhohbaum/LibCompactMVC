@@ -17,7 +17,7 @@ class Main {
 	private $ad;
 
 	public function __construct() {
-		DLOG(__METHOD__ . ": ########################## A NEW REQUEST IS BEEING PROCESSED. ##########################");
+		DLOG("########################## A NEW REQUEST IS BEEING PROCESSED. ##########################");
 	}
 
 	public function log($msg) {
