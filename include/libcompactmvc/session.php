@@ -15,7 +15,7 @@ LIBCOMPACTMVC_ENTRY;
 class Session {
 	private $session_id;
 	// REMEMBER!!!
-	// NEVER use the $_SESSION directly when using this class!
+	// NEVER use the $_SESSION array directly when using this class!
 	// your data will get lost!
 
 	// keeps instance of the classs
@@ -179,7 +179,9 @@ class Session {
 		DLOG("Saving current content: " . var_export(self::$parray, true));
 		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
 		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);
+		session_destroy();
 		session_id($id);
+		session_start();
 		$this->session_id = $id;
 		DLOG("Session ID = " . $this->session_id);
 		self::$parray = unserialize(RedisAdapter::get_instance()->get("SESSION_" . $this->session_id));

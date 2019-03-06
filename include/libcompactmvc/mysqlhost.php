@@ -88,6 +88,11 @@ class MySQLHost extends mysqli {
 
 	public function real_escape_string($str) {
 		$this->lazy_init();
+		if (is_object($str)) {
+			ELOG("Object given instead of a String: " . print_r($str));
+			ELOG("Using an empty String as value in the Query.");
+			return "";
+		}
 		return parent::real_escape_string($str);
 	}
 

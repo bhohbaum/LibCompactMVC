@@ -13,25 +13,25 @@ LIBCOMPACTMVC_ENTRY;
  * @link https://github.com/bhohbaum/LibCompactMVC
  */
 abstract class CMVCCRUDComponent extends CMVCComponent {
-	private $subject;
-	private $object;
-	private $response;
-	private $called_method;
+	private $__m_subject;
+	private $__m_object;
+	private $__m_response;
+	private $__m_called_method;
 	
 	protected function get_subject() {
-		return $this->subject;
+		return $this->__m_subject;
 	}
 	
 	protected function get_object() {
-		return $this->object;
+		return $this->__m_object;
 	}
 	
 	protected function get_response() {
-		return $this->response;
+		return $this->__m_response;
 	}
 
 	protected function get_called_method() {
-		return $this->called_method;
+		return $this->__m_called_method;
 	}
 
 	/**
@@ -56,7 +56,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	
 	protected function json_response($obj) {
 		DLOG();
-		$this->response = $obj;
+		$this->__m_response = $obj;
 		parent::json_response($obj);
 	}
 		
@@ -71,11 +71,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
-		$this->subject = new $table();
-		$this->subject->by(array(
+		$this->__m_subject = new $table();
+		$this->__m_subject->by(array(
 				$pk => $this->param(1)
 		));
-		$this->json_response($this->subject);
+		$this->json_response($this->__m_subject);
 	}
 
 	/**
@@ -88,31 +88,31 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = (is_array($pk) && count($pk) > 0) ? $pk[0] : "id";
-		$this->subject = new $table();
+		$this->__m_subject = new $table();
 		if ($this->param(1) != "undefined") {
-			$this->subject->by(array(
+			$this->__m_subject->by(array(
 					$pk => $this->param(1)
 			));
 		}
-		DTOTool::copy($this, $this->subject);
+		DTOTool::copy($this, $this->__m_subject);
 		try {
 			$subject = json_decode($this->__subject, false);
-			DTOTool::copy($subject, $this->subject);
+			DTOTool::copy($subject, $this->__m_subject);
 		} catch (InvalidMemberException $e5) {
 		}
 		try {
 			if (is_callable(array(
-					$this->subject,
+					$this->__m_subject,
 					$this->param(2)
 			))) {
 				$method = $this->param(2);
 				try {
 					$param = null;
-					$this->object = json_decode($this->__object, true);
-					if (is_array($this->object) && array_key_exists("__type", $this->object)) {
-						$pclass = $this->object["__type"];
+					$this->__m_object = json_decode($this->__object, true);
+					if (is_array($this->__m_object) && array_key_exists("__type", $this->__m_object)) {
+						$pclass = $this->__m_object["__type"];
 						if (class_exists($pclass)) {
-							if ($this->object["__type"] == "DbConstraint") {
+							if ($this->__m_object["__type"] == "DbConstraint") {
 								$param = DbConstraint::create_from_json($this->__object);
 							} else {
 								$param = new $pclass;
@@ -124,31 +124,31 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 					if ($param == null) {
 						$param = json_decode($this->__object, true);
 					}
-					$res = $this->subject->$method($param);
+					$res = $this->__m_subject->$method($param);
 				} catch (InvalidMemberException $e4) {
-					$res = $this->subject->$method();
+					$res = $this->__m_subject->$method();
 				}
-				$this->called_method = $method;
+				$this->__m_called_method = $method;
 				$this->json_response($res);
 				return;
 			} else {
 				if ($this->param(2) == null)
 					throw new InvalidMemberException('$this->param(2) is null, doing full copy...');
-				$this->subject->{$this->param(2)} = $this->__object;
+				$this->__m_subject->{$this->param(2)} = $this->__object;
+				$this->__m_object = $this->__object;
 			}
 		} catch (InvalidMemberException $e1) {
-			DTOTool::copy($this, $this->subject);
 			try {
-				$this->subject->{$pk} = $this->{$pk};
+				$this->__m_subject->{$pk} = $this->{$pk};
 			} catch (InvalidMemberException $e2) {
 				try {
-					$this->subject->{$pk} = $this->param(1);
+					$this->__m_subject->{$pk} = $this->param(1);
 				} catch (InvalidMemberException $e6) {
 				}
 			}
 		}
-		$this->subject->save();
-		$this->json_response($this->subject);
+		$this->__m_subject->save();
+		$this->json_response($this->__m_subject);
 	}
 
 	/**
@@ -161,24 +161,24 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
-		$this->subject = new $table();
-		DTOTool::copy($this, $this->subject);
+		$this->__m_subject = new $table();
+		DTOTool::copy($this, $this->__m_subject);
 		try {
 			$subject = json_decode($this->__subject, false);
-			DTOTool::copy($subject, $this->subject);
+			DTOTool::copy($subject, $this->__m_subject);
 		} catch (InvalidMemberException $e5) {
 		}
 		try {
-			$this->subject->{$pk} = $this->{$pk};
+			$this->__m_subject->{$pk} = $this->{$pk};
 		} catch (InvalidMemberException $e2) {
 			try {
-				$this->subject->{$pk} = $this->param(1);
+				$this->__m_subject->{$pk} = $this->param(1);
 			} catch (InvalidMemberException $e) {
-				unset($this->subject->{$pk});
+				unset($this->__m_subject->{$pk});
 			}
 		}
-		$this->subject->save();
-		$this->json_response($this->subject);
+		$this->__m_subject->save();
+		$this->json_response($this->__m_subject);
 	}
 
 	/**
@@ -191,13 +191,13 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
-		$this->subject = new $table();
-		$this->subject->by(array(
+		$this->__m_subject = new $table();
+		$this->__m_subject->by(array(
 				$pk => $this->param(1)
 		));
-		$this->subject->delete();
+		$this->__m_subject->delete();
 	}
-
+	
 	/**
 	 * Do not print stack trace in API environment, catch and return exception json-serialized instead.
 	 *

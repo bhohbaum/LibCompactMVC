@@ -211,6 +211,11 @@ class View {
 		$this->__comp = array();
 		return $this;
 	}
+	
+	public function clear_templates() {
+		$this->__tpls = array();
+		return $this;
+	}
 
 	/**
 	 *

@@ -54,6 +54,7 @@ abstract class InputSanitizer implements JsonSerializable {
 		self::$member_variables = array();
 		global $argv;
 		if (REGISTER_HTTP_VARS) {
+			DLOG("Registering variables...");
 			if (php_sapi_name() == "cli") {
 				foreach ($_ENV as $var => $val) {
 					self::$member_variables[$var] = self::get_remapped($var, $val);
@@ -70,14 +71,17 @@ abstract class InputSanitizer implements JsonSerializable {
 				}
 			} else {
 				foreach (array_keys($this->request(null)) as $key) {
-					$this->{$key} = self::get_remapped($key, $this->request($key));
+					self::$member_variables[$key] = self::get_remapped($key, $this->request($key));
 				}
 			}
+		} else {
+			DLOG("Registering variables is DISABLED...");
 		}
 		self::$members_populated = true;
 	}
 
 	private static function get_remapped($var_name, $value) {
+		DLOG("$var_name = $value");
 		if (isset(self::$action_mapper)) {
 			if ($var_name == self::$actionname) {
 				$res = self::$action_mapper->reverse_action($value);
@@ -87,8 +91,10 @@ abstract class InputSanitizer implements JsonSerializable {
 				$res = $value;
 			}
 		} else {
+			DLOG("ActionMapper not set!!!");
 			$res = $value;
 		}
+		DLOG("Remapped: $var_name = $res");
 		return $res;
 	}
 

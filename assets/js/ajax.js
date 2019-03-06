@@ -20,6 +20,9 @@
  */
 
 var $_ajax = [];
+var $_ajax_cache = [];
+var $_ajax_response_cache = [];
+var $_ajax_running_cache = [];
 
 function $ajax() {
 	this._responseType = "";
@@ -213,6 +216,7 @@ $ajax.prototype._callHandler = function(url, response, rData) {
 	} catch (e) {
 		console.log(e);
 	}
+	$_ajax[url] = null;
 	delete $_ajax[url];
 };
 $ajax.prototype._doRequest = function(method, url, retry) {

@@ -128,6 +128,9 @@ class DbObject extends DbAccess implements JsonSerializable {
 					$refcol = $tmp[1];
 					if ($column == $var_name) {
 						$qb = new QueryBuilder();
+						if (is_object($this->__member_variables[$var_name])) {
+							$this->__member_variables[$var_name] = $this->__member_variables[$var_name]->$refcol;
+						}
 						$q = $qb->select($reftab, array(
 								$refcol => $this->__member_variables[$var_name]
 						));

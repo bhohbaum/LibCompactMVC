@@ -361,6 +361,18 @@ function obj_sort_by_member(&$obj_arr, $member) {
 	return $obj_arr;
 }
 
+function xor_crypt($key, $text) {
+	$out = '';
+	for($i=0; $i<strlen($text); )
+	{
+		for($j=0; ($j<strlen($key) && $i<strlen($text)); $j++,$i++)
+		{
+			$out .= $text{$i} ^ $key{$j};
+		}
+	}
+	return $out;
+}
+
 $GLOBALS["SITEMAP"] = array();
 
 /**
