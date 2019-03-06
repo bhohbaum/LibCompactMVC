@@ -51,7 +51,7 @@ try {
 	$run = new Main();
 	$run->app();
 } catch (Exception $e) {
-	ob_end_clean();
+	@ob_end_clean();
 	echo("<h2>An unhandled exception occured</h2>");
 	echo("<h4>Message:</h4>");
 	echo("<p>".$e->getMessage()."</p>");
