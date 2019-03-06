@@ -6,7 +6,7 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Socket wrapper class for easy socket handling.
  *
- * @author Botho Hohbaum <bhohbaum@googlemail.com>
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
  * @copyright Copyright (c) Botho Hohbaum
  * @license BSD License (see LICENSE file in root directory)

@@ -7,7 +7,7 @@ LIBCOMPACTMVC_ENTRY;
  * Redis Adapter
  * With additional variable cache.
  *
- * @author Botho Hohbaum <bhohbaum@googlemail.com>
+ * @author Botho Hohbaum (bhohbaum@googlemail.com)
  * @package LibCompactMVC
  * @copyright Copyright (c) Botho Hohbaum
  * @license BSD License (see LICENSE file in root directory)

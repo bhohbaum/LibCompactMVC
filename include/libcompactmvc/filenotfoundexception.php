@@ -4,7 +4,7 @@ if (file_exists('../libcompactmvc.php'))
 LIBCOMPACTMVC_ENTRY;
 
 /**
- * Empty Result Exception
+ * File not found Exception
  *
  * @author Botho Hohbaum <bhohbaum@googlemail.com>
  * @package LibCompactMVC
