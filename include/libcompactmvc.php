@@ -4,7 +4,7 @@ defined('LIBCOMPACTMVC_ENTRY') || define('LIBCOMPACTMVC_ENTRY', (($_SERVER['DOCU
 /**
  * LibCompactMVC application loader
  *
- * @author      Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author      Botho Hohbaum <bhohbaum@googlemail.com>
  * @package     LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum 11.02.2014
  * @link		http://www.github.com/bhohbaum
@@ -32,6 +32,15 @@ function last_error_handler() {
 	ELOG($msg);
 }
 
+function exception_error_handler($severity, $message, $file, $line) {
+	if (!(error_reporting() & $severity)) {
+		// Dieser Fehlercode ist nicht in error_reporting enthalten
+		return;
+	}
+	throw new ErrorException($message, 0, $severity, $file, $line);
+}
+set_error_handler("exception_error_handler");
+
 // first include the configuration
 
 if (!defined("LOG_FILE")) {
@@ -56,6 +65,7 @@ cmvc_include('cmvccontroller.php');
 cmvc_include('cmvccomponent.php');
 cmvc_include('dbaccess.php');
 cmvc_include('dbfilter.php');
+cmvc_include('./jwt/autoload.php');
 
 // load the framework
 cmvc_include_dir("./include/libcompactmvc/");
