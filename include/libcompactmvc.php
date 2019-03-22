@@ -34,7 +34,6 @@ function last_error_handler() {
 
 function exception_error_handler($severity, $message, $file, $line) {
 	if (!(error_reporting() & $severity)) {
-		// Dieser Fehlercode ist nicht in error_reporting enthalten
 		return;
 	}
 	throw new ErrorException($message, 0, $severity, $file, $line);
@@ -44,14 +43,16 @@ set_error_handler("exception_error_handler");
 // first include the configuration
 
 if (!defined("LOG_FILE")) {
-	die("LOG_FILE is undefined, please define it in config.php - exiting.\n");
+	die("LOG_FILE is undefined, please define it in ./include/config.php - exiting.\n");
 }
-@touch(LOG_FILE);
-if (!file_exists(LOG_FILE)) {
-	die(LOG_FILE." cannot be created, exiting.\n");
-}
-if (!is_writable(LOG_FILE)) {
-	die(LOG_FILE." is not writable by the current process, exiting.\n");
+if (defined(LOG_FILE)) {
+	@touch(LOG_FILE);
+	if (!file_exists(LOG_FILE)) {
+		die(LOG_FILE." cannot be created, exiting.\n");
+	}
+	if (!is_writable(LOG_FILE)) {
+		die(LOG_FILE." is not writable by the current process, exiting.\n");
+	}
 }
 
 if (defined('DEBUG') && (DEBUG == 0)) {
