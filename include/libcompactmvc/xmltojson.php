@@ -8,7 +8,7 @@ LIBCOMPACTMVC_ENTRY;
  *
  * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
  * @package		LibCompactMVC
- * @copyright   Copyright (c) Media Impression Unit 08
+ * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)
  * @link		https://github.com/bhohbaum/LibCompactMVC
  */
@@ -22,7 +22,7 @@ class XmlToJson {
 				"\t"
 		), '', $fileContents);
 		$fileContents = trim(str_replace('"', "'", $fileContents));
-		$simpleXml = simplexml_load_string($fileContents);
+		$simpleXml = simplexml_load_string($fileContents, null, LIBXML_NOCDATA);
 		$json = json_encode($simpleXml);
 		return $json;
 	}
@@ -35,7 +35,7 @@ class XmlToJson {
 				"\t"
 		), '', $fileContents);
 		$fileContents = trim(str_replace('"', "'", $fileContents));
-		$simpleXml = simplexml_load_string($fileContents);
+		$simpleXml = simplexml_load_string($fileContents, null, LIBXML_NOCDATA);
 		$json = json_encode($simpleXml);
 		return $json;
 	}
