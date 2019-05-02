@@ -11,7 +11,7 @@ LIBCOMPACTMVC_ENTRY;
  * UTF8.php
  * Socket.php
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)

@@ -7,7 +7,7 @@ LIBCOMPACTMVC_ENTRY;
  * Input provider
  * provides access to input vars and prevents them to appear in serialization
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)

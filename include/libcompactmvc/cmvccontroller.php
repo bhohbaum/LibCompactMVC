@@ -6,7 +6,7 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Controller super class
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)
@@ -159,11 +159,12 @@ abstract class CMVCController extends InputSanitizer {
 	 * @param Object $obj
 	 */
 	protected function json_response($obj) {
-		DLOG(UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
+		$json = UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+		DLOG($json);
 		$this->__mime_type = MIME_TYPE_JSON;
 		$this->__view->clear();
 		$this->__view->add_template("__out.tpl");
-		$this->__view->set_value("out", UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)));
+		$this->__view->set_value("out", $json);
 	}
 
 	/**
@@ -519,7 +520,7 @@ abstract class CMVCController extends InputSanitizer {
 	private function run_exception_handler($e) {
 		DLOG("Exception " . $e->getCode() . " '" . $e->getMessage() . "'");
 		if ($e instanceof RedirectException) {
-			$this->response_code($e->getCode());
+			$this->response_code(is_numeric($e->getCode()) ? $e->getCode() : 301);
 			if ($e->is_internal()) {
 				$this->__redirect = $e->getMessage();
 			} else {
@@ -537,11 +538,11 @@ abstract class CMVCController extends InputSanitizer {
 				return;
 			} catch (Exception $e1) {
 				$this->__ob = $this->__view->render($this->__caching);
-				$this->response_code($e->getCode());
+				$this->response_code(is_numeric($e1->getCode()) ? $e1->getCode() : 500);
 				throw $e1;
 			}
 			$this->__ob = $this->__view->render($this->__caching);
-			$this->response_code($e->getCode());
+			$this->response_code(is_numeric($e->getCode()) ? $e->getCode() : 500);
 		}
 	}
 

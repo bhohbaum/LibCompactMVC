@@ -6,7 +6,7 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * CRUD Component super class
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)
@@ -59,14 +59,42 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$this->__m_response = $obj;
 		parent::json_response($obj);
 	}
-		
-
+	
+	protected function pre_run_get() {
+		DLOG();
+		parent::pre_run_get();
+		$this->__run_get(true);
+	}
+	
+	protected function pre_run_post() {
+		DLOG();
+		parent::pre_run_post();
+		$this->__run_post(true);
+	}
+	
+	protected function pre_run_put() {
+		DLOG();
+		parent::pre_run_put();
+		$this->__run_put(true);
+	}
+	
+	protected function pre_run_delete() {
+		DLOG();
+		parent::pre_run_delete();
+		$this->__run_delete(true);
+	}
+	
 	/**
 	 * Get record by id
 	 */
 	protected function main_run_get() {
 		DLOG();
 		parent::main_run_get();
+		$this->__run_get(false);
+	}
+	
+	private function __run_get($init = false) {
+		DLOG();
 		$table = $this->get_table_name();
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
@@ -84,6 +112,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	protected function main_run_post() {
 		DLOG();
 		parent::main_run_post();
+		$this->__run_post(false);
+	}
+	
+	private function __run_post($init = false) {
+		DLOG();
 		$table = $this->get_table_name();
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
@@ -94,17 +127,18 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 					$pk => $this->param(1)
 			));
 		}
-		DTOTool::copy($this, $this->__m_subject);
 		try {
 			$subject = json_decode($this->__subject, false);
 			DTOTool::copy($subject, $this->__m_subject);
 		} catch (InvalidMemberException $e5) {
+			DTOTool::copy($this, $this->__m_subject);
 		}
 		try {
 			if (is_callable(array(
 					$this->__m_subject,
 					$this->param(2)
 			))) {
+				$res = null;
 				$method = $this->param(2);
 				try {
 					$param = null;
@@ -124,9 +158,9 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 					if ($param == null) {
 						$param = json_decode($this->__object, true);
 					}
-					$res = $this->__m_subject->$method($param);
+					if (!$init) $res = $this->__m_subject->$method($param);
 				} catch (InvalidMemberException $e4) {
-					$res = $this->__m_subject->$method();
+					if (!$init) $res = $this->__m_subject->$method();
 				}
 				$this->__m_called_method = $method;
 				$this->json_response($res);
@@ -144,10 +178,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				try {
 					$this->__m_subject->{$pk} = $this->param(1);
 				} catch (InvalidMemberException $e6) {
+					unset($this->__m_subject->{$pk});
 				}
 			}
 		}
-		$this->__m_subject->save();
+		if (!$init) $this->__m_subject->save();
 		$this->json_response($this->__m_subject);
 	}
 
@@ -157,16 +192,21 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	protected function main_run_put() {
 		DLOG();
 		parent::main_run_put();
+		$this->__run_put(false);
+	}
+	
+	private function __run_put($init = false) {
+		DLOG();
 		$table = $this->get_table_name();
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
 		$pk = $pk[0];
 		$this->__m_subject = new $table();
-		DTOTool::copy($this, $this->__m_subject);
 		try {
 			$subject = json_decode($this->__subject, false);
 			DTOTool::copy($subject, $this->__m_subject);
 		} catch (InvalidMemberException $e5) {
+			DTOTool::copy($this, $this->__m_subject);
 		}
 		try {
 			$this->__m_subject->{$pk} = $this->{$pk};
@@ -177,7 +217,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				unset($this->__m_subject->{$pk});
 			}
 		}
-		$this->__m_subject->save();
+		if (!$init) $this->__m_subject->save();
 		$this->json_response($this->__m_subject);
 	}
 
@@ -187,6 +227,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 	protected function main_run_delete() {
 		DLOG();
 		parent::main_run_delete();
+		$this->__run_delete(false);
+	}
+	
+	private function __run_delete($init = false) {
+		DLOG();
 		$table = $this->get_table_name();
 		$td = new TableDescription();
 		$pk = $td->primary_keys($table);
@@ -195,11 +240,11 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$this->__m_subject->by(array(
 				$pk => $this->param(1)
 		));
-		$this->__m_subject->delete();
+		if (!$init) $this->__m_subject->delete();
 	}
 	
 	/**
-	 * Do not print stack trace in API environment, catch and return exception json-serialized instead.
+	 * Do not print stack trace in API environment, catch and return json-serialized exception instead.
 	 *
 	 * {@inheritdoc}
 	 * @see CMVCController::exception_handler()
@@ -208,7 +253,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		DLOG(print_r($e, true));
 		$this->json_response(array(
 				"message" => $e->getMessage(),
-				"trace" => $e->getTrace(), 
+				"trace" => $e->getTrace(),
 				"code" => $e->getCode()
 		));
 	}

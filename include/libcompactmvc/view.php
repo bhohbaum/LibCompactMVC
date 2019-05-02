@@ -9,7 +9,7 @@ LIBCOMPACTMVC_ENTRY;
  * This class is used for template handling. It loads the templates, fills them
  * with values and generates the output into a buffer that can be retrieved.
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)

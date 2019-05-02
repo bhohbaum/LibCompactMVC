@@ -6,7 +6,7 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Global functions
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)
@@ -385,6 +385,7 @@ function add_to_sitemap(LinkProperty $lp) {
 		$GLOBALS["SITEMAP"][] = $lp->get_path();
 }
 
+// MIME types
 // This list may be completed with required entries
 define('MIME_TYPE_HTML', 'text/html; charset=utf-8');
 define('MIME_TYPE_CSV', 'text/csv; charset=utf-8');

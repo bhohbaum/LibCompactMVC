@@ -6,7 +6,7 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * This class can be used as base class for all Singleton based constructs.
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)

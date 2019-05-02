@@ -6,7 +6,7 @@ LIBCOMPACTMVC_ENTRY;
 /**
  * Generic database object.
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)
@@ -206,11 +206,12 @@ class DbObject extends DbAccess implements JsonSerializable {
 	/**
 	 *
 	 * @param array $constraint
+	 * @throws DBException, EmptyResultException
 	 * @return DbObject
 	 */
 	public function by($constraint = array()) {
 		if (!isset($this->__tablename)) {
-			throw new Exception("Invalid call: No table selected.");
+			throw new DBException("Invalid call: No table selected.");
 		}
 		$constraint = ($constraint == null) ? array() : $constraint;
 		if (is_object($constraint) && get_class($constraint) == "DbConstraint") {
@@ -234,13 +235,13 @@ class DbObject extends DbAccess implements JsonSerializable {
 
 	/**
 	 *
-	 * @throws Exception
+	 * @throws DBException
 	 * @return DbObject
 	 */
 	public function save() {
 		$this->on_before_save();
 		if (!isset($this->__tablename)) {
-			throw new Exception("Invalid call: No table selected.");
+			throw new DBException("Invalid call: No table selected.");
 		}
 		$pks = $this->__td->primary_keys($this->__tablename);
 		$cols = $this->__td->columns($this->__tablename);
@@ -361,6 +362,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	/**
 	 * Enable/Disable foreign key resolution
 	 *
+	 * @throws InvalidArgumentException
 	 * @param bool $enabled
 	 */
 	public function fk_resolution($enabled = true) {

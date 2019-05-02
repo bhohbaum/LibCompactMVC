@@ -7,7 +7,7 @@ LIBCOMPACTMVC_ENTRY;
  * This class calculates if a given point on earth (designated by its latitude and longitude) lies within a
  * given radius around another point.
  *
- * @author 		Botho Hohbaum (bhohbaum@googlemail.com)
+ * @author 		Botho Hohbaum <bhohbaum@googlemail.com>
  * @package		LibCompactMVC
  * @copyright   Copyright (c) Botho Hohbaum
  * @license 	BSD License (see LICENSE file in root directory)
