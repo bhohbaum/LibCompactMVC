@@ -27,8 +27,11 @@ class QueryBuilder extends DbAccess {
 		$selcols = "";
 		if (!is_array($constraint)) {
 			if (is_array($this->td->primary_keys($tablename)) && get_class($constraint) == "DbConstraint") {
-				if ($constraint->get_query_info()["count"]) {
-					$selcols = "COUNT(" . $this->td->primary_keys($tablename)[0] . ") AS count";
+				if (is_string($constraint->get_query_info()["count"])) {
+					$selcols = "COUNT(" . $constraint->get_query_info()["count"] . ") AS count";
+				} else if ($constraint->get_query_info()["count"] == true) {
+// 					$selcols = "COUNT(" . $this->td->primary_keys($tablename)[0] . ") AS count";
+					$selcols = "COUNT(*) AS count";
 				}
 			}
 		} 
