@@ -160,7 +160,6 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	protected function json_response($obj) {
 		$json = UTF8::encode(json_encode($obj, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-		DLOG($json);
 		$this->__mime_type = MIME_TYPE_JSON;
 		$this->__view->clear();
 		$this->__view->add_template("__out.tpl");
@@ -523,26 +522,28 @@ abstract class CMVCController extends InputSanitizer {
 			$this->response_code(is_numeric($e->getCode()) ? $e->getCode() : 301);
 			if ($e->is_internal()) {
 				$this->__redirect = $e->getMessage();
+				DLOG("INTERNAL REDIRECT: " . $this->__redirect);
 			} else {
 				header("Location: " . $e->getMessage());
 			}
+			throw $e;
 		} else {
 			try {
+				$this->response_code(is_numeric($e->getCode()) ? $e->getCode() : 500);
 				$this->exception_handler($e);
 			} catch (RedirectException $e0) {
 				if ($e0->is_internal()) {
 					$this->__redirect = $e0->getMessage();
+					DLOG("INTERNAL REDIRECT: " . $this->__redirect);
 				} else {
 					header("Location: " . $e0->getMessage());
 				}
-				return;
+				throw $e0;
 			} catch (Exception $e1) {
 				$this->__ob = $this->__view->render($this->__caching);
-				$this->response_code(is_numeric($e1->getCode()) ? $e1->getCode() : 500);
 				throw $e1;
 			}
 			$this->__ob = $this->__view->render($this->__caching);
-			$this->response_code(is_numeric($e->getCode()) ? $e->getCode() : 500);
 		}
 	}
 

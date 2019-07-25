@@ -30,9 +30,60 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		return $this->__m_response;
 	}
 
+	/**
+	 * Retrieve the name of the called method after it has been called.
+	 * 
+	 * @return mixed
+	 */
 	protected function get_called_method() {
 		return $this->__m_called_method;
 	}
+	
+	/**
+	 * This method can be used in the pre_run_ phase to detect if RPC call should be allowed or not.
+	 * 
+	 * @param unknown $method
+	 * @throws DBException
+	 * @return void|boolean|mixed
+	 */
+	protected function will_call_method($method = null) {
+		DLOG("('$method')");
+		if (Session::get_instance()->get_property(ST_USER_ID) != null) return;
+		try {
+			$subject = json_decode($this->__subject);
+		} catch (InvalidMemberException $e) {
+		}
+		try {
+			if (is_callable(array(
+					$subject,
+					$this->param(2)
+			))) {
+				$cmethod = $this->param(2);
+				if ($cmethod == $method) return true;
+				
+				DLOG("Checking access rights for requested RPC:" . $cmethod . " HTTP verb: " . $this->get_method());
+				if ($cmethod != "register" && $cmethod != "login") {
+					try {
+						$user->by(array("id" => $this->__user));
+					} catch (InvalidMemberException $e1) {
+						ELOG("Missing user key! Access forbidden!");
+						throw new DBException("Missing user key! Access forbidden!", 403);
+					} catch (EmptyResultException $e2) {
+						ELOG("Invalid user key! Access forbidden!");
+						throw new DBException("Invalid user key! Access forbidden!", 403);
+					}
+				}
+			}
+		} catch (DBException $e3) {
+			throw $e3;
+		} catch (InvalidMemberException $e4) {
+			// that's ok...
+		}
+		if ($method == null && is_string($cmethod)) return $cmethod;
+		return false;
+	}
+	
+	
 
 	/**
 	 * Overwrite this method to define the table that shall be operated on.

@@ -18,18 +18,25 @@ LIBCOMPACTMVC_ENTRY;
 if (gethostname() == 'vweb02') {
 	define('DEBUG', 1);
 	define('LOG_LEVEL', 3);
+	define('LOG_TARGET', 1);
+	define('LOG_TYPE', 0);
 } else if (gethostname() == 'production') {
 	define('DEBUG', 0);
 	define('LOG_LEVEL', 0);
+	define('LOG_TARGET', 2);
+	define('LOG_TYPE', 1);
 } else {
 	define('DEBUG', 1);
 	define('LOG_LEVEL', 3);
+	define('LOG_TARGET', 1);
+	define('LOG_TYPE', 0);
 }
 
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);
 
 define('CACHING_ENABLED', DEBUG != 1 || true);
+define('LANG_DEFAULT', 'app');
 
 define('SMTP_SERVER', '127.0.0.1');
 define('SMTP_USER', '');
@@ -61,6 +68,7 @@ $GLOBALS['WS_SRV_PORT'] = array(
 define('REGISTER_HTTP_VARS', true);
 
 // Session
+define('SESSION_INSECURE_COOKIE', true);
 define('SESSION_DYNAMIC_ID_DISABLED', true);
 define('SESSION_TIMEOUT', 1200);
 
@@ -79,8 +87,6 @@ define('IMAGES_BASE_DIR', './files/images');				// relative to $_SERVER['DOCUMEN
 define('TEMP_DIR', './files/temp');							// relative to $_SERVER['DOCUMENT_ROOT']
 define('CSV_BASE_DIR', './files/csv');						// relative to $_SERVER['DOCUMENT_ROOT']
 define('LOG_FILE', '/var/log/php/cmvc.log');				// relative to $_SERVER['DOCUMENT_ROOT']
-define('LOG_TYPE', 0);
-define('LOG_TARGET', 1);
 define('LOG_IDENT', 'libcompactmvc');
 define('LOG_FACILITY', 'local7');
 if (gethostname() == 'libo') {

@@ -15,21 +15,16 @@ LIBCOMPACTMVC_ENTRY;
 class ActionDispatcher extends InputSanitizer {
 	private $handlers;
 	private $handlersobj;
-	private $action;
 	private $action_default;
 	private $control_action;
-
+	private $last_controller;
+	private static $current_route_id;
+	
 	public function __construct($postgetvar, $mapper) {
 		self::$actionname = $postgetvar;
 		$this->handlers = array();
 		$this->handlersobj = array();
 		parent::__construct($mapper);
-	}
-
-	public function set_handler($pgvvalue, $classname) {
-		$this->handlers[$pgvvalue] = $classname;
-		$this->action_default = "";
-		$this->control_action = "";
 	}
 
 	public function set_default($pgvvalue) {
@@ -41,65 +36,97 @@ class ActionDispatcher extends InputSanitizer {
 	}
 
 	public function run() {
-		$this->action = ($this->request(self::$actionname) == null) ? $this->action_default : $this->request(self::$actionname);
+		$route_id = "";
 		if ($this->control_action != "") {
-			if (!isset($this->handlers[$this->control_action])) {
-				throw new Exception("ActionDispatcher error: No handler registered for action " . $this->control_action);
-			} else {
-				try {
-					$this->get_handlersobj($this->control_action)->get_view()->clear();
-					$this->get_handlersobj($this->control_action)->get_view()->set_action_mapper(self::$action_mapper);
-					$this->get_handlersobj($this->control_action)->run();
-				} catch (RBRCException $rbrce) {
-					DLOG("Returning response from the RBRC.");
-				} catch (RedirectException $re) {
-					if (!$re->is_internal()) return;
-				}
-				if ($this->get_handlersobj($this->control_action)->get_redirect() != "") {
-					$this->action = $this->get_handlersobj($this->control_action)->get_redirect();
+			try {
+				self::$current_route_id = $this->control_action;
+				DLOG("EXECUTING CONTROL ACTION: " . $this->control_action);
+				$ho = $this->get_handlersobj($this->control_action);
+				DLOG("CONTROLER TYPE: " . get_class($ho));
+				$ho->get_view()->clear();
+				$ho->run();
+				$this->last_controller = $ho;
+			} catch (RBRCException $rbrce) {
+				DLOG("Returning response from the RBRC.");
+			} catch (RedirectException $re) {
+				if ($re->is_internal()) {
+					if ($ho->get_redirect() != "") {
+						$route_id = $ho->get_redirect();
+					}
 				}
 			}
 		}
 		do {
-			if (isset($this->handlers[$this->action]) && $this->get_handlersobj($this->action)->get_redirect() != "") {
-				$this->action = $this->get_handlersobj($this->action)->get_redirect();
-			}
-			if (!isset($this->handlers[$this->action])) {
-				throw new Exception("Redirect error: No handler registered for action '" . $this->action . "'");
-			} else {
-				try {
-					$this->get_handlersobj($this->action)->get_view()->clear();
-					$this->get_handlersobj($this->action)->get_view()->set_action_mapper(self::$action_mapper);
-					$this->get_handlersobj($this->action)->run();
-				} catch (RBRCException $rbrce) {
-					DLOG("Returning response from the RBRC.");
+			$route_id = ($route_id == "") ? $this->get_action_mapper()->get_route_id() : $route_id;
+			$route_id = ($route_id == "" && $this->get_action_mapper()->get_route_id()) ? $this->action_default : $route_id;
+			self::$current_route_id = $route_id;
+			$ho = $this->get_handlersobj($route_id);
+			DLOG("EXECUTING MAIN ACTION: " . $route_id);
+			DLOG("CONTROLER TYPE: " . get_class($ho));
+			try {
+				$ho->get_view()->clear();
+				$ho->run();
+				$this->last_controller = $ho;
+			} catch (RBRCException $rbrce) {
+				DLOG("Returning response from the RBRC.");
+			} catch (RedirectException $re) {
+				if ($re->is_internal()) {
+					if ($ho->get_redirect() != "") {
+						$route_id = $ho->get_redirect();
+					}
 				}
 			}
-		} while ($this->get_handlersobj($this->action)->get_redirect() != "");
+		} while ($ho->get_redirect() != "");
 	}
 
 	public function get_ob() {
-		return $this->get_handlersobj($this->action)->get_ob();
+		return $this->last_controller->get_ob();
 	}
 
 	public function get_mime_type() {
-		return $this->get_handlersobj($this->action)->get_mime_type();
+		return $this->last_controller->get_mime_type();
 	}
 
 	public static function get_action_mapper() {
-		DLOG();
 		return self::$action_mapper;
 	}
 
-	private function get_handlersobj($action) {
-		if (!@array_key_exists($action, $this->handlersobj)) {
-			$this->handlersobj[$action] = new $this->handlers[$action]();
+	/**
+	 * 
+	 * @param boolean $action true for automatic detection via get_requested_controller(), "" and $this->action_default for defautl ctrlr, $this->control_action for access control controller.
+	 * @throws Exception
+	 * @return unknown|mixed
+	 */
+	private function get_handlersobj($route_id = true) {
+		$id_used = "";
+		if ($route_id == "") {
+			$route_id = $this->action_default;
 		}
-		if (!is_subclass_of($this->handlersobj[$action], "CMVCController")) {
-			unset($this->handlersobj[$action]);
+		$handler = $this->get_action_mapper()->get_link_property_by_route_id($route_id)->get_controller_name();
+		$id_used = $route_id;
+		if ($handler == "") {
+			$handler = $this->get_action_mapper()->get_link_property_by_route_id($this->action_default)->get_controller_name();
+			$id_used = $this->action_default;
+		}
+		DLOG("id_used  = $id_used");
+		DLOG("handler  = $handler");
+		if (array_key_exists($id_used, $this->handlersobj)) {
+			DLOG("Retrieved object from cache.");
+			return $this->handlersobj[$id_used];
+		}
+		DLOG("First use of this route, instantiating new $handler().");
+		$ret = new $handler();
+		$this->handlersobj[$id_used] = $ret;
+		if (!is_subclass_of($this->handlersobj[$id_used], "CMVCController")) {
+			unset($this->handlersobj[$id_used]);
 			throw new Exception("ActionDispatcher::get_handlersobj(\"$action\"): Class must be a subclass of CMVCController.");
 		}
-		return $this->handlersobj[$action];
+		return $ret;
+	}
+	
+	public static function get_current_route_id() {
+		DLOG();
+		return self::$current_route_id;
 	}
 
 }
