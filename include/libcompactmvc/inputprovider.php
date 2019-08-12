@@ -53,7 +53,7 @@ class InputProvider extends InputSanitizer {
 	/**
 	 */
 	public function jsonSerialize() {
-		throw new InvalidMemberException();
+		return parent::to_array();
 	}
 
 }

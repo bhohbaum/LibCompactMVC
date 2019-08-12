@@ -16,7 +16,6 @@ abstract class InputSanitizer implements JsonSerializable {
 	private static $members_populated;
 	protected static $request_data;
 	protected static $request_data_raw;
-	protected static $actionname;
 	protected static $action_mapper;
 	protected static $member_variables;
 
@@ -60,7 +59,7 @@ abstract class InputSanitizer implements JsonSerializable {
 					self::$member_variables[$var] = self::get_remapped($var, $val);
 				}
 				if (is_array($argv)) {
-					$var = "action";
+					$var = "path0";
 					self::$member_variables[$var] = self::get_remapped($var, $argv[1]);
 					for($i = 1; $i <= 10; $i++) {
 						if (array_key_exists($i + 1, $argv)) {
@@ -74,6 +73,8 @@ abstract class InputSanitizer implements JsonSerializable {
 					self::$member_variables[$key] = self::get_remapped($key, $this->request($key));
 				}
 			}
+			if (!array_key_exists("lang", self::$member_variables)) self::$member_variables["lang"] = LANG_DEFAULT;
+			self::$member_variables["lang"] = (self::$member_variables["lang"] == null) ? LANG_DEFAULT : self::$member_variables["lang"];
 		} else {
 			DLOG("Registering variables is DISABLED...");
 		}
@@ -83,10 +84,10 @@ abstract class InputSanitizer implements JsonSerializable {
 	private static function get_remapped($var_name, $value) {
 		DLOG("$var_name = $value");
 		if (isset(self::$action_mapper)) {
-			if ($var_name == self::$actionname) {
-				$res = self::$action_mapper->reverse_action($value);
-			} else if ($var_name == "param0") {
-				$res = self::$action_mapper->reverse_param0($value);
+			if ($var_name == "path0") {
+				$res = self::$action_mapper->reverse_path0($value);
+			} else if ($var_name == "path1") {
+				$res = self::$action_mapper->reverse_path1($value);
 			} else {
 				$res = $value;
 			}
@@ -143,6 +144,16 @@ abstract class InputSanitizer implements JsonSerializable {
 	public function set_actionmapper(ActionMapper $mapper) {
 		DLOG();
 		self::$action_mapper = $mapper;
+	}
+	
+	public function update_input_var($var, $content) {
+		DLOG();
+		self::$member_variables[$var] = $content;
+	}
+	
+	public function to_array() {
+		DLOG();
+		return self::$member_variables;
 	}
 
 }

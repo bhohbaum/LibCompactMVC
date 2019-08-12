@@ -417,6 +417,7 @@ class HTMLMail {
 	private function auto_text_body() {
 		DLOG();
 		if ($this->mailtype == self::MAIL_TYPE_HTML) {
+			DLOG("Mail type is MAIL_TYPE_HTML, creating text body from HTML body.");
 			if ($this->textbody == "") {
 				$this->textbody = str_replace("\r", "", $this->htmlbody);
 				$this->textbody = str_replace("\n", "", $this->textbody);

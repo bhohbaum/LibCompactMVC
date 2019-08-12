@@ -22,14 +22,14 @@ interface ActionMapperInterface {
 
 	/**
 	 *
-	 * @param String $action
-	 *        	action value
-	 * @param String $param0
-	 *        	subaction value
+	 * @param String $path0
+	 *        	path0 value
+	 * @param String $path1
+	 *        	path1 value
 	 * @param String $urltail
 	 *        	additional tail of URL
 	 * @return String path of URL
 	 */
-	public function get_path($lang, $action = null, $param0 = null, $urltail = null);
+	public function get_path($lang, $path0 = null, $path1 = null, $urltail = null);
 
 }

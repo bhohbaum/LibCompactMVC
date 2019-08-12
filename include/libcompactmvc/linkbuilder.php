@@ -13,18 +13,13 @@ LIBCOMPACTMVC_ENTRY;
  * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class LinkBuilder extends Singleton {
-	private $session;
 
-	protected function __construct() {
-		$this->session = Session::get_instance();
-	}
-
-	public function get_link(ActionMapperInterface $mapper, $action = null, $param0 = null, $urltail = "", $lang = null) {
+	public function get_link(ActionMapperInterface $mapper, $path0 = null, $path1 = null, $urltail = "", $lang = null) {
 		if ($lang == null && defined("ST_LANGUAGE")) {
-			$lang = $this->session->get_property(ST_LANGUAGE);
+			$lang = Session::get_instance()->get_property(ST_LANGUAGE);
 		}
-		$lang = ($lang == null) ? "app" : $lang;
-		return $mapper->get_base_url() . $mapper->get_path($lang, $action, $param0, $urltail);
+		$lang = (!is_string($lang)) ? InputProvider::get_instance()->get_var("lang") : $lang;
+		return $mapper->get_base_url() . $mapper->get_path($lang, $path0, $path1, $urltail);
 	}
 
 }

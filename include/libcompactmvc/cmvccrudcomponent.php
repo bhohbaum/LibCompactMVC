@@ -56,9 +56,9 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		try {
 			if (is_callable(array(
 					$subject,
-					$this->param(2)
+					$this->path(2)
 			))) {
-				$cmethod = $this->param(2);
+				$cmethod = $this->path(2);
 				if ($cmethod == $method) return true;
 				
 				DLOG("Checking access rights for requested RPC:" . $cmethod . " HTTP verb: " . $this->get_method());
@@ -152,7 +152,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$pk = $pk[0];
 		$this->__m_subject = new $table();
 		$this->__m_subject->by(array(
-				$pk => $this->param(1)
+				$pk => $this->path(1)
 		));
 		$this->json_response($this->__m_subject);
 	}
@@ -173,9 +173,9 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$pk = $td->primary_keys($table);
 		$pk = (is_array($pk) && count($pk) > 0) ? $pk[0] : "id";
 		$this->__m_subject = new $table();
-		if ($this->param(1) != "undefined") {
+		if ($this->path(1) != "undefined") {
 			$this->__m_subject->by(array(
-					$pk => $this->param(1)
+					$pk => $this->path(1)
 			));
 		}
 		try {
@@ -187,10 +187,10 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		try {
 			if (is_callable(array(
 					$this->__m_subject,
-					$this->param(2)
+					$this->path(2)
 			))) {
 				$res = null;
-				$method = $this->param(2);
+				$method = $this->path(2);
 				try {
 					$param = null;
 					$this->__m_object = json_decode($this->__object, true);
@@ -217,9 +217,9 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				$this->json_response($res);
 				return;
 			} else {
-				if ($this->param(2) == null)
-					throw new InvalidMemberException('$this->param(2) is null, doing full copy...');
-				$this->__m_subject->{$this->param(2)} = $this->__object;
+				if ($this->path(2) == null)
+					throw new InvalidMemberException('$this->path(2) is null, doing full copy...');
+				$this->__m_subject->{$this->path(2)} = $this->__object;
 				$this->__m_object = $this->__object;
 			}
 		} catch (InvalidMemberException $e1) {
@@ -227,7 +227,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 				$this->__m_subject->{$pk} = $this->{$pk};
 			} catch (InvalidMemberException $e2) {
 				try {
-					$this->__m_subject->{$pk} = $this->param(1);
+					$this->__m_subject->{$pk} = $this->path(1);
 				} catch (InvalidMemberException $e6) {
 					unset($this->__m_subject->{$pk});
 				}
@@ -263,7 +263,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			$this->__m_subject->{$pk} = $this->{$pk};
 		} catch (InvalidMemberException $e2) {
 			try {
-				$this->__m_subject->{$pk} = $this->param(1);
+				$this->__m_subject->{$pk} = $this->path(1);
 			} catch (InvalidMemberException $e) {
 				unset($this->__m_subject->{$pk});
 			}
@@ -289,7 +289,7 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 		$pk = $pk[0];
 		$this->__m_subject = new $table();
 		$this->__m_subject->by(array(
-				$pk => $this->param(1)
+				$pk => $this->path(1)
 		));
 		if (!$init) $this->__m_subject->delete();
 	}

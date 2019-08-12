@@ -26,6 +26,7 @@ class Session {
 
 	// private constructor prevents direct instantiation
 	private function __construct() {
+		DLOG();
 		if (!isset($_SESSION)) {
 			if (php_sapi_name() != "cli") {
 				ini_set('session.cookie_httponly', 1);
@@ -47,6 +48,7 @@ class Session {
 		// This makes it harder for attackers to "steal" our session.
 		// THIS WILL CAUSE TROUBLE WITH AJAX CALLS!!!
 		if (!defined("SESSION_DYNAMIC_ID_DISABLED") || !SESSION_DYNAMIC_ID_DISABLED) {
+			WLOG("WARNING!!! DYNAMIC SESSION ID IS IN USE! THIS MAY CAUSE TROUBLE IN CONJUNCTION WITH AJAX!");
 			if (ini_get("session.use_cookies")) {
 				$sname = session_name();
 				setcookie($sname, '', time() - 42000);
@@ -151,11 +153,14 @@ class Session {
 		session_destroy();
 		ini_set('session.cookie_httponly', 1);
 		if (defined('SESSION_INSECURE_COOKIE')) {
-			if (!SESSION_INSECURE_COOKIE)
-				if (is_tls_con())
+			if (!SESSION_INSECURE_COOKIE) {
+				if (is_tls_con()) {
 					ini_set('session.cookie_secure', 1);
-		} else if (is_tls_con())
+				}
+			}
+		} else if (is_tls_con()) {
 			ini_set('session.cookie_secure', 1);
+		}
 		session_start();
 		session_regenerate_id(true);
 		self::$instance = null;

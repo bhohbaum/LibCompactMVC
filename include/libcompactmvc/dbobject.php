@@ -148,6 +148,10 @@ class DbObject extends DbAccess implements JsonSerializable {
 		}
 		return $ret;
 	}
+	
+	public function unset($var_name) {
+		unset($this->__member_variables[$var_name]);
+	}
 
 	/**
 	 *
@@ -290,6 +294,25 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$this->__isnew = false;
 		$this->on_after_save();
 		return $this;
+	}
+	
+	public function update_all(DbConstraint $constraint = null) {
+		if ($constraint == null) {
+			$constraint = array();
+		} else {
+			$constraint->set_dto($this);
+		}
+		$constraint = ($constraint == null) ? array() : $constraint;
+		$fields = array();
+		$cols = $this->__td->columns($this->__tablename);
+		foreach ($cols as $key => $val) {
+			if (array_key_exists($val, $this->__member_variables)) {
+				$fields[$val] = $this->__member_variables[$val];
+			}
+		}
+		$qb = new QueryBuilder();
+		$q = $qb->update($this->__tablename, $fields, $constraint);
+		$ret = $this->run_query($q, false, false, null, $this->__tablename, true);
 	}
 
 	/**

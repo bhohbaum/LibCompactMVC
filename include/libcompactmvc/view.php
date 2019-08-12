@@ -161,22 +161,22 @@ class View {
 	/**
 	 *
 	 * @param ActionMapperInterface $mapper
-	 * @param String $action
-	 * @param String $param0
+	 * @param String $path0
+	 * @param String $path1
 	 * @param String $urltail
 	 */
-	private function link(ActionMapperInterface $mapper, $action = null, $param0 = null, $urltail = null, $lang = null) {
-		return $this->__lb->get_link($mapper, $action, $param0, $urltail, $lang);
+	private function link(ActionMapperInterface $mapper, $path0 = null, $path1 = null, $urltail = null, $lang = null) {
+		return $this->__lb->get_link($mapper, $path0, $path1, $urltail, $lang);
 	}
 
 	/**
 	 *
-	 * @param String $action
-	 * @param String $param0
+	 * @param String $path0
+	 * @param String $path1
 	 * @param String $urltail
 	 */
-	private function lnk($action = null, $param0 = null, $urltail = null, $lang = null) {
-		return $this->__lb->get_link(self::$__mapper, $action, $param0, $urltail, $lang);
+	private function lnk($path0 = null, $path1 = null, $urltail = null, $lang = null) {
+		return $this->__lb->get_link(self::$__mapper, $path0, $path1, $urltail, $lang);
 	}
 
 	/**
@@ -226,7 +226,8 @@ class View {
 				$this->__part,
 				$this->__vals,
 				$this->__tpls,
-				$this->__comp
+				$this->__comp,
+				InputProvider::get_instance()->to_array()
 		));
 		$hash = md5($serialized);
 		return $hash;

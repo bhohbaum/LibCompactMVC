@@ -98,6 +98,40 @@ function is_windows() {
 	}
 }
 
+function is_tls_con() {
+	$ret = null;
+	if (php_sapi_name() != "cli") {
+		$ret = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] != 'off') ? true : false;
+	}
+	return $ret;
+}
+
+/**
+ * 
+ * @param unknown $url
+ * @return boolean
+ */
+function is_imgdataurl($url) {
+	return str_contains($url, "data:image") && str_contains($url, ";base64,");
+}
+
+/**
+ * 
+ * @param unknown $url
+ * @param unknown $data
+ * @param unknown $type
+ * @return boolean
+ */
+function imgdataurl_extract($url, &$data, &$type) {
+	if (is_imgdataurl($url)) {
+		$tmp = explode(";base64,", $url);
+		$data = base64_decode($tmp[1]);
+		$type = str_replace("data:image/", "", $tmp[0]);
+		return true;
+	}
+	return false;
+}
+
 function mkpw($length = 9, $add_dashes = false, $available_sets = 'luds') {
 	$sets = array();
 	if (strpos($available_sets, 'l') !== false)
@@ -280,16 +314,27 @@ function base_url() {
 	return $ret;
 }
 
-function is_tls_con() {
-	$ret = null;
-	if (php_sapi_name() != "cli") {
-		$ret = (array_key_exists('HTTPS', $_SERVER) && $_SERVER['HTTPS'] != 'off') ? true : false;
-	}
-	return $ret;
+function lnk($path0 = null, $path1 = null, $urltail = "", $lang = null) {
+	return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $path0, $path1, $urltail, $lang);
 }
 
-function lnk($action = null, $param0 = null, $urltail = "", $lang = null) {
-	return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $action, $param0, $urltail, $lang);
+function lnk_by_route_id($route_id) {
+	$arr = explode(".", $route_id);
+	if (count($arr) == 2) {
+		return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $arr[1], null, null, $arr[0]);
+	}
+	if (count($arr) == 3) {
+		return LinkBuilder::get_instance()->get_link(ActionDispatcher::get_action_mapper(), $arr[1], $arr[2], null, $arr[0]);
+	}
+}
+
+function route_id($path0 = null, $path1 = null, $urltail = "", $lang = null) {
+	if ($lang == null) $lang = InputProvider::get_instance()->get_var("lang");
+	if ($path0 != null && $path1 == null) {
+		return $lang . "." . $path0;
+	} else if ($path0 != null && $path1 != null) {
+		return $lang . "." . $path0 . "." . $path1;
+	}
 }
 
 function uppercase($str) {
@@ -314,6 +359,13 @@ function lowercase($str) {
 
 function lc($str) {
 	lowercase($str);
+}
+
+function str_contains($haystack, $needle) {
+	if (strpos($haystack, $needle) !== false) {
+		return true;
+	}
+	return false;
 }
 
 function tr($id, $language, $text = null) {

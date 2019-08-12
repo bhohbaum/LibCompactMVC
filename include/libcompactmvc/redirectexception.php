@@ -17,12 +17,17 @@ class RedirectException extends Exception {
 
 	/**
 	 *
-	 * @param String $location For external redirects the target URL, for internal redirects the target action.
+	 * @param String $location For external redirects the target URL or route id, for internal redirects the target route id.
 	 * @param int $code	The HTTP status code to use for external redirects.
 	 * @param Boolean $internal Set to true for internal redirects, false for external redirects.
 	 */
 	public function __construct($location = null, $code = 302, $internal = false) {
 		DLOG($location);
+		if (!$internal) {
+			if (lc(substr($location, 0,4)) != "http") {
+				$location = lnk_by_route_id($location);
+			}
+		}
 		$this->message = $location;
 		$this->code = $code;
 		$this->is_internal = $internal;

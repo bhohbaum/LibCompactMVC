@@ -19,6 +19,9 @@ abstract class CMVCController extends InputSanitizer {
 	private $__mime_type;
 	private $__redirect;
 	private $__caching;
+	private $__base_param;
+	private $__base_path;
+	
 
 	/**
 	 *
@@ -593,5 +596,27 @@ abstract class CMVCController extends InputSanitizer {
 		DLOG();
 		return $this->__redirect;
 	}
+	
+	/**
+	 *
+	 * @param int $pnum Set the param position
+	 */
+	public function set_base_path($pnum) {
+		DLOG($pnum);
+		if (!is_int($pnum))
+			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
+		$this->__base_path = $pnum;
+	}
+	
+	/**
+	 *
+	 * @return int The URL path depth the controller is located in (based on routing)
+	 */
+	protected function get_base_path() {
+		DLOG();
+		return $this->__base_path;
+	}
+	
+	
 
 }

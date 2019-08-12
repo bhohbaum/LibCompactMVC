@@ -14,7 +14,6 @@ LIBCOMPACTMVC_ENTRY;
  */
 abstract class CMVCComponent extends CMVCController {
 	private $__instance_id;
-	private $__base_param;
 	private $__run_executed = false;
 
 	/**
@@ -35,37 +34,17 @@ abstract class CMVCComponent extends CMVCController {
 
 	/**
 	 *
-	 * @param int $base_param
+	 * @param int $base_path
 	 */
-	public function __construct($base_param = 0) {
+	public function __construct($base_path = null) {
 		DLOG();
 		parent::__construct();
-		if (!is_int($base_param))
+		if (!is_int($base_path) && $base_path != null)
 			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
-		$this->__base_param = (!isset($this->__base_param)) ? $base_param : $this->__base_param;
+		if ($base_path != null) $this->set_base_path($base_path);
 		$this->__instance_id = uniqid();
 		$this->get_view()->set_value("CMP_INST_ID", $this->__instance_id);
 		$this->get_view()->set_value("CMP_ID", $this->get_component_id());
-	}
-
-	/**
-	 *
-	 * @param int $pnum Set the param position
-	 */
-	public function set_base_param($pnum) {
-		DLOG($pnum);
-		if (!is_int($pnum))
-			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
-		$this->__base_param = $pnum;
-	}
-	
-	/**
-	 * 
-	 * @return int The param position
-	 */
-	protected function get_base_param() {
-		DLOG();
-		return $this->__base_param;
 	}
 
 	/**
@@ -95,10 +74,10 @@ abstract class CMVCComponent extends CMVCController {
 	 *
 	 * @param int $pnum
 	 */
-	protected function param($pnum) {
+	protected function path($pnum) {
 		if (!is_int($pnum))
 			throw new InvalidArgumentException("Invalid Parameter: int expected.", 500);
-		$varname = 'param' . ($this->__base_param + $pnum);
+		$varname = 'path' . ($this->get_base_path() + $pnum);
 		if (!array_key_exists($varname, self::$member_variables))
 			throw new InvalidMemberException("Invalid member: " . $varname);
 		$val = self::$member_variables[$varname];

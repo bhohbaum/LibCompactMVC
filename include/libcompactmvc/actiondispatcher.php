@@ -16,32 +16,34 @@ class ActionDispatcher extends InputSanitizer {
 	private $handlers;
 	private $handlersobj;
 	private $action_default;
-	private $control_action;
+	private $action_control;
 	private $last_controller;
+	private $base_path_num;
 	private static $current_route_id;
+	private static $mapper;
 	
-	public function __construct($postgetvar, $mapper) {
-		self::$actionname = $postgetvar;
+	public function __construct($mapper) {
 		$this->handlers = array();
 		$this->handlersobj = array();
 		parent::__construct($mapper);
 	}
 
-	public function set_default($pgvvalue) {
-		$this->action_default = $pgvvalue;
+	public function set_default($route_id) {
+		$this->action_default = $route_id;
 	}
 
-	public function set_control($pgvvalue) {
-		$this->control_action = $pgvvalue;
+	public function set_control($route_id) {
+		$this->action_control = $route_id;
 	}
 
 	public function run() {
 		$route_id = "";
-		if ($this->control_action != "") {
+		if ($this->action_control != "") {
 			try {
-				self::$current_route_id = $this->control_action;
-				DLOG("EXECUTING CONTROL ACTION: " . $this->control_action);
-				$ho = $this->get_handlersobj($this->control_action);
+				self::$current_route_id = $this->action_control;
+				DLOG("EXECUTING CONTROL ACTION: " . $this->action_control);
+				$ho = $this->get_handlersobj($this->action_control);
+				$ho->set_base_path($this->base_path_num);
 				DLOG("CONTROLER TYPE: " . get_class($ho));
 				$ho->get_view()->clear();
 				$ho->run();
@@ -61,6 +63,7 @@ class ActionDispatcher extends InputSanitizer {
 			$route_id = ($route_id == "" && $this->get_action_mapper()->get_route_id()) ? $this->action_default : $route_id;
 			self::$current_route_id = $route_id;
 			$ho = $this->get_handlersobj($route_id);
+			$ho->set_base_path($this->base_path_num);
 			DLOG("EXECUTING MAIN ACTION: " . $route_id);
 			DLOG("CONTROLER TYPE: " . get_class($ho));
 			try {
@@ -90,12 +93,16 @@ class ActionDispatcher extends InputSanitizer {
 	public static function get_action_mapper() {
 		return self::$action_mapper;
 	}
+	
+	public static function set_action_mapper(ActionMapperInterface $mapper) {
+		self::$action_mapper = $mapper;
+	}
 
-	/**
+/**
 	 * 
-	 * @param boolean $action true for automatic detection via get_requested_controller(), "" and $this->action_default for defautl ctrlr, $this->control_action for access control controller.
+	 * @param boolean $action true for automatic detection via get_requested_controller(), "" and $this->action_default for defautl ctrlr, $this->action_control for access control controller.
 	 * @throws Exception
-	 * @return unknown|mixed
+	 * @return CMVCController
 	 */
 	private function get_handlersobj($route_id = true) {
 		$id_used = "";
@@ -108,8 +115,10 @@ class ActionDispatcher extends InputSanitizer {
 			$handler = $this->get_action_mapper()->get_link_property_by_route_id($this->action_default)->get_controller_name();
 			$id_used = $this->action_default;
 		}
+		$this->base_path_num = $this->get_action_mapper()->get_link_property_by_route_id($id_used)->get_base_path_num();
 		DLOG("id_used  = $id_used");
 		DLOG("handler  = $handler");
+		DLOG("base path depth = " . $this->base_path_num);
 		if (array_key_exists($id_used, $this->handlersobj)) {
 			DLOG("Retrieved object from cache.");
 			return $this->handlersobj[$id_used];
@@ -128,5 +137,6 @@ class ActionDispatcher extends InputSanitizer {
 		DLOG();
 		return self::$current_route_id;
 	}
-
+	
+	
 }

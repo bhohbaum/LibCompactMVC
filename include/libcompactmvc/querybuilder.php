@@ -185,7 +185,7 @@ class QueryBuilder extends DbAccess {
 	 */
 	public function where_substring($table = null, $constraint = array(), $filter = array(), $comparator = DbFilter::COMPARE_EQUAL, $logic_op = DbFilter::LOGIC_OPERATOR_AND) {
 		if ($table == null) return "1";
-		if (count($constraint) == 0 && count($filter) == 0) return "1";
+		if (is_array($constraint) && count($constraint) == 0 && count($filter) == 0) return "1";
 		$desc = $this->td->columninfo($table);
 		$first = true;
 		$qstr1 = "(";
@@ -229,11 +229,11 @@ class QueryBuilder extends DbAccess {
 		}
 		$qstr2 = "";
 		foreach ($filter as $filter) {
-			if (!$first) $qstr2 .= $logic_op . " ";
+			if (!$first) $qstr2 .= " " . $logic_op . " ";
 			$first = false;
 			$qstr2 .= $filter->get_query_substring();
 		}
-		$qstr1 = substr($qstr1, 0, -1);
+// 		$qstr1 = substr($qstr1, 0, -1);
 		$qstr2 .= ")";
 		$qstr = $qstr1 . $qstr2;
 		DLOG($qstr);

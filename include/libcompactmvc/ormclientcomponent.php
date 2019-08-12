@@ -22,8 +22,7 @@ class ORMClientComponent extends CMVCComponent {
 	protected function main_run() {
 		DLOG();
 		parent::main_run();
-		$td = new TableDescription();
-		$tables = $td->get_all_tables();
+		$tables = (new TableDescription())->get_all_tables();
 		$this->get_view()->set_value("tables", $tables);
 		foreach ($tables as $table) {
 			if (!class_exists($table))
@@ -33,7 +32,8 @@ class ORMClientComponent extends CMVCComponent {
 				throw new DBException("Class " . $table . " must be derived from DbObject.");
 			$class = new ReflectionClass($table);
 			$methods = array();
-			foreach ($class->getMethods() as $method) {
+			$am = $class->getMethods();
+			foreach ($am as $method) {
 				if ($method->class == $table && 
 					$method->name != "get_endpoint" &&
 					$method->name != "init" &&
@@ -41,13 +41,16 @@ class ORMClientComponent extends CMVCComponent {
 					$method->name != "on_before_save" &&
 					$method->name != "save" &&
 					$method->name != "delete" &&
+					$method->name != "unset" &&
 					$method->name != "jsonSerialize")
 					$methods[] = $method->name;
 			}
+			$methods[] = "update_all";
 			$this->get_view()->set_value("methods_" . $table, $methods);
 			$this->get_view()->set_value("endpoint_" . $table, $subject->get_endpoint());
-			foreach ($class->getMethods() as $method) {
-				if ($method->class == $table)
+			foreach ($am as $method) {
+				if ($method->class == $table || 
+						$method->name == "update_all")
 					$this->get_view()->set_value("method_" . $table. "::" . $method->name, count($method->getParameters()) > 0);
 			}
 		}

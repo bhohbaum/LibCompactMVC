@@ -38,7 +38,6 @@ abstract class Singleton {
 		if ((!isset(self::$instance)) || (!array_key_exists($name, self::$instance))) {
 			self::$instance[$name] = new $name($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p);
 		}
-		
 		return self::$instance[$name];
 	}
 
