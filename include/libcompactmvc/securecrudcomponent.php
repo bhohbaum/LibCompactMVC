@@ -45,8 +45,8 @@ abstract class SecureCRUDComponent extends CMVCCRUDComponent {
 			$found = false;
 			foreach ($this->get_response() as $key => $val) {
 				try {
-					if ($val->user == null) $found = true;
-					else if ($val->user->id != $this->get_subject()->__user) $found = true;
+					if ($this->get_user_for_dto($val) == null) $found = true;
+					else if ($this->get_user_for_dto($val)->id != $this->get_subject()->__user) $found = true;
 					else if (!$this->dto_belongs_to_user($val, $this->__current_user)) $found = true;
 				} catch (Exception $e) {
 					$found = true;
@@ -61,7 +61,7 @@ abstract class SecureCRUDComponent extends CMVCCRUDComponent {
 				ELOG("Response content does not belong to an existing user! Access forbidden!");
 				throw new DBException("Response content does not belong to an existing user! Access forbidden!", 403);
 			}
-			if ($this->get_response()->user->id != $this->get_subject()->__user) {
+			if ($this->get_user_for_dto($this->get_response())->id != $this->get_subject()->__user) {
 				ELOG("Response content does not match the provided user key! Access forbidden!");
 				throw new DBException("Response content does not match the provided user key! Access forbidden!", 403);
 			}

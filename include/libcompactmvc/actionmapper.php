@@ -29,6 +29,7 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 		self::$rev_route_lookup = array();
 		$this->rev_path0 = array();
 		$this->rev_path1 = array();
+		$this->register_internal_endpoints();
 		$this->register_endpoints();
 		$GLOBALS["SITEMAP"] = array();
 		$m2 = $this->get_mapping_2();
@@ -131,10 +132,19 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 	 * @param string $id
 	 * @return LinkProperty
 	 */
-	public function get_link_property_by_route_id($id) {
+	public function get_link_property_by_route_id($inid) {
+		$id = $inid;
 		DLOG("('$id')");
+		while (strlen($id) > 0 && !array_key_exists($id, self::$rev_route_lookup)) {
+			DLOG($id);
+			if (!array_key_exists($id, self::$rev_route_lookup)) {
+				$arr = explode(".", $id);
+				unset($arr[count($arr) - 1]);
+				$id = implode(".", $arr);
+			}
+		}
 		if (!array_key_exists($id, self::$rev_route_lookup)) {
-			throw new ActionMapperException("Route id '$id' could not be resolved.", 404);
+			throw new ActionMapperException("Route id '$inid' could not be resolved.", 404);
 		}
 		return self::$rev_route_lookup[$id];
 	}
@@ -146,8 +156,6 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 	public function get_route_id() {
 		$tmp = "";
 		try {
-// 			$tmp = route_id($this->reverse_path0(InputProvider::get_instance()->get_var("path0")));
-// 			$tmp = route_id($this->reverse_path0(InputProvider::get_instance()->get_var("path0")), $this->reverse_path1(InputProvider::get_instance()->get_var("path1")));
 			$tmp = route_id(InputProvider::get_instance()->get_var("path0"));
 			$tmp = route_id(InputProvider::get_instance()->get_var("path0"), InputProvider::get_instance()->get_var("path1"));
 		} catch (InvalidMemberException $e) {
@@ -254,6 +262,11 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 		$tr = (array_key_exists($path1, $this->rev_path1)) ? $this->rev_path1[$path1] : $path1;
 		if (!$nolog) DLOG("'$path1' translates back to '$tr'");
 		return $tr;
+	}
+	
+	private function register_internal_endpoints() {
+		DLOG();
+		$this->register_ep_2(InputProvider::get_instance()->get_var("lang"), "sys", new LinkProperty("/app/sys", false, "CMVCSystem"));
 	}
 
 }

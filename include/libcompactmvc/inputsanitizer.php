@@ -55,16 +55,14 @@ abstract class InputSanitizer implements JsonSerializable {
 		if (REGISTER_HTTP_VARS) {
 			DLOG("Registering variables...");
 			if (php_sapi_name() == "cli") {
-				foreach ($_ENV as $var => $val) {
+				foreach (getenv() as $var => $val) {
 					self::$member_variables[$var] = self::get_remapped($var, $val);
 				}
 				if (is_array($argv)) {
-					$var = "path0";
-					self::$member_variables[$var] = self::get_remapped($var, $argv[1]);
 					for($i = 1; $i <= 10; $i++) {
-						if (array_key_exists($i + 1, $argv)) {
-							$var = "param" . ($i - 1);
-							self::$member_variables[$var] = self::get_remapped($var, $argv[$i + 1]);
+						if (array_key_exists($i + 0, $argv)) {
+							$var = "path" . ($i - 1);
+							self::$member_variables[$var] = self::get_remapped($var, $argv[$i + 0]);
 						}
 					}
 				}
@@ -79,6 +77,7 @@ abstract class InputSanitizer implements JsonSerializable {
 			DLOG("Registering variables is DISABLED...");
 		}
 		self::$members_populated = true;
+		DLOG(print_r(self::$member_variables, true));
 	}
 
 	private static function get_remapped($var_name, $value) {

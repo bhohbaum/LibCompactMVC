@@ -142,6 +142,8 @@ $GLOBALS['MYSQL_NO_CACHING'] = array(
 );
 define("DBA_DEFAULT_CLASS", "DBA");
 
+define("FIREBASE_API_TOKEN", "AAAAg778THU:APA91bFRNSAc_54I3-INM-DS9Q3gg1-8ijLKzpUvY14r3hX5Wx2L38E3aCCnuqehIn2dTQMWfx4Hd7cLhaMwWU_f_M2RWkdn3qwv7myrPuGVhWKyfX0vUAoDy5VAaltUb1UJOYv5eowR");
+
 define('TBL_APP_PFX', 'cmvc_');
 define('TBL_EVENT_TYPES', 'event_types');
 define('TBL_IMAGES', 'images');
