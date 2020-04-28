@@ -10,30 +10,34 @@
  * @link https://github.com/bhohbaum/LibCompactMVC
  *************************************************************************************************/
 
+$ws.prototype.default_server_uri = '<?= $this->get_value("ws_server_uri") ?>';
+
+window.$_ws = new $ws($ws.prototype.default_server_uri);
+
 <?php foreach ($this->get_value("tables") as $table) { ?>
 //************************************************************************************************
 // <?= $table ?> 
 //************************************************************************************************
 // constructor
-var <?= $table ?> = function() {
+window.<?= $table ?> = function() {
 	$DbObject.call(this, '<?= $this->get_value("endpoint_" . $table) ?>');
 	this.__type = "<?= $table ?>";
 };
 
 // set prototype (derive from $DbObject)
-<?= $table ?>.prototype = Object.create($DbObject.prototype);
+window.<?= $table ?>.prototype = Object.create($DbObject.prototype);
 
 // fix constructor
-<?= $table ?>.prototype.constructor = <?= $table ?>;
+window.<?= $table ?>.prototype.constructor = <?= $table ?>;
 
 // <?= (count($this->get_value("methods_" . $table)) > 0) ? "" : "no " ?>methods
 <?php foreach ($this->get_value("methods_" . $table) as $method) { ?>
 <?php if ($this->get_value("method_" . $table. "::" . $method)) { ?>
-<?= $table ?>.prototype.<?= $method ?> = function(cb, param) {
+window.<?= $table ?>.prototype.<?= $method ?> = function(cb, param) {
 	this.callMethod(cb, "<?= $method ?>", param);
 }
 <?php } else { ?>
-<?= $table ?>.prototype.<?= $method ?> = function(cb) {
+window.<?= $table ?>.prototype.<?= $method ?> = function(cb) {
 	this.callMethod(cb, "<?= $method ?>");
 }
 <?php } ?>

@@ -13,7 +13,7 @@ LIBCOMPACTMVC_ENTRY;
  * @license 	BSD License (see LICENSE file in root directory)
  * @link		https://github.com/bhohbaum/LibCompactMVC
  */
-if (!extension_loaded("redis")) {
+if (!extension_loaded("redis")  && !REDIS_FILE_FALLBACK_DISABLED) {
 	class Redis {
 		private $redisdir;
 		private $content;
@@ -36,12 +36,12 @@ if (!extension_loaded("redis")) {
 			if (!file_exists($fname))
 				return false;
 			$ttl = filemtime($fname);
+			$val = file_get_contents($this->redisdir . md5($key));
+			//touch($fname, $ttl);
 			if ($ttl < time()) {
 				unlink($fname);
 				return false;
 			}
-			$val = file_get_contents($this->redisdir . md5($key));
-			touch($fname, $ttl);
 			return $val;
 		}
 
@@ -52,7 +52,10 @@ if (!extension_loaded("redis")) {
 		}
 
 		public function expire($key, $ttl) {
-			touch($this->redisdir . md5($key), time() + $ttl);
+			$fname = $this->redisdir . md5($key);
+			if (!file_exists($fname))
+				return false;
+			touch($fname, time() + $ttl);
 		}
 
 		public function delete($key) {

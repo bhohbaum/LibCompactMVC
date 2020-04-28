@@ -3,8 +3,14 @@ LibCMVC System Help
 
 Available actions:
 
-gendto:			generate missing DTO classes based on current database
-genep:			generate missing endpoints for DTOs
+gendto:         generate missing DTO classes based on current database
+genep:          generate missing endpoints for DTOs
+
+cc:             clear all caches
+cc_file:        delete combined code cache file
+cc_redis:       clear complete redis cache
+cc_table:       clear table and query cache (redis)
+cc_render:      clear render cache (redis)
 
 <?php } ?><?php if ($this->is_active("newrouting")) { ?>
 <?php if (count($this->get_value("tables")) > 0) { ?>

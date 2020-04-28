@@ -13,6 +13,7 @@ LIBCOMPACTMVC_ENTRY;
  * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 abstract class InputSanitizer implements JsonSerializable {
+	private static $members_initialized;
 	private static $members_populated;
 	protected static $request_data;
 	protected static $request_data_raw;
@@ -49,14 +50,19 @@ abstract class InputSanitizer implements JsonSerializable {
 		if (self::$members_populated === true) {
 			return;
 		}
+		if (self::$members_initialized === true && !isset(self::$action_mapper)) {
+			return;
+		}
 		InputSanitizer::$request_data = null;
 		self::$member_variables = array();
 		global $argv;
 		if (REGISTER_HTTP_VARS) {
 			DLOG("Registering variables...");
 			if (php_sapi_name() == "cli") {
-				foreach (getenv() as $var => $val) {
-					self::$member_variables[$var] = self::get_remapped($var, $val);
+				if (is_array(@getenv())) {
+					foreach (@getenv() as $var => $val) {
+						self::$member_variables[$var] = self::get_remapped($var, $val);
+					}
 				}
 				if (is_array($argv)) {
 					for($i = 1; $i <= 10; $i++) {
@@ -76,7 +82,8 @@ abstract class InputSanitizer implements JsonSerializable {
 		} else {
 			DLOG("Registering variables is DISABLED...");
 		}
-		self::$members_populated = true;
+		self::$members_populated = isset(self::$action_mapper);
+		self::$members_initialized = true;
 		DLOG(print_r(self::$member_variables, true));
 	}
 
@@ -108,6 +115,7 @@ abstract class InputSanitizer implements JsonSerializable {
 			$stack = debug_backtrace();
 			throw new InvalidArgumentException('Unable to access a variable without a name at ' . $stack[0]["file"] . '" on line ' . $stack[0]["line"]);
 		}
+		$this->populate_members();
 		if (!is_array(self::$member_variables)) {
 			$stack = debug_backtrace();
 			throw new InvalidMemberException('Member not defined: ' . get_class($this) . '::' . $var_name . ' in "' . $stack[0]["file"] . '" on line ' . $stack[0]["line"]);
@@ -127,6 +135,7 @@ abstract class InputSanitizer implements JsonSerializable {
 	 * @param unknown_type $value
 	 */
 	public function __set($var_name, $value) {
+		$this->populate_members();
 		self::$member_variables[$var_name] = $value;
 	}
 
@@ -134,6 +143,7 @@ abstract class InputSanitizer implements JsonSerializable {
 	 */
 	public function jsonSerialize() {
 		$ret = array();
+		$this->populate_members();
 		foreach (self::$member_variables as $key => $val) {
 			$ret[$key] = $this->__get($key);
 		}
@@ -143,15 +153,18 @@ abstract class InputSanitizer implements JsonSerializable {
 	public function set_actionmapper(ActionMapper $mapper) {
 		DLOG();
 		self::$action_mapper = $mapper;
+		$this->populate_members();
 	}
 	
 	public function update_input_var($var, $content) {
 		DLOG();
+		$this->populate_members();
 		self::$member_variables[$var] = $content;
 	}
 	
 	public function to_array() {
 		DLOG();
+		$this->populate_members();
 		return self::$member_variables;
 	}
 

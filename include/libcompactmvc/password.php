@@ -7,8 +7,6 @@
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
  * @copyright 2012 The Authors
  */
-namespace {
-
 	if (!defined('PASSWORD_BCRYPT')) {
 		/**
 		 * PHPUnit Process isolation caches constants, but not function declarations.
@@ -262,11 +260,11 @@ namespace {
 		}
 	}
 
-}
 
-namespace PasswordCompat\binary {
 
-	if (!function_exists('PasswordCompat\\binary\\_strlen')) {
+// namespace_PasswordCompat\binary {
+
+	if (!function_exists('_strlen')) {
 
 		/**
 		 * Count the number of bytes in a string
@@ -331,5 +329,4 @@ namespace PasswordCompat\binary {
 		}
 	}
 
-}
 

@@ -111,7 +111,7 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 				throw new ActionMapperException("Path mapping is allready registered on a higher level: lang = '$lang', path0 = '$path0', (path1 = '$path1')", 500);
 			}
 		}
-		if (array_key_exists($lang, $this->mapping3) && is_array($this->mapping3[$lang]) && is_array($this->mapping3[$lang][$path0])) {
+		if (@array_key_exists($lang, $this->mapping3) && @is_array($this->mapping3[$lang]) && @is_array($this->mapping3[$lang][$path0])) {
 			if (array_key_exists($path0, $this->mapping3[$lang]) && array_key_exists($path1, $this->mapping3[$lang][$path0])) {
 				throw new ActionMapperException("Path mapping is allready registered: lang = '$lang', path0 = '$path0', path1 = '$path1'", 500);
 			}
@@ -266,7 +266,9 @@ abstract class ActionMapper extends Singleton implements ActionMapperInterface {
 	
 	private function register_internal_endpoints() {
 		DLOG();
-		$this->register_ep_2(InputProvider::get_instance()->get_var("lang"), "sys", new LinkProperty("/app/sys", false, "CMVCSystem"));
+		$lang = InputProvider::get_instance()->get_var("lang");
+		$this->register_ep_2($lang, "sys", new LinkProperty("/" . $lang . "/sys", false, "CMVCSystem"));
+		$this->register_ep_3($lang, "sysint", "ormclientcomponent", new LinkProperty("/" . $lang . "/sysint/ormclient.js", false, "ORMClientComponent"));
 	}
 
 }

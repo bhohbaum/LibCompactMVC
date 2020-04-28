@@ -282,7 +282,7 @@ abstract class DbAccess {
 	 * @return string comparison operator
 	 */
 	protected function cmpissqlnull($var) {
-		if ($this->sqlnull($var) == "null") {
+		if ($this->sqlnull($var) == "NULL") {
 			return "IS";
 		} else {
 			return "=";
@@ -295,7 +295,7 @@ abstract class DbAccess {
 	 * @return string comparison operator
 	 */
 	protected function cmpisnotsqlnull($var) {
-		if ($this->sqlnull($var) == "null") {
+		if ($this->sqlnull($var) == "NULL") {
 			return "IS NOT";
 		} else {
 			return "!=";

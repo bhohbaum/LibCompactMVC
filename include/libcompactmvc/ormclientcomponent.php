@@ -54,6 +54,7 @@ class ORMClientComponent extends CMVCComponent {
 					$this->get_view()->set_value("method_" . $table. "::" . $method->name, count($method->getParameters()) > 0);
 			}
 		}
+		$this->get_view()->set_value("ws_server_uri", WSAdapter::get_instance()->get_srv_url());
 		$this->get_view()->set_template(0, "__ormclient.tpl");
 		$this->set_mime_type(MIME_TYPE_JS);
 	}

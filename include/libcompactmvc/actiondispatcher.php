@@ -15,34 +15,34 @@ LIBCOMPACTMVC_ENTRY;
 class ActionDispatcher extends InputSanitizer {
 	private $handlers;
 	private $handlersobj;
-	private $action_default;
-	private $action_control;
+	private static $action_default;
+	private static $action_control;
 	private $last_controller;
 	private $base_path_num;
 	private static $current_route_id;
 	private static $mapper;
 	
-	public function __construct($mapper) {
+	public function __construct($mapper = null) {
 		$this->handlers = array();
 		$this->handlersobj = array();
-		parent::__construct($mapper);
+		if ($mapper != null) parent::__construct($mapper);
 	}
 
-	public function set_default($route_id) {
-		$this->action_default = $route_id;
+	public static function set_default($route_id) {
+		self::$action_default = $route_id;
 	}
 
-	public function set_control($route_id) {
-		$this->action_control = $route_id;
+	public static function set_control($route_id) {
+		self::$action_control = $route_id;
 	}
 
 	public function run() {
 		$route_id = "";
-		if ($this->action_control != "") {
+		if (self::$action_control != "") {
 			try {
-				self::$current_route_id = $this->action_control;
-				DLOG("EXECUTING CONTROL ACTION: " . $this->action_control);
-				$ho = $this->get_handlersobj($this->action_control);
+				self::$current_route_id = self::$action_control;
+				DLOG("EXECUTING CONTROL ACTION: " . self::$action_control);
+				$ho = $this->get_handlersobj(self::$action_control);
 				$ho->set_base_path($this->base_path_num);
 				DLOG("CONTROLER TYPE: " . get_class($ho));
 				$ho->get_view()->clear();
@@ -60,7 +60,7 @@ class ActionDispatcher extends InputSanitizer {
 		}
 		do {
 			$route_id = ($route_id == "") ? $this->get_action_mapper()->get_route_id() : $route_id;
-			$route_id = ($route_id == "" && $this->get_action_mapper()->get_route_id()) ? $this->action_default : $route_id;
+			$route_id = ($route_id == "" && $this->get_action_mapper()->get_route_id()) ? self::$action_default : $route_id;
 			self::$current_route_id = $route_id;
 			$ho = $this->get_handlersobj($route_id);
 			$ho->set_base_path($this->base_path_num);
@@ -100,20 +100,20 @@ class ActionDispatcher extends InputSanitizer {
 
 /**
 	 * 
-	 * @param boolean $action true for automatic detection via get_requested_controller(), "" and $this->action_default for defautl ctrlr, $this->action_control for access control controller.
+	 * @param boolean $action true for automatic detection via get_requested_controller(), "" and self::$action_default for defautl ctrlr, self::$action_control for access control controller.
 	 * @throws Exception
 	 * @return CMVCController
 	 */
 	private function get_handlersobj($route_id = true) {
 		$id_used = "";
 		if ($route_id == "") {
-			$route_id = $this->action_default;
+			$route_id = self::$action_default;
 		}
 		$handler = $this->get_action_mapper()->get_link_property_by_route_id($route_id)->get_controller_name();
 		$id_used = $route_id;
 		if ($handler == "") {
-			$handler = $this->get_action_mapper()->get_link_property_by_route_id($this->action_default)->get_controller_name();
-			$id_used = $this->action_default;
+			$handler = $this->get_action_mapper()->get_link_property_by_route_id(self::$action_default)->get_controller_name();
+			$id_used = self::$action_default;
 		}
 		$this->base_path_num = $this->get_action_mapper()->get_link_property_by_route_id($id_used)->get_base_path_num();
 		DLOG("id_used  = $id_used");

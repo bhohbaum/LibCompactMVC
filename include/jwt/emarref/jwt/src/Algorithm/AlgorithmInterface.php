@@ -1,6 +1,6 @@
 <?php
 
-namespace Emarref\Jwt\Algorithm;
+namespace Emarref\Jwt\Algorithm {
 
 interface AlgorithmInterface
 {
@@ -8,4 +8,6 @@ interface AlgorithmInterface
      * @return string
      */
     public function getName();
+}
+
 }

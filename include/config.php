@@ -1,5 +1,5 @@
 <?php
-include_once ('libcompactmvc.php');
+include_once('libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -34,6 +34,7 @@ if (gethostname() == 'vweb02') {
 
 define('REDIS_HOST', '127.0.0.1');
 define('REDIS_PORT', 6379);
+define('REDIS_FILE_FALLBACK_DISABLED', false);
 
 define('CACHING_ENABLED', DEBUG != 1 || true);
 define('LANG_DEFAULT', 'app');
@@ -53,16 +54,16 @@ setlocale(LC_ALL, 0);
 // WebSocket config
 // WS server cluster config
 define('WS_SRV_COUNT', 1);
-define('WS_PROT_EVENT_DISPATCH', 'event-dispatch-protocol');
-$GLOBALS['WS_BASE_URL'] = array(
-		((is_tls_con()) ? 'wss' : 'ws') . '://example.de:12333/'
-);
-$GLOBALS['WS_SRV_ADDR'] = array(
-		'example.de'
-);
-$GLOBALS['WS_SRV_PORT'] = array(
-		'12333'
-);
+define('ST_WS_SRV_IDX', 'ws_srv_idx');
+if (gethostname() == 'vweb05') {
+	$GLOBALS['WS_BASE_URL'] = array(
+			((is_tls_con()) ? 'wss' : 'ws') . '://app.joe-nimble.com/ws/'
+	);
+} else {
+	$GLOBALS['WS_BASE_URL'] = array(
+			((is_tls_con()) ? 'wss' : 'ws') . '://benimble.kmundp.local/ws/'
+	);
+}
 
 // populate controllers with POST/GET variables?
 define('REGISTER_HTTP_VARS', true);

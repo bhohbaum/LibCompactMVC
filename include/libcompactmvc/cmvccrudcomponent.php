@@ -60,19 +60,6 @@ abstract class CMVCCRUDComponent extends CMVCComponent {
 			))) {
 				$cmethod = $this->path(2);
 				if ($cmethod == $method) return true;
-				
-				DLOG("Checking access rights for requested RPC:" . $cmethod . " HTTP verb: " . $this->get_method());
-				if ($cmethod != "register" && $cmethod != "login") {
-					try {
-						$user->by(array("id" => $this->__user));
-					} catch (InvalidMemberException $e1) {
-						ELOG("Missing user key! Access forbidden!");
-						throw new DBException("Missing user key! Access forbidden!", 403);
-					} catch (EmptyResultException $e2) {
-						ELOG("Invalid user key! Access forbidden!");
-						throw new DBException("Invalid user key! Access forbidden!", 403);
-					}
-				}
 			}
 		} catch (DBException $e3) {
 			throw $e3;

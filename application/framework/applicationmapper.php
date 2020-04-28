@@ -1,5 +1,6 @@
 <?php
-if (file_exists('../../include/libcompactmvc.php')) include_once('../../include/libcompactmvc.php');
+if (file_exists('../../include/libcompactmvc.php')) 
+	include_once('../../include/libcompactmvc.php');
 LIBCOMPACTMVC_ENTRY;
 
 /**
@@ -12,27 +13,23 @@ LIBCOMPACTMVC_ENTRY;
  * @link		https://github.com/bhohbaum/LibCompactMVC
  */
 class ApplicationMapper extends ActionMapper {
-	private $mapping2;
-	private $mapping3;
 
-	protected function __construct() {
-		$this->mapping2["app"]["home"] = new LinkProperty("/de/home", true);
-
-		$this->mapping3["app"]["ajaxep"]["user"] = new LinkProperty("/de/ajaxep/user", false);
-
-		parent::__construct();
+	protected function register_endpoints() {
+		DLOG();
+		ActionDispatcher::set_action_mapper($this);
+		ActionDispatcher::set_control(route_id("control"));
+		ActionDispatcher::set_default(route_id("login"));
+		$langs = array("app");
+		foreach ($langs as $lang) {
+			$this->register_ep_2($lang, "home", new LinkProperty("/de/home", true, "Home"));
+			
+			$this->register_ep_3($lang, "ajaxep", "user", new LinkProperty("/de/ajaxep/user", false, "user"));
+		}
 	}
 
 	public function get_base_url() {
 		return BASE_URL;
 	}
 
-	protected function get_mapping_2() {
-		return $this->mapping2;
-	}
-
-	protected function get_mapping_3() {
-		return $this->mapping3;
-	}
 
 }

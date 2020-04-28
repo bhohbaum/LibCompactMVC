@@ -146,7 +146,7 @@ abstract class CMVCController extends InputSanitizer {
 
 	/**
 	 */
-	protected function get_method() {
+	protected function get_http_verb() {
 		if (php_sapi_name() == "cli") {
 			$method = (getenv("METHOD") !== false) ? getenv("METHOD") : "exec";
 		} else {
@@ -415,7 +415,7 @@ abstract class CMVCController extends InputSanitizer {
 	 */
 	protected function dispatch_method($var) {
 		DLOG($var);
-		$method = strtolower($this->get_method());
+		$method = strtolower($this->get_http_verb());
 		$func = $method . "_" . $var;
 		if (is_callable(array(
 				$this,
@@ -446,7 +446,7 @@ abstract class CMVCController extends InputSanitizer {
 			$this->__view = new View();
 		}
 		try {
-			switch ($this->get_method()) {
+			switch ($this->get_http_verb()) {
 				case 'GET':
 					$this->pre_run_get();
 					break;
@@ -464,7 +464,7 @@ abstract class CMVCController extends InputSanitizer {
 					break;
 			}
 			$this->pre_run();
-			switch ($this->get_method()) {
+			switch ($this->get_http_verb()) {
 				case 'GET':
 					$this->main_run_get();
 					break;
@@ -482,7 +482,7 @@ abstract class CMVCController extends InputSanitizer {
 					break;
 			}
 			$this->main_run();
-			switch ($this->get_method()) {
+			switch ($this->get_http_verb()) {
 				case 'GET':
 					$this->post_run_get();
 					break;

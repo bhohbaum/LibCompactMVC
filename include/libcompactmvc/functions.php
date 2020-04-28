@@ -233,7 +233,7 @@ function file_extension($fname) {
 	$ext = $arr[count($arr) - 1];
 	if ($ext == basename($fname))
 		$ext = "";
-	DLOG("Filename: " . $fname . " Extension: " . $ext);
+// 	DLOG("Filename: " . $fname . " Extension: " . $ext);
 	return $ext;
 }
 
@@ -245,6 +245,8 @@ function file_name($fname) {
 }
 
 function cmvc_include($fname) {
+	if (defined("COMBINED_CODE_LOADED")) return;
+	if (function_exists("DLOG")) DLOG($fname);
 	$basepath = dirname(dirname(__FILE__) . "../");
 
 	$dirs_up = array(
@@ -259,6 +261,7 @@ function cmvc_include($fname) {
 	// Put all directories into this array, where source files shall be included.
 	// This function is intended to work from everywhere.
 	$dirs_down = array(
+			"./",
 			"application/",
 			"application/component/",
 			"application/controller/",
@@ -283,6 +286,7 @@ function cmvc_include($fname) {
 }
 
 function cmvc_include_dir($path, $ignore = array()) {
+	if (defined("COMBINED_CODE_LOADED")) return;
 	// DLOG($path);
 	if (is_dir($path)) {
 		$path = rtrim($path, '/') . '/';
@@ -290,7 +294,7 @@ function cmvc_include_dir($path, $ignore = array()) {
 		foreach ($items as $item) {
 			foreach ($ignore as $i) {
 				if (pathinfo($item, PATHINFO_BASENAME) == $i) {
-					DLOG(" " . $item . " is on ignore list.");
+					if (function_exists("DLOG")) DLOG(" " . $item . " is on ignore list.");
 					return;
 				}
 			}
@@ -298,6 +302,7 @@ function cmvc_include_dir($path, $ignore = array()) {
 				cmvc_include_dir($item, $ignore);
 			}
 			if (strtolower(file_extension($item)) == "php") {
+				if (function_exists("DLOG")) DLOG($item);
 				require_once ($item);
 			}
 		}
@@ -413,6 +418,10 @@ function obj_sort_by_member(&$obj_arr, $member) {
 	return $obj_arr;
 }
 
+function sort_obj_by_member(&$obj_arr, $member) {
+	obj_sort_by_member($obj_arr, $member);
+}
+	
 function xor_crypt($key, $text) {
 	$out = '';
 	for($i=0; $i<strlen($text); )

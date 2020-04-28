@@ -14,6 +14,7 @@ LIBCOMPACTMVC_ENTRY;
  */
 class CMVCSystem extends CMVCComponent {
 	private $bridf = "./include/resources/config/orm_ep_base_route_id.txt";
+	private $ccf = "./include/resources/cache/combined.php";
 	
 	protected function get_component_id() {
 		DLOG();
@@ -24,7 +25,13 @@ class CMVCSystem extends CMVCComponent {
 		DLOG();
 		parent::main_run();
 		try {
-			$this->dispatch_method($this->path(1));
+			$this->set_component_dispatch_base($this->path(1));
+			$this->dispatch_component(new ORMClientComponent());
+			if ($this->get_dispatched_component() != null) {
+				$this->component_response();
+			} else {
+				$this->dispatch_method($this->path(1));
+			}
 		} catch (InvalidMemberException $e) {
 			$this->get_view()->activate("main");
 			$this->get_view()->add_template("__syshelp.tpl");
@@ -51,9 +58,9 @@ class CMVCSystem extends CMVCComponent {
 		$tables = $td->get_all_tables();
 		$addtables = array();
 		foreach ($tables as $table) {
+			$fname = "./application/dba/" . $table . ".php";
 			if (!class_exists($table)) {
 				echo_flush("No DTO class found for table: " . $table . "\n");
-				$fname = "./application/dba/" . $table . ".php";
 				if (file_exists($fname)) {
 					echo_flush("...but file exists: " . $fname . "\n");
 					echo_flush("\nSituation must be resolved manually! Exiting...\n\n");
@@ -99,9 +106,9 @@ class CMVCSystem extends CMVCComponent {
 		$tables = $td->get_all_tables();
 		$addtables = array();
 		foreach ($tables as $table) {
+			$fname = "./application/component/ep" . $table . ".php";
 			if (!class_exists("EP" . $table)) {
 				echo_flush("No endpoint class found for table: " . $table . "\n");
-				$fname = "./application/component/ep" . $table . ".php";
 				if (file_exists($fname)) {
 					echo_flush("...but file exists: " . $fname . "\n");
 					echo_flush("\nSituation must be resolved manually! Exiting...\n\n");
@@ -132,5 +139,58 @@ class CMVCSystem extends CMVCComponent {
 			}
 		}
 	}
-
+	
+	protected function exec_cc() {
+		DLOG();
+		$this->exec_cc_file();
+		$this->exec_cc_redis();
+	}
+	
+	protected function exec_cc_file() {
+		DLOG();
+		if (file_exists($this->ccf)) {
+			unlink($this->ccf);
+			echo_flush("Deleted file: " . $this->ccf . " \n");
+		}
+	}
+	
+	protected function exec_cc_redis() {
+		DLOG();
+		echo_flush("Executing FLUSHALL...\n");
+		RedisAdapter::get_instance()->flushall();
+	}
+	
+	protected function exec_cc_table() {
+		DLOG();
+		$search = REDIS_KEY_TBLCACHE_PFX . "*";
+		$keys = RedisAdapter::get_instance()->keys($search);
+		foreach ($keys as $k) {
+			echo_flush($k . "\n");
+			RedisAdapter::get_instance()->delete($k);
+		}
+		$search = REDIS_KEY_TBLDESC_PFX . "*";
+		$keys = RedisAdapter::get_instance()->keys($search);
+		foreach ($keys as $k) {
+			echo_flush($k . "\n");
+			RedisAdapter::get_instance()->delete($k);
+		}
+		$search = REDIS_KEY_FKINFO_PFX . "*";
+		$keys = RedisAdapter::get_instance()->keys($search);
+		foreach ($keys as $k) {
+			echo_flush($k . "\n");
+			RedisAdapter::get_instance()->delete($k);
+		}
+	}
+	
+	protected function exec_cc_render() {
+		DLOG();
+		$search = REDIS_KEY_RCACHE_PFX . "*";
+		$keys = RedisAdapter::get_instance()->keys($search);
+		foreach ($keys as $k) {
+			echo_flush($k . "\n");
+			RedisAdapter::get_instance()->delete($k);
+		}
+	}
+	
+	
 }

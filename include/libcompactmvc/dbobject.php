@@ -243,6 +243,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 	 * @return DbObject
 	 */
 	public function save() {
+		$slotid = $this->{$this->__pk};
 		$this->on_before_save();
 		if (!isset($this->__tablename)) {
 			throw new DBException("Invalid call: No table selected.");
@@ -266,6 +267,7 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$qb = new QueryBuilder();
 		if ($this->__isnew) {
 			$q = $qb->insert($this->__tablename, $fields);
+			$slotid = "";
 		} else {
 			$constraint = array();
 			foreach ($pks as $key => $val) {
@@ -293,6 +295,13 @@ class DbObject extends DbAccess implements JsonSerializable {
 		}
 		$this->__isnew = false;
 		$this->on_after_save();
+		$json = json_encode($this);
+		$slot = "dbeventslot___" . $this->get_table() . "___" . $slotid;
+		WSAdapter::get_instance()->notify($slot, $json);
+		if ($slotid != "") {
+			$slot = "dbeventslot___" . $this->get_table() . "___";
+			WSAdapter::get_instance()->notify($slot, $json);
+		}
 		return $this;
 	}
 	
@@ -313,6 +322,8 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$qb = new QueryBuilder();
 		$q = $qb->update($this->__tablename, $fields, $constraint);
 		$ret = $this->run_query($q, false, false, null, $this->__tablename, true);
+		$slot = "dbeventslot___" . $this->get_table() . "___";
+		WSAdapter::get_instance()->notify($slot);
 	}
 
 	/**
@@ -333,6 +344,8 @@ class DbObject extends DbAccess implements JsonSerializable {
 		$this->__isnew = true;
 		$this->__member_variables = array();
 		$this->run_query($q, false, false, null, $this->__tablename, true);
+		$slot = "dbeventslot___" . $this->get_table() . "___";
+		WSAdapter::get_instance()->notify($slot);
 		return $this;
 	}
 

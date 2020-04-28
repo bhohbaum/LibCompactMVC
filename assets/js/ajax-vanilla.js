@@ -258,7 +258,7 @@ function $ws(url) {
 	this.handlers = [];
 	if (url !== undefined) {
 		this.url = url;
-		this.id = url.substring(url.length - 32, url.length);
+		this.id = this._url2id(url);
 		this.init();
 	} else {
 		this.id = null;
@@ -271,10 +271,10 @@ function $ws(url) {
 $ws.prototype.init = function(url) {
 	if (url !== undefined) {
 		this.url = url;
-		this.id = url.substring(url.length - 32, url.length);
+		this.id = this._url2id(url);
 	}
 	try {
-		this.socket = new WebSocket(this.url, "event-dispatch-protocol");
+		this.socket = new WebSocket(this.url);
 		console.log("WS startup - status " + this.socket.readyState);
 		this.socket.ws = this;
 		this.socket.onopen = function(msg) {
@@ -310,7 +310,13 @@ $ws.prototype.set_handler = function(event, handler) {
 	return this;
 };
 
-$ws.prototype.send = function(msg) {
+$ws.prototype.send = function(event, msg) {
+	if (msg !== undefined) {
+		msg = JSON.stringify(msg);
+		msg = event + " " + msg;
+	} else {
+		msg = event;
+	}
 	if (this.socket.readyState !== 1) {
 		console.log("$ws::send(): No connection to websocket server (status: " + this.socket.readyState + "), re-sending message in 1s...");
 		var me = this;
@@ -319,7 +325,7 @@ $ws.prototype.send = function(msg) {
 		}, 1000);
 	} else {
 		try {
-			this.socket.send(this.id + " " + msg);
+			this.socket.send(msg);
 		} catch (ex) {
 			console.log(ex);
 		}
@@ -331,16 +337,35 @@ $ws.prototype.send = function(msg) {
  * internal functions
  */
 $ws.prototype._run_handlers = function(data) {
+	var me = this;
 	for (idx in this.handlers) {
 		if (Number.isInteger(parseInt(idx))) {
 			this.handlers[idx](data);
 		} else {
-			if (data.substring(33, 33 + idx.length) === idx) {
-				this.handlers[idx](data.substring(33 + idx.length + 1, data.length));
+			if (data.substring(0, idx.length + 1) === idx + " ") {
+				var payload = JSON.tryParse(data.substring(idx.length + 1, data.length));
+				if (payload.hasOwnProperty("__type") || (Array.isArray(payload) && payload[0].hasOwnProperty("__type"))) {
+					(new $DbObject()).mkType(function(typed) {
+						me.handlers[idx](typed);
+					}, payload)
+				} else this.handlers[idx](payload);
 			}
 		}
 	}
 };
+
+$ws.prototype._url2id = function(url) {
+	var arr = url.split("/");
+	var tmp = [];
+	while (arr.length > 0) {
+		tmp.push(arr.pop());
+	}
+	for (var i = 0; i < 3; i++) tmp.pop();
+	while (tmp.length > 0) {
+		arr.push(tmp.pop());
+	}
+	return "/" + arr.join("/");
+}
 
 /*******************************************************************************
  * ORM client: DTO
@@ -376,10 +401,6 @@ $DbObject.prototype.create = function(cb) {
 	var me = this;
 	var data = "";
 	var firstvar = true;
-//	for (key in this) {
-//		data += (firstvar ? "" : "&") + key + "=" + encodeURIComponent(this[key]);
-//		firstvar = false;
-//	}
 	if (me.hasOwnProperty("__subject")) delete me.__subject;
 	if (me.hasOwnProperty("__object")) delete me.__object;
 	data += "__subject=" + encodeURIComponent(JSON.stringify(me));
@@ -400,6 +421,7 @@ $DbObject.prototype.create = function(cb) {
 		if (typeof cb == "function")
 			cb(obj);
 	}).put(this.__ep);
+	return me;
 }
 
 $DbObject.prototype.read = function(p1, p2) {
@@ -426,6 +448,7 @@ $DbObject.prototype.read = function(p1, p2) {
 		if (typeof cb == "function")
 			cb(obj);
 	}).get(this.__ep + id);
+	return me;
 }
 
 $DbObject.prototype.update = function(cb) {
@@ -438,7 +461,7 @@ $DbObject.prototype.update = function(cb) {
 	for (key in this) {
 		varname = key;
 		if (this.hasOwnProperty(varname)) {
-			if (this[varname] !== null) {
+            if (this[varname] !== undefined && this[varname] !== null) {
 				if (this[varname]["update"] !== undefined && this[varname]["__pk"] !== undefined) {
 					if (typeof this[varname].update === "function" && typeof this[varname].__pk === "string") {
 						this[varname].update();
@@ -468,6 +491,7 @@ $DbObject.prototype.update = function(cb) {
 		if (cb !== undefined)
 			cb(obj);
 	}).post(this.__ep + this[this.__pk]);
+	return me;
 }
 
 $DbObject.prototype.del = function(cb) {
@@ -481,6 +505,7 @@ $DbObject.prototype.del = function(cb) {
 		if (cb != undefined)
 			cb(me);
 	}).del(this.__ep + this[this.__pk]);
+	return me;
 }
 
 $DbObject.prototype.copy = function(from) {
@@ -496,6 +521,7 @@ $DbObject.prototype.copy = function(from) {
 					me[property] = me.mkType(null, me[property]);
 		}
 	}
+	return me;
 }
 
 $DbObject.prototype.callMethod = function(cb, method, param) {
@@ -537,29 +563,33 @@ $DbObject.prototype.callMethod = function(cb, method, param) {
 $DbObject.prototype.mkType = function(cb, obj, type) {
 	var cmd;
 	var tmp;
-	if (type === undefined) {
-		if (obj === null) {
-			if (typeof cb == "function")
-				cb(obj);
-			return;
-		} else {
-			if (obj.hasOwnProperty("__type")) {
-				cmd = "tmp = new window." + obj.__type + "();";
-				eval(cmd);
+	if (Array.isArray(obj)) 
+		this.mkTypeArray(cb, obj, type);
+	else {
+		if (type === undefined) {
+			if (obj === null) {
+				if (typeof cb == "function")
+					cb(obj);
+				return;
+			} else {
+				if (obj.hasOwnProperty("__type")) {
+					cmd = "tmp = new window." + obj.__type + "();";
+					eval(cmd);
+				}
 			}
+		} else {
+			cmd = "tmp = new window." + type +"();";
+			eval(cmd);
 		}
-	} else {
-		cmd = "tmp = new window." + type +"();";
-		eval(cmd);
+		if (obj.hasOwnProperty("__type"))
+			tmp.copy(obj);
+		else
+			tmp = obj;
+		if (cb === null)
+			return tmp;
+		else
+			cb(tmp);
 	}
-	if (obj.hasOwnProperty("__type"))
-		tmp.copy(obj);
-	else
-		tmp = obj;
-	if (cb === null)
-		return tmp;
-	else
-		cb(tmp);
 }
 
 /**
@@ -600,6 +630,7 @@ $DbObject.prototype.by = function(cb, constraint) {
 	this.callMethod(function(res) {
 		me.mkType(cb, res);
 	}, "by", constraint);
+	return me;
 }
 
 $DbObject.prototype.all_by = function(cb, constraint) {
@@ -611,6 +642,7 @@ $DbObject.prototype.all_by = function(cb, constraint) {
 			me.mkTypeArray(cb, res);
 		}
 	}, "all_by", constraint);
+	return me;
 }
 
 /*******************************************************************************
@@ -801,6 +833,14 @@ function jQueryLoaded() {
 	return (typeof $ == "function") && ($ == jQuery)
 }
 
+function nl2br(str, is_xhtml) {
+	if (typeof str === 'undefined' || str === null) {
+		return '';
+	}
+	var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
+	return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+}
+
 JSON.isJSON = function(json) {
 	try {
 		var obj = JSON.parse(json)
@@ -828,9 +868,33 @@ if (typeof Array.isArray === 'undefined') {
 /*******************************************************************************
  * Initialisation
  ******************************************************************************/
+$_ajax_startup_initialized = false;
+$_ajax_startup = [];
+
+function __ajaxInitialized() {
+	for (var i = 0; i < $_ajax_startup.length; i++) {
+		$_ajax_startup[i]();
+	}
+	$_ajax_startup = [];
+}
+
+function onFrameworkReady(func) {
+	$_ajax_startup[$_ajax_startup.length] = func;
+}
+
 addListener(document, "readystatechange", function() {
 	console.log("Document ready state changed.");
-	new $ajax().init();
+	if (!$_ajax_startup_initialized) {
+		$_ajax_startup_initialized = true;
+		new $ajax()
+		.ok(function(res) {
+			eval(res);
+			new $ajax().init();
+			__ajaxInitialized();
+		}).get("/app/sysint/ormclient.js")
+	}
 });
+
+
 
 
