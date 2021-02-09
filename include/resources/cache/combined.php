@@ -1751,7 +1751,7 @@ abstract class CMVCComponent extends CMVCController {
 	 *
 	 * @return String Component identification string
 	 */
-	abstract protected function get_component_id();
+	abstract public function get_component_id();
 
 	/**
 	 *
@@ -6640,7 +6640,7 @@ class CMVCSystem extends CMVCComponent {
 	private $bridf = "./include/resources/config/orm_ep_base_route_id.txt";
 	private $ccf = "./include/resources/cache/combined.php";
 	
-	protected function get_component_id() {
+	public function get_component_id() {
 		DLOG();
 		return "sys";
 	}
@@ -9703,7 +9703,7 @@ class Network {
  */
 class ORMClientComponent extends CMVCComponent {
 	
-	protected function get_component_id() {
+	public function get_component_id() {
 		DLOG();
 		return "ormclientcomponent";
 	}
@@ -9763,7 +9763,7 @@ class ORMClientComponent extends CMVCComponent {
  */
 class ORMClientComponentQt extends ORMClientComponent {
 	
-	protected function get_component_id() {
+	public function get_component_id() {
 		DLOG();
 		return "ormclientcomponentqt";
 	}
@@ -11006,7 +11006,7 @@ class Session {
 	 *
 	 * @param unknown_type $id
 	 */
-	public function force_id($id) {
+	public function switch_to($id) {
 		DLOG("Saving current content: " . var_export(self::$parray, true));
 		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
 		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);
@@ -14055,7 +14055,7 @@ cmvc_include("dummycomponent.php");
  */
 class DummyComponent extends CMVCComponent {
 
-	protected function get_component_id() {
+	public function get_component_id() {
 		return "dummy";
 	}
 

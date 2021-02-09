@@ -14,7 +14,7 @@ LIBCOMPACTMVC_ENTRY;
  */
 class DummyComponent extends CMVCComponent {
 
-	protected function get_component_id() {
+	public function get_component_id() {
 		return "dummy";
 	}
 

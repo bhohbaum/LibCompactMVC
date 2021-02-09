@@ -14,7 +14,7 @@ LIBCOMPACTMVC_ENTRY;
  */
 class EP<?= $this->get_value("table") ?> extends CMVCCRUDComponent {
 
-	protected function get_component_id() {
+	public function get_component_id() {
 		return "<?= $this->get_value("table") ?>";
 	}
 	

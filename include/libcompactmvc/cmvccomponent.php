@@ -21,7 +21,7 @@ abstract class CMVCComponent extends CMVCController {
 	 *
 	 * @return String Component identification string
 	 */
-	abstract protected function get_component_id();
+	abstract public function get_component_id();
 
 	/**
 	 *

@@ -29,17 +29,16 @@ abstract class InputSanitizer implements JsonSerializable {
 
 	protected function request($var = null) {
 		if (!isset(InputSanitizer::$request_data) || InputSanitizer::$request_data == null) {
-		    $put_vars = array();
+		    $data = array();
 		    if (!isset(InputSanitizer::$request_data_raw) || InputSanitizer::$request_data_raw == null) {
 		        InputSanitizer::$request_data_raw = file_get_contents('php://input');
-		        $json = json_decode(InputSanitizer::$request_data_raw);
-		        if ($json != null) {
-		            $put_vars = $json;
-		        } else {
-		            parse_str(InputSanitizer::$request_data_raw, $put_vars);
-		        }
+		        parse_str(InputSanitizer::$request_data_raw, $put_vars);
+		        $data = array_merge($_REQUEST, $put_vars);
 		    }
-		    $data = array_merge($_REQUEST, $put_vars);
+		    $json = json_decode(InputSanitizer::$request_data_raw, JSON_OBJECT_AS_ARRAY);
+		    if ($json != null && is_array($json)) {
+		        $data = array_merge($data, $json);
+		    }
 		    InputSanitizer::$request_data = $data;
 		} else {
 			$data = InputSanitizer::$request_data;

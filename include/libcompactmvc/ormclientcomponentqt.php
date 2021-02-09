@@ -14,7 +14,7 @@ LIBCOMPACTMVC_ENTRY;
  */
 class ORMClientComponentQt extends ORMClientComponent {
 	
-	protected function get_component_id() {
+	public function get_component_id() {
 		DLOG();
 		return "ormclientcomponentqt";
 	}

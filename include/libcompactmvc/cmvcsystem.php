@@ -16,7 +16,7 @@ class CMVCSystem extends CMVCComponent {
 	private $bridf = "./include/resources/config/orm_ep_base_route_id.txt";
 	private $ccf = "./include/resources/cache/combined.php";
 	
-	protected function get_component_id() {
+	public function get_component_id() {
 		DLOG();
 		return "sys";
 	}

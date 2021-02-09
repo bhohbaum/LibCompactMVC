@@ -176,11 +176,11 @@ class Session {
 	}
 
 	/**
-	 * Forcibly set the given session id and load their data.
+	 * Switch to another session context.
 	 *
 	 * @param unknown_type $id
 	 */
-	public function force_id($id) {
+	public function switch_to($id) {
 		DLOG("Saving current content: " . var_export(self::$parray, true));
 		RedisAdapter::get_instance()->set("SESSION_" . $this->session_id, serialize(self::$parray));
 		RedisAdapter::get_instance()->expire("SESSION_" . $this->session_id, SESSION_TIMEOUT);

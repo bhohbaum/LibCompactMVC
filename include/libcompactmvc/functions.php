@@ -434,6 +434,7 @@ function xor_crypt($key, $text) {
 	return $out;
 }
 
+
 $GLOBALS["SITEMAP"] = array();
 
 /**
